@@ -1,0 +1,7 @@
+
+<% if (locals.success) { %>
+    <div class="bg-green-100 border text-center border-green-400 text-green-700 px-4 py-3 relative mb-6" role="alert">
+        <strong class="font-medium block sm:inline"><%= locals.success %></strong>
+        <strong class="font-bold block sm:inline"><%= (locals?.subject)?.toUpperCase() %></strong>
+    </div>
+<% } %>

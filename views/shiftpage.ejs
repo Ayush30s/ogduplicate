@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include("./Partials/nav") %>
+    <div class="bg-black text-white flex justify-center items-center min-h-screen">
+        <div class="max-w-lg w-full bg-gray-900 rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-center text-red-500 mb-6">Details</h1>
+    
+            <div class="space-y-4">
+                <div class="flex justify-between">
+                    <span class="font-semibold">Members:</span>
+                    <span><%= shiftDetail.joinedby.length %></span>
+                </div>
+    
+                <div class="flex justify-between">
+                    <span class="font-semibold">Sex:</span>
+                    <span><%= shiftDetail.sex %></span>
+                </div>
+    
+                <div class="flex justify-between">
+                    <span class="font-semibold">Limit:</span>
+                    <span><%= shiftDetail.limit %></span>
+                </div>
+    
+                <div class="flex justify-between">
+                    <span class="font-semibold">Start Time:</span>
+                    <span><%= shiftDetail.starttime %></span>
+                </div>
+    
+                <div class="flex justify-between">
+                    <span class="font-semibold">End Time:</span>
+                    <span><%= shiftDetail.endtime %></span>
+                </div>
+    
+                <div class="flex justify-between">
+                    <span class="font-semibold">Created At:</span>
+                    <span><%= new Date(shiftDetail.createdAt).toLocaleString() %></span>
+                </div>
+    
+                <div class="flex justify-between">
+                    <span class="font-semibold">Updated At:</span>
+                    <span><%= new Date(shiftDetail.updatedAt).toLocaleString() %></span>
+                </div>
+    
+                <div class="flex flex-col">
+                    <span class="text-center my-5 font-bold text-lg text-red-500 font-semibold mb-2">Joined By:</span>
+                    <div class="space-y-2 scroll-y overflow-y-auto">
+                        <% userDetail.forEach(function(user) { %>
+                            <a href="/home/profile/<%= user._id %>" class="flex flex-row my-3 justify-between items-center bg-red-300 rounded-lg hover:bg-red-500 ">
+                                <img src="<%= user.img %>" class="bg-gray-800 h-12 w-12 rounded-lg mx-5 rounded-full"></img>
+                                <span class="bg-gray-800 p-2 rounded-lg m-5 shadow hover:shadow-white"><%= user.name %></span>
+                            </a>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

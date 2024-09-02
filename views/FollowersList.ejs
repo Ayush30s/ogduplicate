@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Following List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <%- include("./Partials/nav.ejs") %>
+
+    <div class="flex flex-col items-center min-h-screen bg-black text-white">
+        <h1 class="mt-2 text-2xl shadow-sm shadow-red-500 py-1 px-5 rounded-lg font-semibold text-center">
+            Followers
+        </h1>
+
+        <div class="w-full max-w-md mt-8 space-y-4 border border-black rounded-lg shadow-sm shadow-red-500 p-5">
+            <% userFollowersData.forEach(following => { %>
+            <div class="flex flex-row justify-between items-center p-3  bg-gray-900 rounded-lg transition-all duration-300 hover:bg-gray-800">
+                <img src="<%= following.profileImage %>" alt="<%= following.fullname %>"
+                    class="w-12 h-12 object-cover rounded-full mr-4">
+                <a href="/home/profile/<%= following._id %>"
+                    class="text-lg font-medium text-white transition-all duration-300 hover:text-red-500">
+                    <%= following.fullname %>
+                </a>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+
+</body>
+
+</html>

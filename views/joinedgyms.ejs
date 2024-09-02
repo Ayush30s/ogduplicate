@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("./Partials/head") %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes slideIn {
+            0% { transform: translateX(-50px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 2s ease-in-out;
+        }
+        .animate-slideIn {
+            animation: slideIn 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-black text-white flex flex-col min-h-screen font-sans">
+    <%- include("./Partials/nav.ejs") %>
+    <h1 class="text-[330%] text-red-600 font-bold text-center my-10">Joined Gyms</h1>
+
+    <div class="flex flex-grow justify-center px-4 py-8">
+        <% if (locals.msg) { %>
+            <div class="m-auto inline font-bold uppercase px-6 py-4 rounded-full shadow-lg border-2 border-black transition-transform transform scale-105 bg-black text-red-600 shadow-red-600/50 text-center">
+                <%= locals.msg %>
+            </div>
+        <% } else { %>
+            <ul class="w-full max-w-2xl space-y-4 animate-fadeIn delay-1000">
+                <% locals?.mygyms?.forEach((gym) => { %>
+                    <li class="my-2 flex justify-center">
+                        <a href="/home/gym/<%= gym._id %>" 
+                           class="text-red-600 text-lg sm:text-xl lg:text-2xl px-5 py-3 border-2 border-red-600 rounded-lg transition-all duration-300 inline-block transform hover:bg-red-600 hover:text-black hover:scale-110 shadow-lg shadow-red-600/50 animate-slideIn w-full text-center">
+                            <div class="flex justify-between items-center">
+                                <span><%= gym.gymname %></span>
+                                <span class="ml-3 text-sm sm:text-base lg:text-lg">Members: <%= gym.joinedby.length %></span>
+                            </div>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
+</body>
+</html>

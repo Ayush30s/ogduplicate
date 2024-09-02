@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./Partials/head") %>
+<body class="bg-black flex items-center justify-center min-h-screen">
+
+    <!-- Registration Form -->
+    <div class="bg-white p-8 shadow-lg w-full max-w-2xl rounded-lg">
+        <h2 class="text-3xl font-extrabold text-red-600 text-center mb-8">Register to Join a Gym</h2>
+        
+        <form action="/register/owner" method="POST" enctype="multipart/form-data">
+            <!-- Full Name and Email Input (Two fields in one line) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="name" class="block text-gray-900 font-semibold mb-2">Full Name</label>
+                    <input type="text" id="name" name="fullname" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your full name" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-gray-900 font-semibold mb-2">Email Address</label>
+                    <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your email" required>
+                </div>
+            </div>
+    
+            <!-- Password and Location Input (Two fields in one line) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="password" class="block text-gray-900 font-semibold mb-2">Password</label>
+                    <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your password" required>
+                </div>
+                <div>
+                    <label for="location" class="block text-gray-900 font-semibold mb-2">Location</label>
+                    <input type="text" id="location" name="location" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your address" required>
+                </div>
+            </div>
+    
+            <!-- Gym Name and Gender Input (Two fields in one line) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="gymname" class="block text-gray-900 font-semibold mb-2">Gym Name</label>
+                    <input type="text" id="gymname" name="gymname" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your Gym Name" required>
+                </div>
+                <div>
+                    <label for="gender" class="block text-gray-900 font-semibold mb-2">Gender</label>
+                    <input type="text" id="gender" name="gender" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your gender">
+                </div>
+            </div>
+
+            <!-- Contact Number and Description Input -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="contact" class="block text-gray-900 font-semibold mb-2">Contact Number</label>
+                    <input type="tel" id="contact" name="contactnumber" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Enter your contact number" required>
+                </div>
+                <div>
+                    <label for="description" class="block text-gray-900 font-semibold mb-2">Description</label>
+                    <textarea id="description" name="description" rows="4" class="w-full px-4 py-2 border border-gray-300 bg-gray-100 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600 rounded-md" placeholder="Describe your gym or goals" required></textarea>
+                </div>
+            </div>
+
+            <!-- Image Upload Input -->
+            <div class="mb-4">
+                <label for="image" class="block text-gray-900 font-semibold mb-2">Upload Gym Image</label>
+                <input type="file" id="image" name="profileImage" class="w-full text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-600" accept="image/*">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-8">
+                <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 transition duration-300 transform hover:scale-105">
+                    Register
+                </button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

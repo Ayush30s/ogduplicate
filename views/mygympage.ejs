@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("./Partials/head") %>
+<body class="min-h-screen flex flex-col bg-black text-white font-sans">
+
+    <!-- Navigation Bar -->
+    <%- include("./Partials/nav.ejs") %>
+
+    <% if (locals.msg == false) { %>
+        <div class="m-auto inline font-bold uppercase px-6 py-4 rounded-full shadow-lg border-2 border-black transition-transform transform scale-105 bg-black text-red-600 shadow-red-600/50">
+            This is a user type Email, to open a gym use another email
+        </div>        
+    <% } else { %>
+        <!-- Main Content -->
+        <div class="w-full flex-grow flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12 shadow-lg shadow-white overflow-hidden">
+
+            <!-- Gym Information Container -->
+            <div class="relative bg-black p-4 sm:p-8 mb-6 shadow-lg shadow-white w-full max-w-6xl rounded-lg transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/70 animate-fadeIn flex flex-col sm:flex-row sm:border-0">
+
+                <!-- Edit Button -->
+                <a href="/app/edit-gym/<%= gymData._id %>" class="absolute top-4 right-4 bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black transition-transform transform hover:scale-105">
+                    Add Shift
+                </a>
+
+                <!-- Left Section: Gym Image -->
+                <div class="flex flex-col w-full sm:w-1/3 items-center mb-4 sm:mb-0 lg:mx-5">
+                    <div class="relative w-full">
+                        <img src="<%= gymData.profileImage %>" alt="gym img" class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-lg transition-transform duration-300 hover:scale-110 border-4 border-red-600 sm:border-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-70 rounded-lg"></div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Gym Details -->
+                <div class="flex flex-col w-full sm:w-2/3 space-y-4 sm:space-y-6 pr-4">
+
+                    <!-- Gym Name -->
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-red-600 mb-4 tracking-wide uppercase text-center animate-textGlow"><%= gymData.gymname %></h2>
+
+                    <!-- Owner and Location -->
+                    <div class="flex flex-col sm:flex-row sm:space-x-6 space-y-4 lg:mx-6 sm:space-y-0">
+                        <div class="flex flex-col w-full sm:w-1/2 text-left">
+                            <p class="text-lg font-semibold text-gray-400">Owned by: <span class="text-white"><%= gymData.fullname %></span></p>
+                            <p class="text-lg font-semibold text-gray-400">Location: <span class="text-white"><%= gymData.location %></span></p>
+                        </div>
+
+                        <!-- Email and Contact Number -->
+                        <div class="flex flex-col w-full sm:w-1/2 text-left">
+                            <p class="text-lg font-semibold text-gray-400">Contact Number: <span class="text-white"><%= gymData.contactnumber %></span></p>
+                            <p class="text-lg font-semibold text-gray-400">Email: <span class="text-white"><%= gymData.email %></span></p>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="bg-black py-4 sm:p-6 rounded-lg shadow-inner max-h-48 sm:max-h-56 md:max-h-64">
+                        <span class="font-bold text-lg">Description : </span>
+                        <p class="text-gray-300 text-justify pb-5 overflow-x-auto leading-relaxed"><%= gymData.description %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shifts Accordion -->
+            <div class="mt-10 w-full max-w-md">
+                <button id="shiftsAccordionButton" class="bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black w-full text-center">
+                    Show Shifts
+                </button>
+                <div id="shiftsAccordionContent" class="hidden mt-4 space-y-6 w-full max-w-6xl">
+                    <h3 class="text-2xl sm:text-3xl font-bold text-red-600 uppercase mb-4 text-center">Shifts</h3>
+                    <div>
+                        <% if (gymData.shifts.length > 0) { %>
+                            <% gymData.shifts.forEach(function(shift,index) { %>
+                                <a href="/home/profile/shiftdetail/<%= shift._id %>">
+                                    <div class="relative p-4 rounded-lg shadow-lg shadow-red-600/50 my-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
+                                        <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
+                                        <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
+                                        <p class="text-sm text-gray-400 mb-2">Gender: <span class="text-white"><%= shift.sex %></span></p>
+                                        <p class="text-sm text-gray-400 mb-2">Limit: <span class="text-white"><%= shift.limit %></span></p>
+                                        <% if(!locals.gymIdSameUserId) { %>
+                                            <a href="/home/gym/<%= gymData._id %>/join-shift/<%= shift._id %>">
+                                                <button class="absolute top-24 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase transform transition-transform hover:scale-105">Join</button>
+                                            </a>
+                                        <% } %>
+                                    </div>
+                                </a>
+                            <% }); %>
+                        <% } else { %>
+                            <h1 class="text-2xl text-center font-bold w-[100%]">No Shift for the gym</h1>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Accordion -->
+            <div class="mt-10 w-full max-w-md flex flex-col justify-center items-center">
+                <button id="membersAccordionButton" class="bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black w-full text-center">
+                    Show Members
+                </button>
+                
+                <div id="membersAccordionContent" class="hidden mt-4 w-[140%] flex flex-col items-center space-y-4">
+                    <% if (gymData.joinedby.length > 0) { %>
+                        <div class="w-full flex flex-col sm:flex-row justify-between items-center p-2 border-b-2 border-red-500  rounded-lg">
+                            <div class="mx-2">                        
+                                profile
+                            </div>
+                            <div class="mx-2">
+                                Name
+                            </div>
+                            <div class="mx-2 font-bold text-sm">
+                                Joined At
+                            </div>
+                            <div class="mx-2 font-bold text-sm">
+                                Shift
+                            </div>
+                        </div>
+                        <% gymData.joinedby.forEach(function(user) { 
+                            let shiftIndex = userToshiftMap.get((user._id).toString());
+                        %>
+                            <div class="w-full flex flex-col sm:flex-row justify-between items-center p-2 shadow-lg hover:shadow-white rounded-lg">
+                                <a href="/home/profile/<%= user._id %>" class="mx-2 rounded-full hover:shadow-white transition-shadow duration-300">
+                                    <img src="<%= user.profileImage %>" alt="Member" class="w-12 h-12 rounded-full border-2 border-red-600 shadow-[inset_0_4px_6px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_4px_6px_rgba(255,255,255,0.8)] transition-shadow duration-300">
+                                </a>                                
+                                <div class="mx-2">
+                                    <%= user.fullname %>
+                                </div>
+                                <div class="mx-2 font-bold text-sm">
+                                    <%= user.createdAt.toLocaleDateString() %>
+                                </div>
+                                <div class="mx-2 font-bold text-sm text-white">
+                                    <%= shiftIndex %>
+                                </div>
+                            </div>
+                        <% }); %>
+                        
+                    <% } else { %>
+                        <h1 class="text-2xl font-bold text-center">No members have Joined</h1>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        document.documentElement.style.scrollBehavior = "smooth";
+
+        // Toggle Shifts Accordion
+        document.getElementById('shiftsAccordionButton').addEventListener('click', function() {
+            var content = document.getElementById('shiftsAccordionContent');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                this.textContent = 'Hide Shifts';
+            } else {
+                content.classList.add('hidden');
+                this.textContent = 'Show Shifts';
+            }
+        });
+
+        // Toggle Members Accordion
+        document.getElementById('membersAccordionButton').addEventListener('click', function() {
+            var content = document.getElementById('membersAccordionContent');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                this.textContent = 'Hide Members';
+            } else {
+                content.classList.add('hidden');
+                this.textContent = 'Show Members';
+            }
+        });
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeInUp {
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8), 0 0 50px rgba(255, 0, 0, 0.6); }
+        }
+        .animate-textGlow {
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        /* Media Query for Phone Devices */
+        @media (max-width: 640px) {
+            .sm:border-0 {
+                border: none !important;
+            }
+            .sm:border-0 img {
+                border: none !important;
+            }
+        }
+    </style>
+</body>
+</html>
