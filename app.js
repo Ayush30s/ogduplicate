@@ -36,8 +36,7 @@ io.on("connection", (socket) => {
 
 
 // "mongodb://127.0.0.1:27017/Gym"
-// mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym
-mongoose.connect("mongodb://127.0.0.1:27017/Gym")
+mongoose.connect("mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym")
     .then(() => console.log("MonogDB connected Successfully"))
     .catch((err) => console.log("err :", err))
 
