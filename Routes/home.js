@@ -143,6 +143,8 @@ homeRoute.get("/", async (req, res) => {
     try {
         // Fetch all gyms with the joinedby array populated
         const allGyms = await gymModel.find({}).populate('joinedby.user').exec();
+        console.log(allGyms);
+
         const currentuser = await gymModel.findById(userId);
         let gymNotJoined = [];
 
@@ -150,7 +152,7 @@ homeRoute.get("/", async (req, res) => {
         if(currentuser) {
             allGyms.forEach((gym) => {
                 if(gym._id.toString() != userId) {
-                    gymNotJoined.push(gym._id);
+                    gymNotJoined.push(gym);
                 }
             });
         } else {
@@ -169,6 +171,7 @@ homeRoute.get("/", async (req, res) => {
             });
         }
 
+        console.log(gymNotJoined)
         return res.render("landing", {
             allgyms: gymNotJoined,
             user: req.user,

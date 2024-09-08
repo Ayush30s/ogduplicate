@@ -25,6 +25,17 @@
         .slide-in-left {
             animation: slideInLeft 1s ease-out;
         }
+
+        /* Responsive AI button and div */
+        @media (max-width: 640px) {
+            #aidiv {
+                right: 2%;
+            }
+            #aiPage {
+                width: calc(100% - 32px); /* Adjust width to fit screen with some padding */
+                bottom: 10%;
+            }
+        }
     </style>
 </head>
 <body class="bg-black text-white">
@@ -180,7 +191,7 @@
 
             const aiPage = document.createElement("div");
             aiPage.id = "aiPage";
-            aiPage.classList.add("fixed", "bottom-16", "rounded-lg", "right-6", "bg-black", "w-96", "h-auto", "p-5", "border-2", "border-red-600", "shadow-lg", "z-50", "hidden");
+            aiPage.classList.add("fixed", "bottom-16", "rounded-lg", "right-4", "bg-black", "w-11/12", "max-w-md", "h-auto", "p-5", "border-2", "border-red-600", "shadow-lg", "z-50", "hidden");
 
             aiPage.innerHTML = `
                 <h2 class="text-lg font-bold text-red-600 mb-2">Ask AI</h2>

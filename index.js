@@ -6,6 +6,7 @@ const ownerRoute = require("./Routes/owner");
 const staticRoute = require("./Routes/staticroute");
 const { homeRoute } = require("./Routes/home")
 const followRoute = require("./Routes/follow")
+const cors = require('cors');
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
@@ -15,6 +16,8 @@ const {authenticateUser} = require("./Middleware/authentication");
 
 const app = express();
 const PORT = process.env.PORT;
+
+app.use(cors());
 
 const server = http.createServer(app);
 const io = new Server(server);
@@ -49,11 +52,6 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.resolve("./Public")));
 app.use(express.static(path.resolve("./Public/images")));
 app.use(authenticateUser('token'));
-
-
-app.get("/", (req,res) => {
-    return res.render("frontpage");
-})
 
 app.use("/app", staticRoute);
 app.use("/register", ownerRoute);

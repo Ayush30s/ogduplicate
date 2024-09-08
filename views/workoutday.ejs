@@ -75,7 +75,7 @@
 
         <div class="grid">
             <% workoutDays.exercises.forEach(exercise => { %>
-                <a href="/home/workout-day/2/:name" class="card">
+                <a href="/home/workout-day/2/:<%= exercise.name %>" class="card">
                     <h2><%= exercise.name %></h2>
                     <p><strong>Sets:</strong> <%= exercise.sets %></p>
                     <p><strong>Reps:</strong> <%= exercise.reps %></p>

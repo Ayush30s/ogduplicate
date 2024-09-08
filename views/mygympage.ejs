@@ -1,8 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include("./Partials/head") %>
-<body class="min-h-screen flex flex-col bg-black text-white font-sans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeInUp {
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8), 0 0 50px rgba(255, 0, 0, 0.6); }
+        }
+        .animate-textGlow {
+            animation: textGlow 2s ease-in-out infinite;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 640px) {
+            .sm:border-0 {
+                border: none !important;
+            }
+            .sm:border-0 img {
+                border: none !important;
+            }
+            .w-full {
+                width: 100% !important;
+            }
+            .max-w-6xl {
+                max-width: 100% !important;
+            }
+            .max-w-md {
+                max-width: 100% !important;
+            }
+            .px-4 {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            .py-6 {
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+            .text-3xl {
+                font-size: 1.875rem !important;
+            }
+            .text-4xl {
+                font-size: 2.25rem !important;
+            }
+            .text-lg {
+                font-size: 1.125rem !important;
+            }
+            .text-sm {
+                font-size: 0.875rem !important;
+            }
+            .mb-4 {
+                margin-bottom: 1rem !important;
+            }
+            .mb-6 {
+                margin-bottom: 1.5rem !important;
+            }
+            .mt-10 {
+                margin-top: 2.5rem !important;
+            }
+            .h-48 {
+                height: 12rem !important;
+            }
+            .h-64 {
+                height: 16rem !important;
+            }
+            .px-6 {
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+            }
+            .py-3 {
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+            }
+        }
+
+        /* Additional Styles */
+        .text-red-600 {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-black text-white font-sans">
     <!-- Navigation Bar -->
     <%- include("./Partials/nav.ejs") %>
 
@@ -15,7 +117,7 @@
         <div class="w-full flex-grow flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12 shadow-sm shadow-white overflow-hidden">
 
             <!-- Gym Information Container -->
-            <div class="relative bg-black p-4 sm:p-8 mb-6 shadow-sm shadow-white w-full max-w-6xl rounded-lg transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/70 animate-fadeIn flex flex-col sm:flex-row sm:border-0">
+            <div class="relative bg-black p-4 sm:p-8 mb-6 shadow-sm shadow-white w-full max-w-6xl rounded-lg transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/70 animate-fadeIn flex flex-col sm:flex-row">
 
                 <!-- Edit Button -->
                 <a href="/app/edit-gym/<%= gymData._id %>" class="absolute top-4 right-4 bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black transition-transform transform hover:scale-105">
@@ -66,14 +168,14 @@
                 <div id="shiftsAccordionContent" class="hidden mt-4 space-y-6 w-full max-w-6xl">
                     <div class="flex flex-row flex-wrap overflow-auto">
                         <% if (gymData.shifts.length > 0) { %>
-                            <% gymData.shifts.forEach(function(shift,index) { %>
+                            <% gymData.shifts.forEach(function(shift, index) { %>
                                 <a href="/home/profile/shiftdetail/<%= gymData._id %>/<%= shift._id %>">
                                     <div class="relative p-4 rounded-lg shadow-sm shadow-red-600/50 m-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
                                         <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
                                         <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
                                         <p class="text-sm text-gray-400 mb-2">Gender: <span class="text-white"><%= shift.sex %></span></p>
                                         <p class="text-sm text-gray-400 mb-2">Limit: <span class="text-white"><%= shift.limit %></span></p>
-                                        <% if(!locals.gymIdSameUserId) { %>
+                                        <% if (!locals.gymIdSameUserId) { %>
                                             <a href="/home/gym/<%= gymData._id %>/join-shift/<%= shift._id %>">
                                                 <button class="absolute top-24 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase transform transition-transform hover:scale-105">Join</button>
                                             </a>
@@ -82,7 +184,7 @@
                                 </a>
                             <% }); %>
                         <% } else { %>
-                            <h1 class="text-2xl text-center font-bold w-[100%]">No Shift for the gym</h1>
+                            <h1 class="text-2xl text-center font-bold w-full">No Shift for the gym</h1>
                         <% } %>
                     </div>
                 </div>
@@ -94,9 +196,9 @@
                     Show Members
                 </button>
                 
-                <div id="membersAccordionContent" class="hidden mt-4 w-[140%] flex flex-col items-center space-y-4">
+                <div id="membersAccordionContent" class="hidden mt-4 w-full flex flex-col items-center space-y-4">
                     <% if (gymData.joinedby.length > 0) { %>
-                        <div class="w-full flex flex-col sm:flex-row justify-between items-center p-2 border-b-2 border-red-500  rounded-lg">
+                        <div class="w-full flex flex-row justify-between items-center align-middle p-2 border-b-2 border-red-500 rounded-lg">
                             <div class="mx-2">                        
                                 profile
                             </div>
@@ -110,24 +212,24 @@
                                 Shift
                             </div>
                         </div>
+
                         <% gymData.joinedby.forEach(function(user) { 
                             let shiftIndex = userToshiftMap.get((user.user._id).toString());
                         %>
-                        <div class="w-full flex flex-wrap sm:flex-nowrap justify-between items-center p-3 shadow-sm hover:shadow-lg rounded-lg transition-shadow duration-300 bg-white">
-                            <a href="/home/profile/<%= user.user._id %>" class="flex-shrink-0 mx-4 rounded-full">
-                                <img src="<%= user.user.profileImage %>" alt="Member" class="w-14 h-14 rounded-full border-2 border-red-600 shadow-[inset_0_4px_6px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_4px_6px_rgba(255,255,255,0.8)] transition-shadow duration-300">
-                            </a> 
-                            <div class="flex-grow mx-4 text-lg font-semibold text-gray-800">
-                                <%= user.user.fullname %>
+                            <div class="w-full flex flex-wrap sm:flex-nowrap justify-between items-center p-3 shadow-sm hover:shadow-lg rounded-lg transition-shadow duration-300 bg-white">
+                                <a href="/home/profile/<%= user.user._id %>" class="flex-shrink-0 mx-4 rounded-full">
+                                    <img src="<%= user.user.profileImage %>" alt="Member" class="w-14 h-14 rounded-full border-2 border-red-600 shadow-[inset_0_4px_6px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_4px_6px_rgba(255,255,255,0.8)] transition-shadow duration-300">
+                                </a> 
+                                <div class="flex-grow mx-4 text-lg font-semibold text-gray-800">
+                                    <%= user.user.fullname %>
+                                </div>
+                                <div class="mx-4 text-sm text-gray-600">
+                                    <%= user.user.createdAt?.toLocaleDateString() %>
+                                </div>
+                                <div class="mx-4 font-bold text-sm text-gray-700">
+                                    Shift: <%= shiftIndex %>
+                                </div>
                             </div>
-                            <div class="mx-4 text-sm text-gray-600">
-                                <%= user.user.createdAt?.toLocaleDateString() %>
-                            </div>
-                            <div class="mx-4 font-bold text-sm text-gray-700">
-                                Shift: <%= shiftIndex %>
-                            </div>
-                        </div>
-
                         <% }); %>
                         
                     <% } else { %>
@@ -166,46 +268,5 @@
             }
         });
     </script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .animate-fadeIn {
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeInUp {
-            animation: fadeInUp 1s ease-in-out;
-        }
-
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8), 0 0 50px rgba(255, 0, 0, 0.6); }
-        }
-        .animate-textGlow {
-            animation: textGlow 2s ease-in-out infinite;
-        }
-
-        /* Media Query for Phone Devices */
-        @media (max-width: 640px) {
-            .sm:border-0 {
-                border: none !important;
-            }
-            .sm:border-0 img {
-                border: none !important;
-            }
-        }
-    </style>
 </body>
 </html>
