@@ -101,7 +101,7 @@
                         <h3 class="text-2xl sm:text-3xl font-bold text-red-600 uppercase mb-4 text-center">Shifts</h3>
                         <div class="flex flex-col md:flex-row justify-center items-center">
                             <% gymData.shifts.forEach(function(shift, index) { %>
-                                <% if (shift.limit > shift.joinedby.length && shift.sex.toUpperCase() == user.gender.toUpperCase()) { %>
+                                <% if (shift.limit >= shift.joinedby.length && shift.sex.toUpperCase() == user.gender.toUpperCase()) { %>
                                     <div class="relative p-4 m-4 shadow-lg w-[90%] shadow-red-500 rounded-lg shadow-lg hover:shadow-white animate-fadeInUp <%= shiftJoined && (shiftJoined == index + 1 ? 'bg-purple-900' : '') %>">
                                         <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
                                         <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>

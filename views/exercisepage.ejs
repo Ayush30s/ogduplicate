@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dumbbell Bench Press</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.2.0/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom Styles */
+        .hero-bg {
+            background: linear-gradient(135deg, #ff0000, #000000);
+            position: absolute;
+            inset: 0;
+            z-index: -10;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 2rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .link {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background: #ffffff;
+            color: #ff0000;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .link:hover {
+            background: #ff0000;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4 relative">
+
+    <div class="hero-bg"></div>
+
+    <div class="card max-w-3xl w-full mx-auto mt-8 mb-8">
+        <div>
+            <h1 class="text-4xl font-extrabold text-gray-900 text-center mb-8">Dumbbell Bench Press</h1>
+
+            <!-- Exercise Info -->
+            <div class="space-y-4 mb-8">
+                <p class="text-xl text-gray-800"><strong>Sets:</strong> 3</p>
+                <p class="text-xl text-gray-800"><strong>Reps:</strong> 10-12</p>
+                <p class="text-xl text-gray-800"><strong>Focus:</strong> Chest, Triceps</p>
+            </div>
+
+            <!-- Exercise Detail -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Exercise Details:</h2>
+                <p class="text-gray-700 text-lg leading-relaxed">
+                    The dumbbell bench press is a fundamental chest exercise that helps build upper body strength. It targets the pectoral muscles, triceps, and shoulders. Using dumbbells allows for a greater range of motion compared to a barbell, activating stabilizer muscles.
+                </p>
+            </div>
+
+            <!-- Video List -->
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6">YouTube Video Tutorials:</h2>
+            <ul class="space-y-4">
+                <li>
+                    <a href="https://www.youtube.com/watch?v=iod1P3Efp4E" target="_blank" class="link hover:bg-red-600 hover:text-white">
+                        Dumbbell Bench Press Tutorial - Form and Technique
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=VmB1G1K7v94" target="_blank" class="link hover:bg-red-600 hover:text-white">
+                        How to Perform Dumbbell Bench Press Safely
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=OeSYmuHk7nE" target="_blank" class="link hover:bg-red-600 hover:text-white">
+                        Common Mistakes in Dumbbell Bench Press and How to Fix Them
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=6l65WFAnJvI" target="_blank" class="link hover:bg-red-600 hover:text-white">
+                        Building Chest with Dumbbell Bench Press
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=-CkHflbUE8Y" target="_blank" class="link hover:bg-red-600 hover:text-white">
+                        Best Tips for Dumbbell Bench Press Progression
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+</html>

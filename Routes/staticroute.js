@@ -2,6 +2,135 @@ const {Router} = require("express");
 const userModel = require("../Models/user");
 const gymModel = require("../Models/gym");
 
+const workoutPlan = {
+    user: {
+        height: 145, // cm
+        weight: 40,  // kg
+        fitnessGoal: 'Muscle Gain',
+        experienceLevel: 'Beginner',
+        availableEquipment: 'Dumbbell',
+        workoutFrequency: 3, // days per week
+        injuriesLimitations: "Pain in left leg, can't lift heavy weights"
+    },
+    workoutDays: [
+        {
+            day: 'Day 1',
+            focus: 'Upper Body (Chest, Shoulders, Triceps)',
+            exercises: [
+                {
+                    name: 'Dumbbell Bench Press',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Chest, Triceps'
+                },
+                {
+                    name: 'Dumbbell Row',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Back, Biceps'
+                },
+                {
+                    name: 'Dumbbell Shoulder Press',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Shoulders, Triceps'
+                },
+                {
+                    name: 'Dumbbell Bicep Curls',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Biceps'
+                },
+                {
+                    name: 'Dumbbell Tricep Extensions',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Triceps'
+                }
+            ]
+        },
+        {
+            day: 'Day 2',
+            focus: 'Lower Body (Leg-Friendly) and Core',
+            exercises: [
+                {
+                    name: 'Seated Dumbbell Leg Extensions',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Quadriceps'
+                },
+                {
+                    name: 'Dumbbell Deadlifts',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Hamstrings, Glutes'
+                },
+                {
+                    name: 'Glute Bridges',
+                    sets: 3,
+                    reps: '15',
+                    focus: 'Glutes, Lower Back'
+                },
+                {
+                    name: 'Standing Calf Raises (Bodyweight)',
+                    sets: 3,
+                    reps: '15-20',
+                    focus: 'Calves'
+                },
+                {
+                    name: 'Dumbbell Russian Twists',
+                    sets: 3,
+                    reps: '15-20 (each side)',
+                    focus: 'Core, Obliques'
+                }
+            ]
+        },
+        {
+            day: 'Day 3',
+            focus: 'Full Body',
+            exercises: [
+                {
+                    name: 'Dumbbell Squats (Bodyweight or Light Dumbbells)',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Quads, Glutes'
+                },
+                {
+                    name: 'Dumbbell Chest Flyes',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Chest'
+                },
+                {
+                    name: 'Dumbbell Shoulder Lateral Raises',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Shoulders'
+                },
+                {
+                    name: 'Dumbbell Hammer Curls',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Biceps'
+                },
+                {
+                    name: 'Dumbbell Overhead Tricep Extensions',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Triceps'
+                }
+            ]
+        }
+    ],
+    additionalNotes: [
+        'Warm-Up: 5-10 minutes of light cardio or dynamic stretching',
+        'Cool-Down: 5-10 minutes of static stretching',
+        'Rest Between Sets: 60-90 seconds',
+        'Progress by gradually increasing the weight as strength improves, but prioritize form and safety.',
+        'Avoid exercises that heavily strain the injured leg; focus on proper form and use lighter weights if necessary.'
+    ]
+};
+
 const staticRoute = Router();
 
 staticRoute.get("/", (req,res) => {
@@ -48,6 +177,28 @@ staticRoute.get("/edit-gym/:gymId", (req,res) => {
         gymId: gymId
     });
 })
+
+staticRoute.get("/edit-shift/:gymId/:shiftId", (req, res) => {
+    const {gymId, shiftId} = req.params;
+    return res.render("gymupdateForm", {
+        gymId: gymId,
+        shiftId: shiftId
+    });
+});
+
+staticRoute.get("/addmoredetails", async(req,res) => {
+    const userData = await userModel.findById(req.user._id)
+        .populate("phy");
+
+    return res.render("userphy",{
+        userData
+    });
+});
+
+staticRoute.get("/transform", async(req,res) => {
+    return res.render("userphy");
+})
+
 
 
 module.exports = staticRoute;

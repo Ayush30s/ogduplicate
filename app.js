@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const ownerRoute = require("./Routes/owner");
@@ -5,42 +7,39 @@ const staticRoute = require("./Routes/staticroute");
 const { homeRoute } = require("./Routes/home")
 const followRoute = require("./Routes/follow")
 const http = require("http");
-const socketIo = require("socket.io");
+const { Server } = require("socket.io");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const {authenticateUser} = require("./Middleware/authentication");
 
 
 const app = express();
-const PORT = 7000;
+const PORT = process.env.PORT;
 
 const server = http.createServer(app);
-const io = socketIo(server); // Initialize Socket.IO
+const io = new Server(server);
 
+io.on("connection", (socket) => {
+    console.log("A new user is connected");
+
+    socket.on("aiMessage", (data) => {
+        console.log('Message received from client:', data);
+
+        //data is recieved from client know send the data to clicent after gettig from chat gpt
+
+        // Send a response back to the client
+        socket.emit('serverMessage', "protein");
+    });
+});
+
+
+
+
+// "mongodb://127.0.0.1:27017/Gym"
+// mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym
 mongoose.connect("mongodb://127.0.0.1:27017/Gym")
     .then(() => console.log("MonogDB connected Successfully"))
     .catch((err) => console.log("err :", err))
-
-
-app.use((req, res, next) => {
-    req.io = io;
-    next();
-});
-
-io.on("connection", (socket) => {
-    console.log("A user connected");
-
-    // Handle user joining their specific room
-    socket.on("joinRoom", (userId) => {
-        socket.join(userId);
-        console.log(`User ${userId} joined their room.`);
-    });
-
-    socket.on("disconnect", () => {
-        console.log("A user disconnected");
-    });
-});
-
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -63,4 +62,4 @@ app.use("/home" , (req,res,next) => {
 } , homeRoute);
 app.use("/request", followRoute);
 
-app.listen(PORT, () => console.log("Server running at PORT:", PORT));
+server.listen(PORT, () => console.log("Server running at PORT:", PORT));

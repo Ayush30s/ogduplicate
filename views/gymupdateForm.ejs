@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Shift Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Animations */
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .hover-grow:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-black text-white flex justify-center items-center min-h-screen">
+    <div class="w-full max-w-lg p-8 bg-gray-900 rounded-lg shadow-lg slide-in">
+        <h2 class="text-3xl font-bold text-center text-red-500 mb-8">Update Shift Details</h2>
+        <form method="post" action="/home/edit-gym/<%= gymId %>/<%= shiftId %>">
+            <!-- Sex Selection -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2" for="sex">Sex</label>
+                <select id="sex" name="sex" class="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 hover-grow">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+            <!-- Limit Input -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2" for="limit">Limit</label>
+                <input type="number" id="limit" name="limit" placeholder="10" min="0" class="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 hover-grow">
+            </div>
+
+            <!-- Start Time Input -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2" for="starttime">Start Time</label>
+                <input type="time" id="starttime" name="starttime" class="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 hover-grow">
+            </div>
+
+            <!-- End Time Input -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2" for="endtime">End Time</label>
+                <input type="time" id="endtime" name="endtime" class="w-full p-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 hover-grow">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit" class="w-full p-3 rounded-lg bg-red-500 text-white font-bold hover:bg-red-600 transition duration-300 hover-grow">Submit</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

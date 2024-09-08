@@ -5,6 +5,7 @@ const path = require("path");
 const userModel = require("../Models/user");
 const { createHmac } = require("crypto");
 const { createToken } = require("../services/auth");
+const PhyModel = require("../Models/userphy");
 
 const ownerRoute = Router();
 
@@ -37,6 +38,7 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
 
         // Check if the email is already registered in the user model
         const checkEmailInUserModel = await userModel.findOne({ email: email });
+        console.log(checkEmailInUserModel)
         if (checkEmailInUserModel) {
             return res.render("frontpage", {
                 msg: "This Email is already registered.",
@@ -144,6 +146,36 @@ ownerRoute.post("/signin", async (req, res) => {
 // Sign out route
 ownerRoute.get("/signout", async (req, res) => {
     return res.clearCookie('token').redirect("/app");
+});
+
+ownerRoute.post("/addmoredetails", async (req, res) => {
+    try {
+        const { height, weight, fitnessGoal, experienceLevel, availableEquipment, workoutFrequency, injuriesLimitations } = req.body;
+        console.log(height, weight, fitnessGoal, experienceLevel, availableEquipment, workoutFrequency, injuriesLimitations);
+
+        // Create a new document in the PhyModel collection
+        const details = await PhyModel.create({
+            height,
+            weight,
+            fitnessGoal,
+            experienceLevel,
+            availableEquipment,
+            workoutFrequency,
+            injuriesLimitations
+        });
+
+        // Find the user by ID and update their phy field with the ID of the created details
+        const userdata = await userModel.findByIdAndUpdate(
+            req.user._id,
+            { phy: details._id },  // Update the phy field with the new PhyModel ID
+            { new: true }
+        ).populate("phy");  // Populate the phy field to bring in the related PhyModel document
+
+        return res.redirect(`/home/profile/${req.user._id}/workoutplan`);
+    } catch (error) {
+        console.error("Error adding more details:", error);
+        return res.status(500).send("Server error");
+    }
 });
 
 module.exports = ownerRoute;

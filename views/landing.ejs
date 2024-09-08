@@ -30,9 +30,13 @@
 <body class="bg-black text-white">
     <%- include("./Partials/nav.ejs") %>
 
-    <div class="container mx-auto h-[100vh] overflow-hidden">
+    <!-- AI Button -->
+    <div id="aidiv" class="fixed bottom-4 right-4 z-50">
+        <button id="ai" class="border border-white p-2 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all">Ask AI</button>
+    </div>
 
-        <%- include("./Partials/alerts.ejs")%>
+    <div class="container mx-auto h-[100vh] overflow-hidden">
+        <%- include("./Partials/alerts.ejs") %>
         <%- include("./Partials/success.ejs") %>
 
         <% if (allgyms.length === 0) { %>
@@ -50,7 +54,7 @@
                         <!-- Each slide -->
                         <div class="swiper-slide">
                             <div class="text-sm rounded-lg mx-4">
-                                <div class="bg-black border-2 border-red-600 rounded-lg overflow-hidden transition-transform transform hover:scale-105 ">
+                                <div class="bg-black border-2 border-red-600 rounded-lg overflow-hidden transition-transform transform hover:scale-105">
                                     <img src="<%= gym.profileImage %>" alt="<%= gym.gymname %>" class="object-cover w-full h-40 transition-opacity duration-500 hover:opacity-90">
                                     
                                     <div class="p-4">
@@ -148,6 +152,99 @@
             });
         </script>
     <% } %>
+
+    <!-- AI Message Script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Boolean to track visibility of AI page
+        let isAIPageVisible = false;
+
+        // Toggle the visibility of the AI message page when the AI button is clicked
+        document.getElementById("ai").addEventListener("click", () => {
+            const aiPage = document.getElementById("aiPage");
+
+            if (!isAIPageVisible) {
+                aiPage.style.display = "block";  // Show the AI page
+            } else {
+                aiPage.style.display = "none";   // Hide the AI page
+            }
+
+            isAIPageVisible = !isAIPageVisible;  // Toggle the visibility status
+        });
+
+        // Create the AI message page container and insert it into the DOM
+        function createAIPage() {
+            const aiDiv = document.getElementById("aidiv");
+
+            const aiPage = document.createElement("div");
+            aiPage.id = "aiPage";
+            aiPage.classList.add("fixed", "bottom-16", "rounded-lg", "right-6", "bg-black", "w-96", "h-auto", "p-5", "border-2", "border-red-600", "shadow-lg", "z-50", "hidden");
+
+            aiPage.innerHTML = `
+                <h2 class="text-lg font-bold text-red-600 mb-2">Ask AI</h2>
+                <div id="chatHistory" class="overflow-y-auto max-h-48 mb-4 p-2 bg-gray-800 text-white rounded-lg" style="display: none;"></div>
+                <textarea id="aiMessage" placeholder="Ask AI anything" rows="3" maxlength="500" class="w-full max-w-full h-24 p-2 text-black border-2 border-red-600 rounded-lg resize-none"></textarea>
+                <button id="sendMessage" class="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Send</button>
+            `;
+
+            aiDiv.appendChild(aiPage);
+
+            // Attach event listener to the send button
+            document.getElementById("sendMessage").addEventListener("click", () => {
+                const message = document.getElementById("aiMessage").value.trim(); // Get the message text
+                if (message) {  // Ensure that message is not empty
+                    // Append the user's question to the chat history
+                    appendToChatHistory("You", message);
+                    socket.emit("aiMessage", message);  // Emit message to the server
+                    document.getElementById("aiMessage").value = "";  // Clear the input field
+                }
+            });
+        }
+
+        // Append questions and answers to the chat history
+        function appendToChatHistory(sender, text) {
+            const chatHistory = document.getElementById("chatHistory");
+
+            // Create message container
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("text-yellow-600", "text-sm", "mb-1");
+
+            // Create sender element
+            const senderElement = document.createElement("strong");
+            senderElement.classList.add("mr-2", "font-bold");
+            senderElement.textContent = `${sender}:`;
+
+            // Create text element
+            const textElement = document.createElement("div");
+            textElement.classList.add("inline");
+            textElement.textContent = text;
+
+            // Append sender and text to message container
+            messageElement.appendChild(senderElement);
+            messageElement.appendChild(textElement);
+
+            // Append message container to chat history
+            chatHistory.appendChild(messageElement);
+
+            // Check if there are messages and ensure the chat history is visible
+            if (chatHistory.children.length > 0) {
+                chatHistory.style.display = "block";
+            }
+
+            // Scroll to the bottom of the chat history
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // Call the function to create the AI page when the page loads 
+        createAIPage();
+
+        // Socket event listener for server messages (AI's response)
+        socket.on("serverMessage", (data) => {
+            // Append AI's answer to the chat history
+            appendToChatHistory("AI", data);
+        });
+    </script>
 </body>
 </html>
- 

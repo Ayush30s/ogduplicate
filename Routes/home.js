@@ -6,27 +6,175 @@ const followModel = require("../Models/follow");
 
 const homeRoute = Router();
 
+const workoutPlan = {
+    user: {
+        height: 145, // cm
+        weight: 40,  // kg
+        fitnessGoal: 'Muscle Gain',
+        experienceLevel: 'Beginner',
+        availableEquipment: 'Dumbbell',
+        workoutFrequency: 3, // days per week
+        injuriesLimitations: "Pain in left leg, can't lift heavy weights"
+    },
+    workoutDays: [
+        {
+            day: 'Day 1',
+            focus: 'Upper Body (Chest, Shoulders, Triceps)',
+            exercises: [
+                {
+                    name: 'Dumbbell Bench Press',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Chest, Triceps'
+                },
+                {
+                    name: 'Dumbbell Row',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Back, Biceps'
+                },
+                {
+                    name: 'Dumbbell Shoulder Press',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Shoulders, Triceps'
+                },
+                {
+                    name: 'Dumbbell Bicep Curls',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Biceps'
+                },
+                {
+                    name: 'Dumbbell Tricep Extensions',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Triceps'
+                }
+            ]
+        },
+        {
+            day: 'Day 2',
+            focus: 'Lower Body (Leg-Friendly) and Core',
+            exercises: [
+                {
+                    name: 'Seated Dumbbell Leg Extensions',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Quadriceps'
+                },
+                {
+                    name: 'Dumbbell Deadlifts',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Hamstrings, Glutes'
+                },
+                {
+                    name: 'Glute Bridges',
+                    sets: 3,
+                    reps: '15',
+                    focus: 'Glutes, Lower Back'
+                },
+                {
+                    name: 'Standing Calf Raises (Bodyweight)',
+                    sets: 3,
+                    reps: '15-20',
+                    focus: 'Calves'
+                },
+                {
+                    name: 'Dumbbell Russian Twists',
+                    sets: 3,
+                    reps: '15-20 (each side)',
+                    focus: 'Core, Obliques'
+                }
+            ]
+        },
+        {
+            day: 'Day 3',
+            focus: 'Full Body',
+            exercises: [
+                {
+                    name: 'Dumbbell Squats (Bodyweight or Light Dumbbells)',
+                    sets: 3,
+                    reps: '10-12',
+                    focus: 'Quads, Glutes'
+                },
+                {
+                    name: 'Dumbbell Chest Flyes',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Chest'
+                },
+                {
+                    name: 'Dumbbell Shoulder Lateral Raises',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Shoulders'
+                },
+                {
+                    name: 'Dumbbell Hammer Curls',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Biceps'
+                },
+                {
+                    name: 'Dumbbell Overhead Tricep Extensions',
+                    sets: 3,
+                    reps: '12-15',
+                    focus: 'Triceps'
+                }
+            ]
+        }
+    ],
+    additionalNotes: [
+        'Warm-Up: 5-10 minutes of light cardio or dynamic stretching',
+        'Cool-Down: 5-10 minutes of static stretching',
+        'Rest Between Sets: 60-90 seconds',
+        'Progress by gradually increasing the weight as strength improves, but prioritize form and safety.',
+        'Avoid exercises that heavily strain the injured leg; focus on proper form and use lighter weights if necessary.'
+    ]
+};
+
+
 homeRoute.get("/", async (req, res) => {
     const userId = req.user._id;
+    const {msg} = req.query;
     
     try {
         // Fetch all gyms with the joinedby array populated
-        const allGyms = await gymModel.find({}).populate('joinedby.user').exec();  
-        const gymNotJoined = [];
+        const allGyms = await gymModel.find({}).populate('joinedby.user').exec();
+        const currentuser = await gymModel.findById(userId);
+        let gymNotJoined = [];
 
-        allGyms.forEach((gym) => {
-            // Check if the user is in the joinedby array
-            const hasJoined = gym.joinedby.some(join => join.user._id.toString() === userId.toString());
-            
-            if (!hasJoined) {
-                gymNotJoined.push(gym);
-            }
-        });
+        //if you are owner then show all gyms except yours
+        if(currentuser) {
+            allGyms.forEach((gym) => {
+                if(gym._id.toString() != userId) {
+                    gymNotJoined.push(gym._id);
+                }
+            });
+        } else {
+            //if you are user show all the gyms you have not joined
+            gymNotJoined = [];
+            allGyms.forEach((gym) => {
+                // Check if the user is in the joinedby array
+                let hasJoined;
+                if(gym.joinedby.length > 0) {
+                    hasJoined = gym.joinedby.some(join => join.user._id.toString() === userId.toString());
+                }
+                
+                if (!hasJoined) {
+                    gymNotJoined.push(gym);
+                }
+            });
+        }
 
         return res.render("landing", {
             allgyms: gymNotJoined,
             user: req.user,
+            msg: msg
         });
+
     } catch (error) {
         console.error("Error fetching gyms:", error);
         return res.status(500).send("Internal Server Error");
@@ -112,7 +260,8 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
             flag: isUserJoined,
             shiftJoined: shiftJoined + 1,
             daysLeftToMonth: daysLeftToMonth,
-            success: success
+            success: success,
+            msg: req.query.msg
         });
     } catch (error) {
         console.error("Error fetching gym data:", error);
@@ -179,10 +328,12 @@ homeRoute.get("/mygyms", async (req, res) => {
         const Mygymdata = await gymModel.findById(req.user._id)
             .populate({
                 path: 'joinedby.user',
-                select: '_id' // Only fetch user IDs
             })
             .populate("shifts");
-
+                
+        if(!Mygymdata) {
+            return res.redirect("/home?msg=You do not have ownership of any gym. Please use a different ID to register a new gym.");
+        }
 
         // Check if the gym ID matches the user ID
         let gymIdSameUserId = false;
@@ -196,7 +347,7 @@ homeRoute.get("/mygyms", async (req, res) => {
         Mygymdata.shifts.forEach((shift, shiftIndex) => {
             shift.joinedby.forEach((joined) => {
                 // joined is an object with user field
-                const userId = joined.user.toString();
+                const userId = joined._id.toString();
                 userToshiftMap.set(userId, shiftIndex + 1);
             });
         });
@@ -217,6 +368,15 @@ homeRoute.get("/mygyms", async (req, res) => {
 
 homeRoute.get("/profile/:userId", async (req, res) => {
     const id = req.params.userId;
+
+    let userData = await userModel.findById(id)
+        .populate("joinedgym")
+        .populate("followData")
+        .populate("phy")
+
+    if (!userData) {
+        return res.redirect(`/home/gym/${id}`);
+    }
 
     if (!id) {
         return res.render("home", {
@@ -243,22 +403,22 @@ homeRoute.get("/profile/:userId", async (req, res) => {
         }
     }
 
+    let userFollowMe = false;
+    if(followData?.following?.includes(req.user._id)) {
+        userFollowMe = true;
+    }
+
     let showFollowButton = true;
     if (id === req.user._id) {
         showFollowButton = false;
     }
 
-    let userData = await userModel.findById(id);
+    userData = await userModel.findById(id)
+        .populate("joinedgym")
+        .populate("followData")
+        .populate("phy")
 
-    if (!userData) {
-        userData = await gymModel.findById(id)
-            .populate({
-                path: 'joinedby.user',
-                select: '_id' // Only fetch user IDs
-            });
-    }
-
-    let usertype = userData?.usertype;
+    let {usertype} = userData;
 
     // Check if the logged-in user has joined the gym (if the profile is of a gym)
     let showjoinedgym = false;
@@ -266,21 +426,19 @@ homeRoute.get("/profile/:userId", async (req, res) => {
         // Check if the logged-in user has joined this gym
         showjoinedgym = userData.joinedby.some(joined => joined.user.toString() === req.user._id.toString());
     }
-
-    if (usertype === "OWNER") {
-        return res.redirect(`/home/gym/${id}`);
-    } else {
-        return res.render("profile", {
-            userData: userData,
-            user: req.user,
-            usertype: usertype,
-            showjoinedgym: showjoinedgym,
-            showFollowButton: showFollowButton,
-            followingOrNot: followingOrNot,
-            followersCount: followersCount,
-            followingCount: followingCount
-        });
-    }
+   
+    return res.render("profile", {
+        userData: userData,
+        user: req.user,
+        usertype: usertype,
+        showjoinedgym: showjoinedgym,
+        showFollowButton: showFollowButton,
+        followingOrNot: followingOrNot,
+        followersCount: followersCount,
+        followingCount: followingCount,
+        userFollowMe:userFollowMe
+    });
+    
 });
 
 homeRoute.get("/:gymId/leavegym", async (req, res) => {
@@ -379,6 +537,16 @@ homeRoute.post("/edit-gym/:gymId", async (req, res) => {
     const { gymId } = req.params;
     const { members, sex, limit, starttime, endtime } = req.body;
 
+    const shiftData = await ShiftModel.find({
+        members: members,
+        sex: sex, 
+        limit: limit, 
+        starttime: starttime, 
+        endtime: endtime
+    });
+
+    console.log("found: ",shiftData);
+
     try {
         // Create a new shift
         const shift = await ShiftModel.create({
@@ -404,10 +572,43 @@ homeRoute.post("/edit-gym/:gymId", async (req, res) => {
         return res.status(500).send("Internal Server Error");
     }
 });
+homeRoute.post("/edit-gym/:gymId/:shiftId", async (req, res) => {
+    const { gymId, shiftId } = req.params;
+    const { members, sex, limit, starttime, endtime } = req.body;
+
+    if(gymId != req.user._id) {
+        return res.send("Invalid Request");
+    }
+
+    try {
+        // Use shiftId directly, not wrapped in an object
+        const data = await ShiftModel.findByIdAndUpdate(
+            shiftId, 
+            {
+                $set: {
+                    members: members,
+                    sex: sex, 
+                    limit: limit, 
+                    starttime: starttime, 
+                    endtime: endtime
+                }
+            },
+            { new: true } // This option returns the updated document
+        );
+
+        console.log(data);
+        return res.redirect(`/home/gym/${gymId}`);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("An error occurred while updating the shift.");
+    }
+});
+
 
 homeRoute.get("/gym/:gymId/join-shift/:shiftId", async (req, res) => {
     const userId = req.user._id.toString();
     const { shiftId, gymId } = req.params;
+    let msg;
 
     try {
         let gymData = await gymModel.findById(gymId)
@@ -439,22 +640,35 @@ homeRoute.get("/gym/:gymId/join-shift/:shiftId", async (req, res) => {
                 return res.redirect(`/home/gym/${gymId}`);
             }
 
+            // if user is trying to get into another shift
+            // 1st check if the limit is not exceeded
             // Remove user from the current shift if exists
-            if (currentShift) {
-                await ShiftModel.findByIdAndUpdate(
-                    currentShift._id,
-                    { $pull: { joinedby: userId } }
-                );
-            }
-
             // Add user to the new shift
-            await ShiftModel.findByIdAndUpdate(
-                shiftId,
-                { $push: { joinedby: userId } }
-            );
-        }
+            const data = await ShiftModel.findById(shiftId);
+            const { limit } = data;
 
-        return res.redirect(`/home/gym/${gymId}`)
+            if(limit > data.joinedby.length) {
+                if (currentShift) {
+                    await ShiftModel.findByIdAndUpdate(
+                        currentShift._id,
+                        { $pull: { joinedby: userId } }
+                    );
+                }
+
+                await ShiftModel.findByIdAndUpdate(
+                    shiftId,
+                    { $push: { joinedby: userId } }
+                );
+            } else {
+                msg = "limit is full in this shift"
+            }
+        }
+        if(msg != undefined) {
+            return res.redirect(`/home/gym/${gymId}?msg=${msg}`)
+        } else {
+            return res.redirect(`/home/gym/${gymId}?success=${"Shift joined successfully"}`);
+        }
+        
     } catch (error) {
         console.error("Error joining shift:", error);
         return res.status(500).send("Internal Server Error");
@@ -462,10 +676,31 @@ homeRoute.get("/gym/:gymId/join-shift/:shiftId", async (req, res) => {
 });
 
 
-homeRoute.get("/profile/shiftdetail/:shiftId", async (req, res) => {
+homeRoute.get("/profile/shiftdetail/:gymId/:shiftId", async (req, res) => {
     try {
-        const { shiftId } = req.params;
-        const shiftDetail = await ShiftModel.findById(shiftId);
+        //avoid problem of user trying to get access of other gym owner shift details using their id in url
+        const { shiftId, gymId } = req.params;
+        if(req.user._id != gymId) {
+            return res.status(404).send("Invalid Request"); 
+        }
+
+        //avoid problem of  , owner trying to get access of other owners shift details
+        const gymData = await gymModel.findById(gymId).populate("shifts");
+        if(!gymData) {
+            return res.status(404).send("Invalid Request");
+        } 
+
+        let shiftDetail;
+        gymData.shifts.forEach((shift) => {
+            if(shift._id == shiftId) {
+                shiftDetail = shift;
+            }
+        })
+
+        //the owner is trying to access a shift that dosen't exists
+        if(!shiftDetail) {
+            return res.status(404).send("Invalid Request");
+        }
 
         const userDetailPromises = shiftDetail.joinedby.map(async (user_id) => {
             const userdata = await userModel.findById(user_id);
@@ -481,7 +716,8 @@ homeRoute.get("/profile/shiftdetail/:shiftId", async (req, res) => {
         return res.render("shiftpage", {
             shiftDetail: shiftDetail,
             userDetail: userDetail,
-            user: req.user
+            user: req.user,
+            gymId: gymId
         });
     } catch (error) {
         console.error("Error fetching shift details:", error);
@@ -489,139 +725,190 @@ homeRoute.get("/profile/shiftdetail/:shiftId", async (req, res) => {
     }
 });
 
+homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
+    const workoutPlan = {
+        user: {
+            height: 145, // cm
+            weight: 40,  // kg
+            fitnessGoal: 'Muscle Gain',
+            experienceLevel: 'Beginner',
+            availableEquipment: 'Dumbbell',
+            workoutFrequency: 3, // days per week
+            injuriesLimitations: "Pain in left leg, can't lift heavy weights"
+        },
+        workoutDays: [
+            {
+                day: 'Day 1',
+                focus: 'Upper Body (Chest, Shoulders, Triceps)',
+                exercises: [
+                    {
+                        name: 'Dumbbell Bench Press',
+                        sets: 3,
+                        reps: '10-12',
+                        focus: 'Chest, Triceps'
+                    },
+                    {
+                        name: 'Dumbbell Row',
+                        sets: 3,
+                        reps: '10-12',
+                        focus: 'Back, Biceps'
+                    },
+                    {
+                        name: 'Dumbbell Shoulder Press',
+                        sets: 3,
+                        reps: '10-12',
+                        focus: 'Shoulders, Triceps'
+                    },
+                    {
+                        name: 'Dumbbell Bicep Curls',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Biceps'
+                    },
+                    {
+                        name: 'Dumbbell Tricep Extensions',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Triceps'
+                    }
+                ]
+            },
+            {
+                day: 'Day 2',
+                focus: 'Lower Body (Leg-Friendly) and Core',
+                exercises: [
+                    {
+                        name: 'Seated Dumbbell Leg Extensions',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Quadriceps'
+                    },
+                    {
+                        name: 'Dumbbell Deadlifts',
+                        sets: 3,
+                        reps: '10-12',
+                        focus: 'Hamstrings, Glutes'
+                    },
+                    {
+                        name: 'Glute Bridges',
+                        sets: 3,
+                        reps: '15',
+                        focus: 'Glutes, Lower Back'
+                    },
+                    {
+                        name: 'Standing Calf Raises (Bodyweight)',
+                        sets: 3,
+                        reps: '15-20',
+                        focus: 'Calves'
+                    },
+                    {
+                        name: 'Dumbbell Russian Twists',
+                        sets: 3,
+                        reps: '15-20 (each side)',
+                        focus: 'Core, Obliques'
+                    }
+                ]
+            },
+            {
+                day: 'Day 3',
+                focus: 'Full Body',
+                exercises: [
+                    {
+                        name: 'Dumbbell Squats (Bodyweight or Light Dumbbells)',
+                        sets: 3,
+                        reps: '10-12',
+                        focus: 'Quads, Glutes'
+                    },
+                    {
+                        name: 'Dumbbell Chest Flyes',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Chest'
+                    },
+                    {
+                        name: 'Dumbbell Shoulder Lateral Raises',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Shoulders'
+                    },
+                    {
+                        name: 'Dumbbell Hammer Curls',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Biceps'
+                    },
+                    {
+                        name: 'Dumbbell Overhead Tricep Extensions',
+                        sets: 3,
+                        reps: '12-15',
+                        focus: 'Triceps'
+                    }
+                ]
+            }
+        ],
+        additionalNotes: [
+            'Warm-Up: 5-10 minutes of light cardio or dynamic stretching',
+            'Cool-Down: 5-10 minutes of static stretching',
+            'Rest Between Sets: 60-90 seconds',
+            'Progress by gradually increasing the weight as strength improves, but prioritize form and safety.',
+            'Avoid exercises that heavily strain the injured leg; focus on proper form and use lighter weights if necessary.'
+        ]
+    };
 
-// homeRoute.post("/user/follow/:user_id", async (req, res) => {
-//     const userToFollow = req.params.user_id;
-//     const currentUser = req.user._id;
+    //get data from chat gpt in the above format about the exercise for the user and render it on the page
+    return res.render("workoutplan", { 
+        workoutPlan: workoutPlan,
+        user: req.user
+    })
+})
 
-//     if (!userToFollow || !currentUser) {
-//         return res.status(404).send("User Not Found");
-//     }
 
-//     let followed = false;
-//     try {
-//         // Find or create the follow document for the current user
-//         let currentUserFollowData = await followModel.findOne({ _id: currentUser });
-//         if (!currentUserFollowData) {
-//             currentUserFollowData = new followModel({ _id: currentUser });
-//         }
+homeRoute.get("/workout-day/:index", async(req,res) => {
+    const {index} = req.params;
+    return res.render("workoutday", {
+        workoutDays: workoutPlan.workoutDays[index]
+    });
+})
+
+homeRoute.get("/workout-day/:day/:exerciseName", async(req,res) => {
+    const { day, exerciseName } = req.params;
+
+    function findExerciseByName(workoutPlan, exerciseName) {
+        for (const day of workoutPlan.workoutDays) {
+            for (const exercise of day.exercises) {
+                if (exercise.name === exerciseName) {
+                    return exercise; // Return the exercise if found
+                }
+            }
+        }
+        return null; // Return null if the exercise is not found
+    }
+    
+    // Example usage:
+    const searchExercise = 'Dumbbell Bench Press';
+    const foundExercise = findExerciseByName(workoutPlan, searchExercise);
+    console.log(foundExercise.name);
+
+    //make a call to chatgpt which will give data about that "foundExercise.name"
+    return res.render("exercisepage", {
         
-//         // Add the user to follow to the current user's following list
-//         if (!currentUserFollowData.following.includes(userToFollow)) {
-//             currentUserFollowData.following.push(userToFollow);
-//             await currentUserFollowData.save();
-//         } else {
-//             currentUserFollowData.following.pull(userToFollow);
-//             await currentUserFollowData.save();
-//         }
+    });
+})
 
-//         // Find or create the follow document for the user to be followed
-//         let userToFollowFollowData = await followModel.findOne({ _id: userToFollow });
-//         if (!userToFollowFollowData) {
-//             userToFollowFollowData = new followModel({ _id: userToFollow });
-//         }
+homeRoute.post("/profile/shiftdetail/update/:shiftId", async(req,res) => {
+    const {shiftId} = req.params;
+    const { limit, starttime, endtime } = req.body;
+    const newshiftData = await ShiftModel.findByIdAndUpdate(
+        { shiftId },
+        { 
+            limit: limit,
+            starttime: starttime,
+            endtime: endtime
+        }
+    )
 
-//         // Add the current user to the user-to-follow's followers list
-//         if (!userToFollowFollowData.followers.includes(currentUser)) {
-//             userToFollowFollowData.followers.push(currentUser);
-//             await userToFollowFollowData.save();
-//         } else {
-//             userToFollowFollowData.followers.pull(currentUser);
-//             await userToFollowFollowData.save();
-//         }
-
-//         return res.redirect(`/home/profile/${userToFollow}`);
-//     } catch (error) {
-//         console.error("Error following user:", error);
-//         return res.status(500).send("Internal Server Error");
-//     }
-// });
-
-// homeRoute.get(`/user/followingList/:user_id`, async (req, res) => {
-//     try {
-//         const { user_id } = req.params;
-//         const userId = req.user._id;
-
-//         const FollowData = await followModel.findById(user_id);
-//         let followingMeOrnot = false;
-
-//         // If no following model is initialized yet for this user or if the model created by the followers but the following is empty
-//         if (!FollowData || FollowData.following.length == 0) {
-//             return res.redirect(`/home/profile/${user_id}`);
-//         } else {
-//             //check if the user on which profile we are viweing is following me or not
-//             // const followersDataofLoggineduser = await followModel.findById(userId)
-//             if(userId == user_id) {
-//                 followingMeOrnot = true;
-//             }
-//             else if(FollowData.following.includes((userId).toString())) {
-//                 followingMeOrnot = true;
-//             }
-//         }
-
-//         // If the current user does not follow the user specified by user_id
-//         if (!followingMeOrnot) {
-//             return res.redirect(`/home/profile/${user_id}`);
-//         }
-
-//         const followingUsers = FollowData.following;
-
-//         // Use Promise.all to wait for all user data to be fetched
-//         const dataForFollowingPage = await Promise.all(followingUsers.map(async (user_id) => {
-//             const profileUserData = await userModel.findById(user_id);
-//             return profileUserData;
-//         }));
-
-//         return res.render("FollowingList", {
-//             followingUsers: dataForFollowingPage,
-//             user: req.user
-//         });
-//     } catch (error) {
-//         console.error("Error fetching following list:", error);
-//         return res.status(500).send("Internal Server Error");
-//     }
-// });
-// homeRoute.get("/user/followersList/:user_id", async (req, res) => {
-//     try {
-//         const userId = req.user._id;
-//         const { user_id } = req.params;
-
-//         const userFollowData = await followModel.findById(user_id);
-//         if (!userFollowData || userFollowData.followers.length === 0) {
-//             return res.redirect(`/home/profile/${user_id}`);
-//         }
-
-//         let followingMeOrNot = false;
-
-//         // Check if the current user follows the user specified by user_id
-//         if (user_id.toString() === userId.toString() || userFollowData.following.includes(userId.toString())) {
-//             followingMeOrNot = true;
-//         }
-
-//         // If the current user does not follow the user specified by user_id
-//         if (!followingMeOrNot) {
-//             return res.redirect(`/home/profile/${user_id}`);
-//         }
-
-//         const userFollowList = userFollowData.followers;
-
-//         // Fetch all user data for the followers list
-//         const userFollowersData = await Promise.all(
-//             userFollowList.map(async (followerId) => {
-//                 const profileUserData = await userModel.findById(followerId);
-//                 return profileUserData;
-//             })
-//         );
-
-//         return res.render("FollowersList", {
-//             userFollowersData,
-//             user: req.user
-//         });
-//     } catch (err) {
-//         console.error(err);
-//         return res.status(500).send("Server Error");
-//     }
-// });
+    console.log(newshiftData);
+})
 
 module.exports = {
     homeRoute
