@@ -46,7 +46,7 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
         }
 
         // Create a new gym owner entry in the gym model
-        const ownerdata = await gymModel.create({
+        await gymModel.create({
             fullname: fullname,
             email: email,
             password: password,
@@ -59,19 +59,15 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
             profileImage: profileImagePath // Save the uploaded file path
         });
 
-        console.log(ownerdata);
-
         return res.redirect("/app/signin-form");
     } catch (error) {
-        console.error("Error registering owner:", error);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error hai hai");
     }
 });
 
 ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
     try {
         const { fullname, email, password, gender, contactnumber } = req.body;
-        console.log(fullname, email, password, gender, contactnumber);
 
         // Ensure all fields are filled
         if (!fullname || !email || !password || !gender || !contactnumber) {
@@ -102,7 +98,7 @@ ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
         return res.redirect("/app/signin-form");
     } catch (error) {
         console.error("Error registering user:", error);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error hai");
     }
 });
 
@@ -139,7 +135,7 @@ ownerRoute.post("/signin", async (req, res) => {
         return res.cookie("token", token).redirect("/home");
     } catch (error) {
         console.error("Error during sign in:", error);
-        return res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error hai");
     }
 });
 
@@ -151,7 +147,6 @@ ownerRoute.get("/signout", async (req, res) => {
 ownerRoute.post("/addmoredetails", async (req, res) => {
     try {
         const { height, weight, fitnessGoal, experienceLevel, availableEquipment, workoutFrequency, injuriesLimitations } = req.body;
-        console.log(height, weight, fitnessGoal, experienceLevel, availableEquipment, workoutFrequency, injuriesLimitations);
 
         // Create a new document in the PhyModel collection
         const details = await PhyModel.create({
@@ -165,7 +160,7 @@ ownerRoute.post("/addmoredetails", async (req, res) => {
         });
 
         // Find the user by ID and update their phy field with the ID of the created details
-        const userdata = await userModel.findByIdAndUpdate(
+        await userModel.findByIdAndUpdate(
             req.user._id,
             { phy: details._id },  // Update the phy field with the new PhyModel ID
             { new: true }
@@ -174,7 +169,7 @@ ownerRoute.post("/addmoredetails", async (req, res) => {
         return res.redirect(`/home/profile/${req.user._id}/workoutplan`);
     } catch (error) {
         console.error("Error adding more details:", error);
-        return res.status(500).send("Server error");
+        return res.status(500).send("Server error hai");
     }
 });
 
