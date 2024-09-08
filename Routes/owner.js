@@ -61,6 +61,7 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
 
         return res.redirect("/app/signin-form");
     } catch (error) {
+        console.log(error);
         return res.status(500).send("Internal Server Error hai hai");
     }
 });
@@ -134,6 +135,7 @@ ownerRoute.post("/signin", async (req, res) => {
 
         return res.cookie("token", token).redirect("/home");
     } catch (error) {
+        console.log(error);
         console.error("Error during sign in:", error);
         return res.status(500).send("Internal Server Error hai");
     }
@@ -168,6 +170,7 @@ ownerRoute.post("/addmoredetails", async (req, res) => {
 
         return res.redirect(`/home/profile/${req.user._id}/workoutplan`);
     } catch (error) {
+        console.log(error);
         console.error("Error adding more details:", error);
         return res.status(500).send("Server error hai");
     }
