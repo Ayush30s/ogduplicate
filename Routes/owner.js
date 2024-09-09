@@ -6,6 +6,18 @@ const userModel = require("../Models/user");
 const { createHmac } = require("crypto");
 const { createToken } = require("../services/auth");
 const PhyModel = require("../Models/userphy");
+const cloudinary = require("cloudinary").v2;
+
+const fun = async(path) => {
+    cloudinary.config({ 
+        cloud_name: 'dzblab9we', 
+        api_key: '575212773332514', 
+        api_secret: 'ghj2avDgbHGv81YNAzo95uvpnHg'
+    });
+    
+    const uploadResult = await cloudinary.uploader.upload(path);
+    return uploadResult;
+}
 
 const ownerRoute = Router();
 
@@ -38,15 +50,27 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
 
         // Check if the email is already registered in the user model
         const checkEmailInUserModel = await userModel.findOne({ email: email });
-        console.log(checkEmailInUserModel)
         if (checkEmailInUserModel) {
             return res.render("frontpage", {
                 msg: "This Email is already registered.",
             });
         }
 
-        // Create a new gym owner entry in the gym model
-        await gymModel.create({
+        // Upload the image to Cloudinary and get the URL
+        let cloudImageURL = null;
+        if (profileImagePath) {
+            try {
+                // Await the Cloudinary upload process
+                const uploadResponse = await fun("./Public" + profileImagePath); 
+                cloudImageURL = uploadResponse.secure_url;  // Get the URL after the upload completes
+            } catch (error) {
+                console.error("Error uploading image to Cloudinary:", error);
+                return res.status(500).send("Error uploading image to Cloudinary.");
+            }
+        }
+
+        // Create a new gym owner entry in the gym model with the Cloudinary URL
+        const newGymOwner = await gymModel.create({
             fullname: fullname,
             email: email,
             password: password,
@@ -56,15 +80,18 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
             description: description,
             gender: gender,
             contactnumber: contactnumber,
-            profileImage: profileImagePath // Save the uploaded file path
+            profileImage: cloudImageURL // Save the Cloudinary URL
         });
 
+        await newGymOwner.save();
+        
         return res.redirect("/app/signin-form");
     } catch (error) {
-        console.log(error);
-        return res.status(500).send("Internal Server Error hai hai");
+        console.log("Error:", error);
+        return res.status(500).send("Internal Server Error");
     }
 });
+
 
 ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
     try {
@@ -78,6 +105,19 @@ ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
         // Handle the uploaded file
         const profileImagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
+        // Upload the image to Cloudinary and get the URL
+        let cloudImageURL = null;
+        if (profileImagePath) {
+            try {
+                // Await the Cloudinary upload process
+                const uploadResponse = await fun("./Public" + profileImagePath); 
+                cloudImageURL = uploadResponse.secure_url;  // Get the URL after the upload completes
+            } catch (error) {
+                console.error("Error uploading image to Cloudinary:", error);
+                return res.status(500).send("Error uploading image to Cloudinary.");
+            }
+        }
+
         // Check if the email is already registered in the gym model
         const checkEmailInGymModel = await gymModel.findOne({ email: email });
         if (checkEmailInGymModel) {
@@ -87,14 +127,15 @@ ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
         }
 
         // Create a new user entry in the user model
-        await userModel.create({
+        const newday = await userModel.create({
             fullname: fullname,
             email: email,
             password: password,
             gender: gender,
             contactnumber: contactnumber,
-            profileImage: profileImagePath // Save the uploaded file path
+            profileImage: cloudImageURL // Save the uploaded file path
         });
+        console.log("data : " , newday);
 
         return res.redirect("/app/signin-form");
     } catch (error) {
