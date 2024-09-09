@@ -61,7 +61,7 @@
             <div class="swiper-container">
                 <!-- Additional required wrapper -->
                 <div class="swiper-wrapper">
-                    <% allgyms.forEach(gym => { %>
+                    <% allgyms?.forEach(gym => { %>
                         <!-- Each slide -->
                         <div class="swiper-slide">
                             <div class="text-sm rounded-lg mx-4">
@@ -98,7 +98,7 @@
 
             <!-- Simple grid layout if gyms are less than or equal to 3 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <% allgyms.forEach(gym => { %>
+                <% allgyms?.forEach(gym => { %>
                     <div class="text-sm rounded-lg mx-4">
                         <div class="bg-black border-2 border-red-600 rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-red-600/50">
                             <img src="<%= gym.profileImage %>" alt="<%= gym.gymname %>" class="object-cover w-full h-40 transition-opacity duration-500 hover:opacity-90">

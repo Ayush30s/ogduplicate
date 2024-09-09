@@ -50,6 +50,7 @@ app.use(express.static(path.resolve("./Public")));
 app.use(express.static(path.resolve("./Public/images")));
 app.use(authenticateUser('token'));
 
+// app.use("/", staticRoute);
 app.use("/app", staticRoute);
 app.use("/register", ownerRoute);
 app.use("/home" , (req,res,next) => {
