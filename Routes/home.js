@@ -859,7 +859,7 @@ homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
     };
 
     //get data from chat gpt in the above format about the exercise for the user and render it on the page
-    return res.render("workoutplan", { 
+    return res.render("dailyworkoutplan", { 
         workoutPlan: workoutPlan,
         user: req.user
     })
