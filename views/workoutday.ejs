@@ -71,11 +71,10 @@
 <body>
 
     <div class="container">
-        <h1><%= workoutDays.day %>: <%= workoutDays.focus %> Workout</h1>
-
+        <h1><%= day %>: <%= workoutDays.focus %> Workout</h1>
         <div class="grid">
-            <% workoutDays.exercises.forEach(exercise => { %>
-                <a href="/home/workout-day/2/:<%= exercise.name %>" class="card">
+            <% workoutDays.exercises.forEach((exercise, index) => { %>
+                <a href="/home/workout-day/<%=day%>/workout/<%= index %>/<%= exercise.name %>" class="card">
                     <h2><%= exercise.name %></h2>
                     <p><strong>Sets:</strong> <%= exercise.sets %></p>
                     <p><strong>Reps:</strong> <%= exercise.reps %></p>

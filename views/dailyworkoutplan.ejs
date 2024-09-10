@@ -96,7 +96,7 @@
         <!-- Workout Days List -->
         <div class="card-container">
             <% workoutPlan.workoutDays.forEach(function(day, index) { %>
-                <a href="/home/workout-day/<%= index %>" class="block">
+                <a href="/home/workout-day/<%= index+1 %>" class="block">
                     <div class="card p-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-300">
                         <div class="card-content">
                             <h2 class="text-2xl font-semibold mb-2 text-red-500"><%= day.day %></h2>

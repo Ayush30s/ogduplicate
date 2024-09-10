@@ -53,13 +53,13 @@
 
     <div class="card max-w-3xl w-full mx-auto mt-8 mb-8">
         <div>
-            <h1 class="text-4xl font-extrabold text-gray-900 text-center mb-8">Dumbbell Bench Press</h1>
+            <h1 class="text-4xl font-extrabold text-gray-900 text-center mb-8"><%= exerciseObj.name %></h1>
 
             <!-- Exercise Info -->
             <div class="space-y-4 mb-8">
-                <p class="text-xl text-gray-800"><strong>Sets:</strong> 3</p>
-                <p class="text-xl text-gray-800"><strong>Reps:</strong> 10-12</p>
-                <p class="text-xl text-gray-800"><strong>Focus:</strong> Chest, Triceps</p>
+                <p class="text-xl text-gray-800"><strong>Sets:</strong> <%= exerciseObj.sets %> </p>
+                <p class="text-xl text-gray-800"><strong>Reps:</strong> <%= exerciseObj.reps %> </p>
+                <p class="text-xl text-gray-800"><strong>Focus:</strong> <%= exerciseObj.focus %> </p>
             </div>
 
             <!-- Exercise Detail -->

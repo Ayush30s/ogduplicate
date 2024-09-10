@@ -869,32 +869,30 @@ homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
 homeRoute.get("/workout-day/:index", async(req,res) => {
     const {index} = req.params;
     return res.render("workoutday", {
-        workoutDays: workoutPlan.workoutDays[index]
+        workoutDays: workoutPlan.workoutDays[index-1],
+        day: Number(index)
     });
 })
 
-homeRoute.get("/workout-day/:day/:exerciseName", async(req,res) => {
-    const { day, exerciseName } = req.params;
+homeRoute.get("/workout-day/:day/workout/:index/:exercisename", async(req,res) => {
+    const { day, index, exercisename } = req.params;
+    console.log("exerciseName:", typeof(day), index, exercisename)
+    let dayindex = Number(day)
+    console.log((dayindex))
 
-    function findExerciseByName(workoutPlan, exerciseName) {
-        for (const day of workoutPlan.workoutDays) {
-            for (const exercise of day.exercises) {
-                if (exercise.name === exerciseName) {
-                    return exercise; // Return the exercise if found
-                }
+    let exerciseObj;
+
+    workoutPlan.workoutDays.forEach((day) => {
+        day.exercises.forEach((exercise) => {
+            if(exercise.name == exercisename) {
+                exerciseObj = exercise;
             }
-        }
-        return null; // Return null if the exercise is not found
-    }
-    
-    // Example usage:
-    const searchExercise = 'Dumbbell Bench Press';
-    const foundExercise = findExerciseByName(workoutPlan, searchExercise);
-    console.log(foundExercise.name);
+        })
+    })
 
-    //make a call to chatgpt which will give data about that "foundExercise.name"
+    //make a call to chatgpt which will give data about that "exerciseObj"
     return res.render("exercisepage", {
-        
+        exerciseObj: exerciseObj
     });
 })
 
