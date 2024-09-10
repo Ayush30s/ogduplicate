@@ -26,6 +26,46 @@
             animation: slideInLeft 1s ease-out;
         }
 
+        /* Swiper navigation buttons below the card slider */
+        .swiper-button-next,
+        .swiper-button-prev {
+            position: relative;
+            margin-top: 20px;
+            width: 40px; /* Increased width for better visibility */
+            height: 40px; /* Increased height for better visibility */
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: red; /* Background color */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow effect */
+            opacity: 0.9;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .swiper-button-prev {
+            margin-right: 10px;
+        }
+
+        .swiper-button-next {
+            margin-left: 10px;
+        }
+
+        /* Center navigation buttons below slider */
+        .swiper-nav-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Add hover effects */
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            opacity: 1;
+            transform: scale(1.1); /* Slight zoom effect on hover */
+        }
+
         /* Responsive AI button and div */
         @media (max-width: 640px) {
             #aidiv {
@@ -86,10 +126,12 @@
                         </div>                        
                     <% }) %>
                 </div>
+            </div>
 
-                <!-- Navigation buttons -->
-                <div class="swiper-button-prev text-red-600 hover:text-white"></div>
-                <div class="swiper-button-next text-red-600 hover:text-white"></div>
+            <!-- Navigation buttons -->
+            <div class="swiper-nav-buttons">
+                <div class="swiper-button-prev text-red-600 mx-20 hover:text-white"></div>
+                <div class="swiper-button-next text-red-600 mx-20 hover:text-white"></div>
             </div>
         <% } else { %>
             <header class="bg-red-600 p-3 text-center slide-in-left mb-10 rounded-br-xl rounded-bl-xl">
@@ -119,6 +161,12 @@
                         </div>
                     </div>
                 <% }) %>
+            </div>
+
+            <!-- Navigation buttons -->
+            <div class="swiper-nav-buttons">
+                <div class="swiper-button-prev text-red-600 mx-20 hover:text-white"></div>
+                <div class="swiper-button-next text-red-600 mx-20 hover:text-white"></div>
             </div>
         <% } %>
     </div>
@@ -176,85 +224,16 @@
         document.getElementById("ai").addEventListener("click", () => {
             const aiPage = document.getElementById("aiPage");
 
-            if (!isAIPageVisible) {
-                aiPage.style.display = "block";  // Show the AI page
+            if (isAIPageVisible) {
+                aiPage.style.display = "none";
             } else {
-                aiPage.style.display = "none";   // Hide the AI page
+                aiPage.style.display = "block";
             }
-
-            isAIPageVisible = !isAIPageVisible;  // Toggle the visibility status
+            isAIPageVisible = !isAIPageVisible;
         });
 
-        // Create the AI message page container and insert it into the DOM
-        function createAIPage() {
-            const aiDiv = document.getElementById("aidiv");
-
-            const aiPage = document.createElement("div");
-            aiPage.id = "aiPage";
-            aiPage.classList.add("fixed", "bottom-16", "rounded-lg", "right-4", "bg-black", "w-11/12", "max-w-md", "h-auto", "p-5", "border-2", "border-red-600", "shadow-lg", "z-50", "hidden");
-
-            aiPage.innerHTML = `
-                <h2 class="text-lg font-bold text-red-600 mb-2">Ask AI</h2>
-                <div id="chatHistory" class="overflow-y-auto max-h-48 mb-4 p-2 bg-gray-800 text-white rounded-lg" style="display: none;"></div>
-                <textarea id="aiMessage" placeholder="Ask AI anything" rows="3" maxlength="500" class="w-full max-w-full h-24 p-2 text-black border-2 border-red-600 rounded-lg resize-none"></textarea>
-                <button id="sendMessage" class="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Send</button>
-            `;
-
-            aiDiv.appendChild(aiPage);
-
-            // Attach event listener to the send button
-            document.getElementById("sendMessage").addEventListener("click", () => {
-                const message = document.getElementById("aiMessage").value.trim(); // Get the message text
-                if (message) {  // Ensure that message is not empty
-                    // Append the user's question to the chat history
-                    appendToChatHistory("You", message);
-                    socket.emit("aiMessage", message);  // Emit message to the server
-                    document.getElementById("aiMessage").value = "";  // Clear the input field
-                }
-            });
-        }
-
-        // Append questions and answers to the chat history
-        function appendToChatHistory(sender, text) {
-            const chatHistory = document.getElementById("chatHistory");
-
-            // Create message container
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("text-yellow-600", "text-sm", "mb-1");
-
-            // Create sender element
-            const senderElement = document.createElement("strong");
-            senderElement.classList.add("mr-2", "font-bold");
-            senderElement.textContent = `${sender}:`;
-
-            // Create text element
-            const textElement = document.createElement("div");
-            textElement.classList.add("inline");
-            textElement.textContent = text;
-
-            // Append sender and text to message container
-            messageElement.appendChild(senderElement);
-            messageElement.appendChild(textElement);
-
-            // Append message container to chat history
-            chatHistory.appendChild(messageElement);
-
-            // Check if there are messages and ensure the chat history is visible
-            if (chatHistory.children.length > 0) {
-                chatHistory.style.display = "block";
-            }
-
-            // Scroll to the bottom of the chat history
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-
-        // Call the function to create the AI page when the page loads 
-        createAIPage();
-
-        // Socket event listener for server messages (AI's response)
-        socket.on("serverMessage", (data) => {
-            // Append AI's answer to the chat history
-            appendToChatHistory("AI", data);
+        socket.on('message', (msg) => {
+            document.getElementById('message').innerHTML += `<p>${msg}</p>`;
         });
     </script>
 </body>
