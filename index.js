@@ -13,7 +13,6 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const {authenticateUser} = require("./Middleware/authentication");
 
-
 const app = express();
 const PORT = process.env.PORT;
 

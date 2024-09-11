@@ -131,13 +131,13 @@
                 <div class="flex flex-col w-full sm:w-2/3 space-y-4 sm:space-y-6 pr-4">
 
                     <!-- Gym Name -->
-                    <h2 class="text-3xl sm:text-sm font-extrabold text-red-600 mb-4 tracking-wide uppercase text-center"><%= gymData.gymname %></h2>
+                    <h2 class="text-3xl font-extrabold text-red-600 mb-4 tracking-wide uppercase text-center"><%= gymData.gymname %></h2>
 
                     <!-- Owner and Location -->
                     <div class="flex flex-col sm:flex-row sm:space-x-6 space-y-4 lg:mx-6 sm:space-y-0">
                         <div class="flex flex-col w-full sm:w-1/2 text-left">
-                            <p class="text-lg font-semibold sm:text-sm  text-gray-400">Owned by: <span class="text-white"><%= gymData.fullname %></span></p>
-                            <p class="text-lg font-semibold sm:text-sm  text-gray-400">Location: <span class="text-white"><%= gymData.location %></span></p>
+                            <p class="text-lg font-semibold sm:text-sm text-gray-400">Owned by: <span class="text-white"><%= gymData.fullname %></span></p>
+                            <p class="text-lg font-semibold sm:text-sm text-gray-400">Location: <span class="text-white"><%= gymData.location %></span></p>
                         </div>
 
                         <!-- Email and Contact Number -->
@@ -160,14 +160,9 @@
                 <button id="shiftsAccordionButton" class="max-w-md bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black w-full text-center">
                     Show Shifts
                 </button>
-                <div id="shiftsAccordionContent" class="hidden mt-4 space-y-6 w-full max-w-6xl">
-                    <!-- Edit Button -->
-                    <a href="/app/edit-gym/<%= gymData._id %>" class="absolute top-42 right-4 sm:w-1/2 sm:right-4 sm:top-4 bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black transition-transform transform hover:scale-105 sm:block hidden">
-                        Add Shift
-                    </a>
-
+                <div id="shiftsAccordionContent" class="hidden mt-4 flex flex-col items-center space-y-6 w-full max-w-6xl">
                     <!-- Visible on smaller devices -->
-                    <a href="/app/edit-gym/<%= gymData._id %>" class="sm:hidden bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black mt-6 block text-center">
+                    <a href="/app/edit-gym/<%= gymData._id %>" class=" bg-red-600 text-white uppercase px-2 text-center w-1/4 py-1 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black mt-6 block text-center">
                         Add Shift
                     </a>
                     

@@ -25,31 +25,46 @@ const workoutPlan = {
                     name: 'Dumbbell Bench Press',
                     sets: 3,
                     reps: '10-12',
-                    focus: 'Chest, Triceps'
+                    focus: 'Chest, Triceps',
+                    details: 'Lie on a flat bench holding dumbbells at chest level. Push them upwards while keeping your core tight.',
+                    videoUrl: 'https://www.youtube.com/watch?v=VmB1G1K7v94',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/db-bench-press-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Row',
                     sets: 3,
                     reps: '10-12',
-                    focus: 'Back, Biceps'
+                    focus: 'Back, Biceps',
+                    details: 'Place one knee and one hand on a bench while rowing the dumbbell with the other hand, pulling towards your waist.',
+                    videoUrl: 'https://www.youtube.com/watch?v=MEt8zvEoSlA',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/one-arm-dumbbell-row-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Shoulder Press',
                     sets: 3,
                     reps: '10-12',
-                    focus: 'Shoulders, Triceps'
+                    focus: 'Shoulders, Triceps',
+                    details: 'Sit upright and press dumbbells overhead until your arms are fully extended, then slowly lower them back.',
+                    videoUrl: 'https://www.youtube.com/watch?v=B-aVuyhvLHU',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/seated-dumbbell-shoulder-press-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Bicep Curls',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Biceps'
+                    focus: 'Biceps',
+                    details: 'Hold a dumbbell in each hand, curl them up to shoulder height, and slowly lower them back.',
+                    videoUrl: 'https://www.youtube.com/watch?v=ykJmrZ5v0Oo',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-biceps-curl-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Tricep Extensions',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Triceps'
+                    focus: 'Triceps',
+                    details: 'Hold a dumbbell overhead with both hands and lower it behind your head, then lift it back up.',
+                    videoUrl: 'https://www.youtube.com/watch?v=nRiJVZDpdL0',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-overhead-triceps-extension-960x540.jpg'
                 }
             ]
         },
@@ -61,31 +76,46 @@ const workoutPlan = {
                     name: 'Seated Dumbbell Leg Extensions',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Quadriceps'
+                    focus: 'Quadriceps',
+                    details: 'Sit on a chair, place a dumbbell between your feet, and extend your legs out straight, then lower them back.',
+                    videoUrl: 'https://www.youtube.com/watch?v=foUbbdz6Klg',
+                    imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2022/02/Seated-Leg-Extensions.jpg'
                 },
                 {
                     name: 'Dumbbell Deadlifts',
                     sets: 3,
                     reps: '10-12',
-                    focus: 'Hamstrings, Glutes'
+                    focus: 'Hamstrings, Glutes',
+                    details: 'Hold dumbbells in front of you, keep your back straight, and lower them towards the floor while hinging at the hips.',
+                    videoUrl: 'https://www.youtube.com/watch?v=r4MzxtBKyNE',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/romanian-deadlift-960x540.jpg'
                 },
                 {
                     name: 'Glute Bridges',
                     sets: 3,
                     reps: '15',
-                    focus: 'Glutes, Lower Back'
+                    focus: 'Glutes, Lower Back',
+                    details: 'Lie on your back with knees bent and feet flat, push your hips upward while squeezing your glutes, then lower.',
+                    videoUrl: 'https://www.youtube.com/watch?v=wPM8icPu6H8',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/glute-bridge-960x540.jpg'
                 },
                 {
                     name: 'Standing Calf Raises (Bodyweight)',
                     sets: 3,
                     reps: '15-20',
-                    focus: 'Calves'
+                    focus: 'Calves',
+                    details: 'Stand upright and raise your heels off the ground as high as possible, then slowly lower back down.',
+                    videoUrl: 'https://www.youtube.com/watch?v=-M4-G8p8fmc',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/calf-raise-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Russian Twists',
                     sets: 3,
                     reps: '15-20 (each side)',
-                    focus: 'Core, Obliques'
+                    focus: 'Core, Obliques',
+                    details: 'Sit on the floor with knees bent, lean back slightly, and twist your torso side to side while holding a dumbbell.',
+                    videoUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/russian-twist-960x540.jpg'
                 }
             ]
         },
@@ -97,31 +127,46 @@ const workoutPlan = {
                     name: 'Dumbbell Squats (Bodyweight or Light Dumbbells)',
                     sets: 3,
                     reps: '10-12',
-                    focus: 'Quads, Glutes'
+                    focus: 'Quads, Glutes',
+                    details: 'Hold a dumbbell in each hand or use bodyweight, squat down while keeping your chest up and knees behind your toes.',
+                    videoUrl: 'https://www.youtube.com/watch?v=aclHkVaku9U',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-squat-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Chest Flyes',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Chest'
+                    focus: 'Chest',
+                    details: 'Lie on a flat bench with dumbbells in both hands, extend arms out and then bring them back together above your chest.',
+                    videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-chest-flye-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Shoulder Lateral Raises',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Shoulders'
+                    focus: 'Shoulders',
+                    details: 'Stand upright, raise your arms out to the sides until they are at shoulder height, then lower them back down.',
+                    videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-lateral-raise-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Hammer Curls',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Biceps'
+                    focus: 'Biceps',
+                    details: 'Hold dumbbells with your palms facing each other, curl them up to shoulder level, and slowly lower them.',
+                    videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvin4',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-hammer-curl-960x540.jpg'
                 },
                 {
                     name: 'Dumbbell Overhead Tricep Extensions',
                     sets: 3,
                     reps: '12-15',
-                    focus: 'Triceps'
+                    focus: 'Triceps',
+                    details: 'Hold a dumbbell overhead with both hands, lower it behind your head, then lift it back up while keeping your elbows in.',
+                    videoUrl: 'https://www.youtube.com/watch?v=6SS6K3lAwZ8',
+                    imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-overhead-triceps-extension-960x540.jpg'
                 }
             ]
         }
@@ -748,31 +793,46 @@ homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
                         name: 'Dumbbell Bench Press',
                         sets: 3,
                         reps: '10-12',
-                        focus: 'Chest, Triceps'
+                        focus: 'Chest, Triceps',
+                        details: 'Lie on a flat bench holding dumbbells at chest level. Push them upwards while keeping your core tight.',
+                        videoUrl: 'https://www.youtube.com/watch?v=VmB1G1K7v94',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/db-bench-press-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Row',
                         sets: 3,
                         reps: '10-12',
-                        focus: 'Back, Biceps'
+                        focus: 'Back, Biceps',
+                        details: 'Place one knee and one hand on a bench while rowing the dumbbell with the other hand, pulling towards your waist.',
+                        videoUrl: 'https://www.youtube.com/watch?v=MEt8zvEoSlA',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/one-arm-dumbbell-row-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Shoulder Press',
                         sets: 3,
                         reps: '10-12',
-                        focus: 'Shoulders, Triceps'
+                        focus: 'Shoulders, Triceps',
+                        details: 'Sit upright and press dumbbells overhead until your arms are fully extended, then slowly lower them back.',
+                        videoUrl: 'https://www.youtube.com/watch?v=B-aVuyhvLHU',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/seated-dumbbell-shoulder-press-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Bicep Curls',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Biceps'
+                        focus: 'Biceps',
+                        details: 'Hold a dumbbell in each hand, curl them up to shoulder height, and slowly lower them back.',
+                        videoUrl: 'https://www.youtube.com/watch?v=ykJmrZ5v0Oo',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-biceps-curl-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Tricep Extensions',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Triceps'
+                        focus: 'Triceps',
+                        details: 'Hold a dumbbell overhead with both hands and lower it behind your head, then lift it back up.',
+                        videoUrl: 'https://www.youtube.com/watch?v=nRiJVZDpdL0',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-overhead-triceps-extension-960x540.jpg'
                     }
                 ]
             },
@@ -784,31 +844,46 @@ homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
                         name: 'Seated Dumbbell Leg Extensions',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Quadriceps'
+                        focus: 'Quadriceps',
+                        details: 'Sit on a chair, place a dumbbell between your feet, and extend your legs out straight, then lower them back.',
+                        videoUrl: 'https://www.youtube.com/watch?v=foUbbdz6Klg',
+                        imageUrl: 'https://fitnessprogramer.com/wp-content/uploads/2022/02/Seated-Leg-Extensions.jpg'
                     },
                     {
                         name: 'Dumbbell Deadlifts',
                         sets: 3,
                         reps: '10-12',
-                        focus: 'Hamstrings, Glutes'
+                        focus: 'Hamstrings, Glutes',
+                        details: 'Hold dumbbells in front of you, keep your back straight, and lower them towards the floor while hinging at the hips.',
+                        videoUrl: 'https://www.youtube.com/watch?v=r4MzxtBKyNE',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/romanian-deadlift-960x540.jpg'
                     },
                     {
                         name: 'Glute Bridges',
                         sets: 3,
                         reps: '15',
-                        focus: 'Glutes, Lower Back'
+                        focus: 'Glutes, Lower Back',
+                        details: 'Lie on your back with knees bent and feet flat, push your hips upward while squeezing your glutes, then lower.',
+                        videoUrl: 'https://www.youtube.com/watch?v=wPM8icPu6H8',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/glute-bridge-960x540.jpg'
                     },
                     {
                         name: 'Standing Calf Raises (Bodyweight)',
                         sets: 3,
                         reps: '15-20',
-                        focus: 'Calves'
+                        focus: 'Calves',
+                        details: 'Stand upright and raise your heels off the ground as high as possible, then slowly lower back down.',
+                        videoUrl: 'https://www.youtube.com/watch?v=-M4-G8p8fmc',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/calf-raise-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Russian Twists',
                         sets: 3,
                         reps: '15-20 (each side)',
-                        focus: 'Core, Obliques'
+                        focus: 'Core, Obliques',
+                        details: 'Sit on the floor with knees bent, lean back slightly, and twist your torso side to side while holding a dumbbell.',
+                        videoUrl: 'https://www.youtube.com/watch?v=wkD8rjkodUI',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/russian-twist-960x540.jpg'
                     }
                 ]
             },
@@ -820,31 +895,46 @@ homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
                         name: 'Dumbbell Squats (Bodyweight or Light Dumbbells)',
                         sets: 3,
                         reps: '10-12',
-                        focus: 'Quads, Glutes'
+                        focus: 'Quads, Glutes',
+                        details: 'Hold a dumbbell in each hand or use bodyweight, squat down while keeping your chest up and knees behind your toes.',
+                        videoUrl: 'https://www.youtube.com/watch?v=aclHkVaku9U',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-squat-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Chest Flyes',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Chest'
+                        focus: 'Chest',
+                        details: 'Lie on a flat bench with dumbbells in both hands, extend arms out and then bring them back together above your chest.',
+                        videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-chest-flye-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Shoulder Lateral Raises',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Shoulders'
+                        focus: 'Shoulders',
+                        details: 'Stand upright, raise your arms out to the sides until they are at shoulder height, then lower them back down.',
+                        videoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-lateral-raise-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Hammer Curls',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Biceps'
+                        focus: 'Biceps',
+                        details: 'Hold dumbbells with your palms facing each other, curl them up to shoulder level, and slowly lower them.',
+                        videoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvin4',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-hammer-curl-960x540.jpg'
                     },
                     {
                         name: 'Dumbbell Overhead Tricep Extensions',
                         sets: 3,
                         reps: '12-15',
-                        focus: 'Triceps'
+                        focus: 'Triceps',
+                        details: 'Hold a dumbbell overhead with both hands, lower it behind your head, then lift it back up while keeping your elbows in.',
+                        videoUrl: 'https://www.youtube.com/watch?v=6SS6K3lAwZ8',
+                        imageUrl: 'https://www.bodybuilding.com/images/2021/xdb/originals/dumbbell-overhead-triceps-extension-960x540.jpg'
                     }
                 ]
             }
@@ -857,6 +947,8 @@ homeRoute.get("/profile/:userId/workoutplan", async(req,res) => {
             'Avoid exercises that heavily strain the injured leg; focus on proper form and use lighter weights if necessary.'
         ]
     };
+    
+    
 
     //get data from chat gpt in the above format about the exercise for the user and render it on the page
     return res.render("dailyworkoutplan", { 
@@ -876,12 +968,9 @@ homeRoute.get("/workout-day/:index", async(req,res) => {
 
 homeRoute.get("/workout-day/:day/workout/:index/:exercisename", async(req,res) => {
     const { day, index, exercisename } = req.params;
-    console.log("exerciseName:", typeof(day), index, exercisename)
     let dayindex = Number(day)
-    console.log((dayindex))
 
     let exerciseObj;
-
     workoutPlan.workoutDays.forEach((day) => {
         day.exercises.forEach((exercise) => {
             if(exercise.name == exercisename) {
@@ -889,6 +978,8 @@ homeRoute.get("/workout-day/:day/workout/:index/:exercisename", async(req,res) =
             }
         })
     })
+
+    console.log(exerciseObj)
 
     //make a call to chatgpt which will give data about that "exerciseObj"
     return res.render("exercisepage", {
@@ -907,7 +998,6 @@ homeRoute.post("/profile/shiftdetail/update/:shiftId", async(req,res) => {
             endtime: endtime
         }
     )
-
     console.log(newshiftData);
 })
 
