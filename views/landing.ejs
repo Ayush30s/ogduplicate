@@ -37,10 +37,10 @@
         <% if (allgyms.length === 0) { %>
             <h1 class="text-center my-[10%] font-bold text-4xl text-white">NO GYMS TO EXPLORE</h1>
         <% } else { %>
-            <div class="flex flex-wrap m-5">
+            <div class="flex flex-wrap items-center m-5">
                 <% allgyms?.forEach(gym => { %>
                     <!-- Each slide -->
-                    <div class="text-sm rounded-lg mx-4 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 sm:w-full md:w-1/5">
+                    <div class="text-sm rounded-lg mx-4 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-1/5">
                         <div class="bg-black rounded-lg overflow-hidden transition-transform transform hover:scale-105">
                             <img src="<%= gym.profileImage %>" alt="<%= gym.gymname %>" class="object-cover w-full h-40 transition-opacity duration-500 hover:opacity-90">
                             
