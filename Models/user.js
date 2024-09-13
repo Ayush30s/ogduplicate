@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
     },
     bio: {
         type: String,
-        default: "To add bio edit your profile"
+        default: "Bio..."
     },
     Likedblogs: [{
         type: mongoose.Schema.Types.ObjectId,
