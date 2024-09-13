@@ -162,7 +162,7 @@
                 </button>
                 <div id="shiftsAccordionContent" class="hidden mt-4 flex flex-col items-center space-y-6 w-full max-w-6xl">
                     <!-- Visible on smaller devices -->
-                    <a href="/app/edit-gym/<%= gymData._id %>" class=" bg-red-600 text-white uppercase px-2 text-center w-1/4 py-1 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black mt-6 block text-center">
+                    <a href="/app/edit-gym/<%= gymData._id %>" class=" bg-black text-white uppercase px-2 text-center w-1/4 py-1 shadow-sm hover:bg-black hover:text-red-600 shadow-red-600/50 border-2 border-black mt-6 block text-center">
                         Add Shift
                     </a>
                     
@@ -266,6 +266,17 @@
                 content.classList.add('hidden');
                 this.textContent = 'Show Members';
             }
+        });
+
+        const socket = io();
+
+        // Register as admin when connected
+        socket.emit('registerAdmin');
+
+        // Listen for new join requests from users
+        socket.on('newJoinRequest', (data) => {
+            console.log(`New join request: ${data.message}`);
+            alert(`New join request: ${data.message}`);
         });
     </script>
 </body>

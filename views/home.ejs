@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include('./partials/head') %>
+        <title>Homepage</title>
+        <style>
+            /* Custom styles for the dropdown */
+            .dropdown:hover .dropdown-menu {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; transform: scale(0.95); }
+                50% { opacity: 1; transform: scale(1); }
+            }
+
+            @keyframes moveBackground {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            .animate-fade {
+                animation: fadeInOut 2s ease-in-out infinite;
+            }
+
+            .animate-bg {
+                animation: moveBackground 10s ease-in-out infinite;
+            }
+
+            @keyframes glow {
+                0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); }
+                50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+                100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); }
+            }
+        </style>
+    </head>
+    <body class="bg-black text-white">
+        <%- include('./partials/nav') %>
+        <% if (blogs?.length > 0) { %>
+            <h1 class="text-4xl font-extrabold text-center p-2 text-red-600 my-4">
+                Trending Blogs
+            </h1>
+            <div class="mt-4 flex flex-wrap gap-1 item-center justify-center ">
+                <% blogs?.forEach(blog => { %>
+                    <div class="w-[90%] sm:w-[45%] md:w-[20%] mx-auto bg-white text-black shadow-md overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-transform duration-500 ease-out cursor-pointer mb-8">
+                        <!-- Image Section -->
+                        <div class="overflow-hidden">
+                            <img class="w-full h-48 object-cover transition-transform duration-500 ease-out hover:scale-110" src="<%= blog?.coverImage %>" alt="Blog Image">
+                        </div>
+                    
+                        <!-- Content Section -->
+                        <div class="p-6 bg-gradient-to-b from-white to-gray-100 rounded-b-xl">
+                            <h3 class="text-sm my-2 font-medium text-gray-700 hover:text-red-500 transition-colors duration-300">
+                                <%= blog?.title %>
+                            </h3>
+
+                            <h3 class="text-sm my-2 font-medium text-gray-700 hover:text-red-500 transition-colors duration-300">
+                                <%= blog?.createdBy?.name %>
+                            </h3>
+                    
+                            <!-- Buttons and Date -->
+                            <div class="mt-6 flex justify-between items-center">
+                                <a href="/blog/<%= blog?._id %>" class="inline-block bg-gradient-to-r from-black to-red-600 text-white font-semibold rounded-full px-2 py-1 transition-colors duration-300 hover:from-red-700 hover:to-black">
+                                    View
+                                </a>
+                                <span class="text-gray-500 text-xs bg-gray-100 rounded-full px-4 py-1">
+                                    Published On : <%= blog?.createdAt.toLocaleDateString() %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="flex items-center justify-center h-screen bg-gray-900">
+                <div class="text-center bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+                    <a href="/blog/add-blog">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-3-3v6m6-6h.01M3 4h18M4 20h16"></path>
+                        </svg>
+                    </a>
+                    <h1 class="text-2xl font-semibold text-gray-700 mb-2">No Blog Created</h1>
+                    <p class="text-gray-500">It looks like you haven't created any blogs yet. Start by adding a new blog to get started.</p>
+                </div>
+            </div>
+        <% } %>
+        
+        <script>
+            // Toggle dropdown menu
+            document.getElementById('dropdownButton').addEventListener('click', function () {
+                var dropdownMenu = document.getElementById('dropdownMenu');
+                dropdownMenu.classList.toggle('hidden');
+            });
+        </script>
+    </body>
+</html>

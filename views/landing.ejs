@@ -109,6 +109,7 @@
                 if (message) {  // Ensure that message is not empty
                     // Append the user's question to the chat history
                     appendToChatHistory("You", message);
+                    //send msg to the server
                     socket.emit("aiMessage", message);  // Emit message to the server
                     document.getElementById("aiMessage").value = "";  // Clear the input field
                 }
@@ -154,7 +155,7 @@
 
         // Socket event listener for server messages (AI's response)
         socket.on("serverMessage", (data) => {
-            // Append AI's answer to the chat history
+            // Append AI's answer we are etting from the server to the chat history
             appendToChatHistory("AI", data);
         });
     </script>

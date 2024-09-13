@@ -1,6 +1,7 @@
 const {Router} = require("express");
 const userModel = require("../Models/user");
 const gymModel = require("../Models/gym");
+const { blogModel } = require("../Models/blog")
 
 const workoutPlan = {
     user: {
@@ -198,6 +199,17 @@ staticRoute.get("/addmoredetails", async(req,res) => {
 staticRoute.get("/transform", async(req,res) => {
     return res.render("userphy");
 })
+
+staticRoute.get("/blogs", async(req,res) => {
+    const allblogs = await blogModel.find({}).populate("createdBy");
+    console.log(allblogs)
+
+    return res.render("home", {
+        user: req.user,
+        blogs: allblogs
+    });
+})
+
 
 
 

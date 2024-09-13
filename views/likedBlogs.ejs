@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <%- include("./partials/head") %>
+</head>
+
+<body>
+    <%- include("./partials/nav") %>
+    <h1 class="text-center text-4xl font-bold mt-5 mb-10">Liked Blogs</h1>
+    <div class="flex flex-wrap">
+        <% Likedblogs.Likedblogs.forEach(blog => { %>
+            <div class=" w-[20%] mx-4 bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-1 transition duration-300 ease-in-out cursor-pointer m-3">
+                <img class="w-full h-auto object-cover" src="<%= blog.coverImage %>" alt="Blog Image">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 hover:text-gray-600 transition duration-300"><%= blog.title %></h2>
+                    <p class="text-gray-600 mt-4 text-sm">
+                        <%= blog.content.slice(0, 100) %>...
+                    </p> 
+                    <div class="mt-4 flex justify-between items-center">
+                        <a href="/blog/<%= blog._id %>" class="bg-gray-100 font-semibold rounded-xl px-3 py-1 text-blue-600 hover:text-red-400 transition duration-300">View</a>
+                        <span class="text-gray-700 text-sm bg-gray-100 rounded-xl px-3 py-1"><%= blog.createdAt.toLocaleDateString() %></span>
+                       
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+   <script>
+        document.getElementById('dropdownButton').addEventListener('click', function () {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('hidden');
+        });
+   </script>
+</body>
+</html>

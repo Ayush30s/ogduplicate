@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include('./partials/head') %>
+        <title>Homepage</title>
+        <style>
+            /* Custom styles for the dropdown */
+            .dropdown:hover .dropdown-menu {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes moveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animate-fade {
+            animation: fadeInOut 2s ease-in-out infinite;
+        }
+
+        .animate-bg {
+            animation: moveBackground 10s ease-in-out infinite;
+        }
+
+        </style>
+    </head>
+    <body>
+        <%- include('./partials/nav') %>
+        
+        <div class="mt-4 flex flex-wrap">
+            <% if (blogs.length > 0) { %>
+                <% blogs?.forEach(blog => { %>
+                    <div class="max-w-sm mx-auto bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-1 transition duration-300 ease-in-out cursor-pointer m-3">
+                        <img class="w-full h-48 object-cover" src="<%= blog?.coverImage %>" alt="Blog Image">
+                        <div class="p-6">
+                            <h2 class="text-2xl font-semibold text-gray-800 hover:text-gray-600 transition duration-300"><%= blog?.title %></h2>
+                            <p class="text-gray-600 mt-4 text-sm">
+                                <%= blog?.content.slice(0, 100) %>...
+                            </p>
+                        
+                            <div class="mt-4 flex justify-between items-center">
+                                <a href="/blog/<%= blog?._id %>" class="bg-gray-100 font-semibold rounded-xl px-3 py-1 text-red-500 hover:text-blue-500 transition duration-300">View</a>
+                                <span class="text-gray-700 text-sm bg-gray-100 rounded-xl px-3 py-1 "><%= blog?.createdAt.toLocaleDateString() %></span>
+                            </div>
+                        </div>
+                    </div>                       
+                <% }) %>
+            <% } else { %>
+                <div class="flex -z-10 inline fixed top-0 items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-bg w-full">
+                    <div class="text-center p-10 bg-white rounded-xl shadow-lg animate-fade">
+                        <h1 class="text-4xl font-bold text-gray-800 mb-4">No Blogs Yet!</h1>
+                        <p class="text-lg text-gray-600 mb-6">It looks like you haven't written any blogs yet. Start sharing your thoughts with the world!</p>
+                        <a href="/blog/add-blog" class="px-6 py-3 bg-blue-500 cursor-pointer text-white rounded-lg hover:bg-blue-700 transition duration-400 ease-in-out transform hover:-translate-y-1">
+                            Create Your First Blog
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+       
+        <script>
+            // Toggle dropdown menu
+            document.getElementById('dropdownButton').addEventListener('click', function () {
+                var dropdownMenu = document.getElementById('dropdownMenu');
+                dropdownMenu.classList.toggle('hidden');
+            });
+        </script>
+    </body>
+</html>

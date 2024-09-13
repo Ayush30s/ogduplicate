@@ -346,8 +346,7 @@ ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
 
         return res.redirect("/app/signin-form");
     } catch (error) {
-        console.error("Error registering user:", error);
-        return res.status(500).send("Internal Server Error");
+        return res.render("frontpage", { msg: "This Email is already registered." });
     }
 });
 

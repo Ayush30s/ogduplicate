@@ -42,7 +42,7 @@
                             Leave
                         </a>
                         <% } else { %>
-                        <a href="/home/<%= gymData._id %>/joingym" class="bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-all duration-300 transform hover:scale-110 hover:shadow-red-600/50 border-2 border-black w-full sm:w-[50%] text-center">
+                        <a id="join" href="/home/<%= gymData._id %>/joingym" class="bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-all duration-300 transform hover:scale-110 hover:shadow-red-600/50 border-2 border-black w-full sm:w-[50%] text-center">
                             Join
                         </a>
                     <% } %>
@@ -129,6 +129,23 @@
     <script>
         document.documentElement.style.scrollBehavior = "smooth";
     </script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io();
+
+        // Handle button click to join gym
+        document.getElementById("join").addEventListener("click", (event) => {
+            socket.emit("joingym")
+        });
+
+        // Listen for confirmation from the server
+        socket.on("joinConfirmation", (data) => {
+            console.log("Server Confirmation:", data);
+            alert(data);  // Display the confirmation to the user
+        });
+    </script>
+
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
@@ -165,5 +182,8 @@
             }
         }
     </style>
+    <script>
+        
+    </script>
 </body>
 </html>

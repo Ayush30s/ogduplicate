@@ -188,7 +188,6 @@ homeRoute.get("/", async (req, res) => {
     try {
         // Fetch all gyms with the joinedby array populated
         const allGyms = await gymModel.find({}).populate('joinedby.user').exec();
-        console.log(allGyms);
 
         const currentuser = await gymModel.findById(userId);
         let gymNotJoined = [];
@@ -216,7 +215,6 @@ homeRoute.get("/", async (req, res) => {
             });
         }
 
-        console.log(gymNotJoined)
         return res.render("landing", {
             allgyms: gymNotJoined,
             user: req.user,
@@ -282,13 +280,15 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
                 joinedDate = joined.joinedAt.getDate()
             }
         });
+
         const currentDate = new Date();
         const year = currentDate.getFullYear();
         const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based, so add 1
         const day = currentDate.getDate().toString().padStart(2, '0');
         const daysInMonth = new Date(year, month, 0).getDate() + 1;
-        daysLeftToMonth = daysInMonth - Number(day) - Number(joinedDate);
-        
+        let days = Number(day) - Number(joinedDate);
+        daysLeftToMonth = daysInMonth - days;
+        daysLeftToMonth += (daysInMonth - daysLeftToMonth);
 
         // Determine if the user has joined any shift
         let shiftJoined = -1;

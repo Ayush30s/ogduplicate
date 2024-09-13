@@ -50,6 +50,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "To add bio edit your profile"
     },
+    Likedblogs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "blogModel"
+    }],
+    Savedblogs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "blogModel"
+    }],
     salt: {
         type: String,
     }
