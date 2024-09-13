@@ -291,9 +291,6 @@ blogRouter.post("/save/:blogId", async (req, res) => {
     return res.redirect(`/blog/${blogId}`); // Redirect to the blog page or wherever you want
 });
 
-blogRouter.get("/saveblogs", (req,res) => {
-    return res.send("done");
-})
 
 module.exports = {
     blogRouter
