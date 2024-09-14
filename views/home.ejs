@@ -1,100 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <%- include('./Partials/head') %>
-        <title>Homepage</title>
-        <style>
-            /* Custom styles for the dropdown */
-            .dropdown:hover .dropdown-menu {
-                display: block;
+
+<head>
+    <%- include('./Partials/head') %>
+    <title>Blogs</title>
+    <style>
+        body {
+            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
+        }
+        /* Keyframe animations */
+        @keyframes cardFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
 
-            @keyframes fadeInOut {
-                0%, 100% { opacity: 0; transform: scale(0.95); }
-                50% { opacity: 1; transform: scale(1); }
-            }
+        .fade-in {
+            opacity: 0;
+            animation: cardFadeIn 0.5s ease-out forwards;
+        }
 
-            @keyframes moveBackground {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
+        /* Staggered effect for each card */
+        .stagger-animation:nth-child(1) {
+            animation-delay: 0.2s;
+        }
 
-            .animate-fade {
-                animation: fadeInOut 2s ease-in-out infinite;
-            }
+        .stagger-animation:nth-child(2) {
+            animation-delay: 0.4s;
+        }
 
-            .animate-bg {
-                animation: moveBackground 10s ease-in-out infinite;
-            }
+        .stagger-animation:nth-child(3) {
+            animation-delay: 0.6s;
+        }
 
-            @keyframes glow {
-                0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); }
-                50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
-                100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.6); }
-            }
-        </style>
-    </head>
-    <body class="bg-black text-white">
-        <%- include('./partials/nav') %>
-        <% if (blogs?.length > 0) { %>
-            <h1 class="text-4xl font-extrabold text-center p-2 text-red-600 my-4">
-                Trending Blogs
-            </h1>
-            <div class="mt-4 flex flex-wrap gap-1 item-center justify-center ">
-                <% blogs?.forEach(blog => { %>
-                    <div class="w-[90%] sm:w-[45%] md:w-[20%] mx-auto bg-white text-black shadow-md overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-transform duration-500 ease-out cursor-pointer mb-8">
-                        <!-- Image Section -->
-                        <div class="overflow-hidden">
-                            <img class="w-full h-48 object-cover transition-transform duration-500 ease-out hover:scale-110" src="<%= blog?.coverImage %>" alt="Blog Image">
-                        </div>
-                    
-                        <!-- Content Section -->
-                        <div class="p-6 bg-gradient-to-b from-white to-gray-100 rounded-b-xl">
-                            <h3 class="text-sm my-2 font-medium text-gray-700 hover:text-red-500 transition-colors duration-300">
-                                <%= blog?.title %>
-                            </h3>
+        .stagger-animation:nth-child(4) {
+            animation-delay: 0.8s;
+        }
 
-                            <h3 class="text-sm my-2 font-medium text-gray-700 hover:text-red-500 transition-colors duration-300">
-                                <%= blog?.createdBy?.name %>
-                            </h3>
-                    
-                            <!-- Buttons and Date -->
-                            <div class="mt-6 flex justify-between items-center">
-                                <a href="/blog/<%= blog?._id %>" class="inline-block bg-gradient-to-r from-black to-red-600 text-white font-semibold rounded-full px-2 py-1 transition-colors duration-300 hover:from-red-700 hover:to-black">
-                                    View
-                                </a>
-                                <span class="text-gray-500 text-xs bg-gray-100 rounded-full px-4 py-1">
-                                    Published On : <%= blog?.createdAt.toLocaleDateString() %>
-                                </span>
-                            </div>
+        /* Custom card styles matching the black, white, red theme */
+        .card-container {
+            background: linear-gradient(145deg, #000000, #111);
+            border: 2px solid #e00808;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+        }
+
+        .card-container:hover {
+            box-shadow: 0 6px 15px rgba(255, 0, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            color: #d30e0e;
+        }
+
+        .card-title:hover {
+            color: #ff5555;
+        }
+
+        .card-text {
+            color: #cccccc;
+        }
+
+        .view-button {
+            background-color: #dd1010;
+            color: white;
+            border-radius: 9999px;
+        }
+
+        .view-button:hover {
+            background-color: #cc0000;
+        }
+
+        .published-date {
+            background-color: #000000;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <%- include('./partials/nav') %>
+
+    <% if (blogs?.length > 0) { %>
+        <h1 class="text-4xl font-extrabold text-center p-2 text-red-600 my-4">
+            Trending Blogs
+        </h1>
+
+        <div class="mt-4 flex flex-wrap gap-4 justify-center">
+            <% blogs?.forEach((blog, index) => { %>
+                <div class="stagger-animation fade-in w-[90%] sm:w-[45%] md:w-[30%] card-container rounded-lg overflow-hidden transition-transform duration-500 ease-out mb-8">
+                    <!-- Image Section -->
+                    <div class="overflow-hidden rounded-t-lg p-4">
+                        <img class="w-full rounded-xl h-48 object-cover transition-transform duration-500 ease-out hover:scale-110"
+                            src="<%= blog?.coverImage %>" alt="Blog Image">
+                    </div>
+
+                    <!-- Content Section -->
+                    <div class="p-4 rounded-b-lg">
+                        <h3 class="text-lg font-semibold card-title transition-colors duration-300">
+                            <%= blog?.title %>
+                        </h3>
+
+                        <p class="text-sm card-text mt-2">
+                            By <%= blog?.createdBy?.fullname %>
+                        </p>
+
+                        <!-- Buttons and Date -->
+                        <div class="mt-6 flex justify-between items-center">
+                            <a href="/blog/<%= blog?._id %>" class="inline-block view-button font-semibold rounded-full px-4 py-1 transition-colors duration-300">
+                                View
+                            </a>
+                            <span class="text-xs published-date rounded-full px-4 py-1">
+                                Published: <%= blog?.createdAt.toLocaleDateString() %>
+                            </span>
                         </div>
                     </div>
-                    
-                <% }) %>
-            </div>
-        <% } else { %>
-            <div class="flex items-center justify-center h-screen bg-gray-900">
-                <div class="text-center bg-white p-8 rounded-lg shadow-lg border border-gray-200">
-                    <a href="/blog/add-blog">
-                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-3-3v6m6-6h.01M3 4h18M4 20h16"></path>
-                        </svg>
-                    </a>
-                    <h1 class="text-2xl font-semibold text-gray-700 mb-2">No Blog Created</h1>
-                    <p class="text-gray-500">It looks like you haven't created any blogs yet. Start by adding a new blog to get started.</p>
                 </div>
+            <% }) %>
+        </div>
+
+    <% } else { %>
+        <!-- Empty State if no blogs -->
+        <div class="flex items-center justify-center h-screen bg-black">
+            <div class="text-center bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+                <a href="/blog/add-blog">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-3-3v6m6-6h.01M3 4h18M4 20h16"></path>
+                    </svg>
+                </a>
+                <h1 class="text-2xl font-semibold text-gray-700 mb-2">No Blog Created</h1>
+                <p class="text-gray-500">It looks like you haven't created any blogs yet. Start by adding a new blog to get started.</p>
             </div>
-        <% } %>
-        
-        <script>
-            // Toggle dropdown menu
-            document.getElementById('dropdownButton').addEventListener('click', function () {
-                var dropdownMenu = document.getElementById('dropdownMenu');
-                dropdownMenu.classList.toggle('hidden');
-            });
-        </script>
-    </body>
+        </div>
+    <% } %>
+
+    <script>
+        // Toggle dropdown menu
+        document.getElementById('dropdownButton').addEventListener('click', function () {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+
 </html>

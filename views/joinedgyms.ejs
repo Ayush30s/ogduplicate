@@ -4,6 +4,18 @@
     <%- include("./Partials/head") %>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        body {
+            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
+        }
+
         @keyframes fadeIn {
             0% { opacity: 0; }
             100% { opacity: 1; }
@@ -34,7 +46,7 @@
                 <% locals?.mygyms?.forEach((gym) => { %>
                     <li class="my-2 flex justify-center">
                         <a href="/home/gym/<%= gym._id %>" 
-                           class="text-red-600 text-lg sm:text-xl lg:text-2xl px-5 py-3 border-2 border-red-600 rounded-lg transition-all duration-300 inline-block transform hover:bg-red-600 hover:text-black hover:scale-110 shadow-lg shadow-red-600/50 animate-slideIn w-full text-center">
+                           class="text-red-600 text-lg sm:text-xl lg:text-2xl px-5 py-3 border-2 border-red-600 bg-black rounded-lg transition-all duration-300 inline-block transform hover:bg-red-600 hover:text-black hover:scale-110 shadow-lg shadow-red-600/50 animate-slideIn w-full text-center">
                             <div class="flex justify-between items-center">
                                 <span><%= gym.gymname %></span>
                                 <span class="ml-3 text-sm sm:text-base lg:text-lg">Members: <%= gym.joinedby.length %></span>

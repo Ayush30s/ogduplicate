@@ -174,7 +174,7 @@ staticRoute.get("/editprofile", async(req,res) => {
 
 staticRoute.get("/edit-gym/:gymId", (req,res) => {
     const {gymId} = req.params;
-    return res.render("gymEditForm", {
+    return res.render("gymShiftEditForm", {
         gymId: gymId
     });
 })

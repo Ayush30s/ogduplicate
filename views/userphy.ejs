@@ -1,65 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personalized Workout Plan Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<style>
+    body {
+            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
+        }
+</style>
+
 <body class="bg-black text-white">
+    <%- include("./Partials/nav") %>
 
-    <div class="flex justify-center items-center min-h-screen">
-        <form action="/register/addmoredetails" method="POST" class="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-lg">
-            <h1 class="text-2xl font-bold mb-6 text-center text-red-500">Personalized Workout Plan</h1>
+    <div class="min-h-screen flex flex-col justify-center items-center px-4">
+        <!-- Header Section -->
+        <div class="w-full max-w-4xl mb-8 text-center">
+            <h1 class="text-5xl font-bold text-red-500 my-4">Personalized Workout Plan by AI</h1>
+            <p class="text-lg font-semibold text-gray-300 my-6">"The only bad workout is the one that didn't happen. Let AI help you stay consistent and achieve your goals."</p>
+        </div>
 
-            <div class="mb-4">
-                <label for="height" class="block mb-2 text-white">Height (cm)</label>
-                <input type="number" id="height" name="height" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-            </div>
+        <!-- Description Section -->
+        <div class="w-full max-w-4xl mb-8 text-center">
+            <p class="text-lg text-gray-400">
+                Our AI-driven personalized workout plan is designed to cater to your unique fitness needs and preferences. Based on the information you provide, such as your fitness goals, current experience level, and available equipment, the AI will generate a workout routine tailored specifically for you. Whether your goal is to gain muscle, lose weight, or build endurance, this plan will help you stay consistent and motivated, ensuring optimal progress. Just fill out the form below, and let the AI do the rest!
+            </p>
+        </div>
 
-            <div class="mb-4">
-                <label for="weight" class="block mb-2 text-white">Weight (kg)</label>
-                <input type="number" id="weight" name="weight" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-            </div>
+        <!-- Form Section -->
+        <div class="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-4xl my-4">
+            <form action="/register/addmoredetails" method="POST">
+                <!-- Grid for Height, Weight, Workout Frequency -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <!-- Height -->
+                    <div>
+                        <label for="height" class="block mb-2 text-white">Height (cm)</label>
+                        <input type="number" id="height" name="height" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
 
-            <div class="mb-4">
-                <label for="fitnessGoal" class="block mb-2 text-white">Fitness Goal</label>
-                <select id="fitnessGoal" name="fitnessGoal" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="muscleGain">Muscle Gain</option>
-                    <option value="weightLoss">Weight Loss</option>
-                    <option value="endurance">Endurance</option>
-                </select>
-            </div>
+                    <!-- Weight -->
+                    <div>
+                        <label for="weight" class="block mb-2 text-white">Weight (kg)</label>
+                        <input type="number" id="weight" name="weight" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
 
-            <div class="mb-4">
-                <label for="experienceLevel" class="block mb-2 text-white">Experience Level</label>
-                <select id="experienceLevel" name="experienceLevel" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                </select>
-            </div>
+                    <!-- Workout Frequency -->
+                    <div>
+                        <label for="workoutFrequency" class="block mb-2 text-white">Workout Frequency (days per week)</label>
+                        <input type="number" id="workoutFrequency" name="workoutFrequency" min="1" max="7" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
 
-            <div class="mb-4">
-                <label for="availableEquipment" class="block mb-2 text-white">Available Equipment</label>
-                <input type="text" id="availableEquipment" name="availableEquipment" placeholder="e.g., Dumbbells, Barbell" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-            </div>
+                <!-- Grid for Fitness Goal and Experience Level -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <!-- Fitness Goal -->
+                    <div>
+                        <label for="fitnessGoal" class="block mb-2 text-white">Fitness Goal</label>
+                        <select id="fitnessGoal" name="fitnessGoal" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="muscleGain">Muscle Gain</option>
+                            <option value="weightLoss">Weight Loss</option>
+                            <option value="endurance">Endurance</option>
+                        </select>
+                    </div>
 
-            <div class="mb-4">
-                <label for="workoutFrequency" class="block mb-2 text-white">Workout Frequency (days per week)</label>
-                <input type="number" id="workoutFrequency" name="workoutFrequency" min="1" max="7" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-            </div>
+                    <!-- Experience Level -->
+                    <div>
+                        <label for="experienceLevel" class="block mb-2 text-white">Experience Level</label>
+                        <select id="experienceLevel" name="experienceLevel" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class="mb-6">
-                <label for="injuriesLimitations" class="block mb-2 text-white">Injuries or Limitations</label>
-                <textarea id="injuriesLimitations" name="injuriesLimitations" rows="3" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Please describe any injuries or limitations"></textarea>
-            </div>
+                <!-- Available Equipment -->
+                <div class="mb-4">
+                    <label for="availableEquipment" class="block mb-2 text-white">Available Equipment</label>
+                    <input type="text" id="availableEquipment" name="availableEquipment" placeholder="e.g., Dumbbells, Barbell" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
 
-            <div class="text-center">
-                <button type="submit" class="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700">Submit</button>
-            </div>
-        </form>
+                <!-- Injuries or Limitations -->
+                <div class="mb-6">
+                    <label for="injuriesLimitations" class="block mb-2 text-white">Injuries or Limitations</label>
+                    <textarea id="injuriesLimitations" name="injuriesLimitations" rows="3" class="w-full px-3 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Please describe any injuries or limitations"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" class="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
 
 </body>
+
 </html>

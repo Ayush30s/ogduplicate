@@ -286,9 +286,9 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
         const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based, so add 1
         const day = currentDate.getDate().toString().padStart(2, '0');
         const daysInMonth = new Date(year, month, 0).getDate() + 1;
-        let days = Number(day) - Number(joinedDate);
-        daysLeftToMonth = daysInMonth - days;
-        daysLeftToMonth += (daysInMonth - daysLeftToMonth);
+        daysLeftToMonth = Number(daysInMonth) - day +  Number(daysInMonth) - (Number(daysInMonth) - Number(joinedDate));
+
+        console.log(daysLeftToMonth);
 
         // Determine if the user has joined any shift
         let shiftJoined = -1;
@@ -362,7 +362,7 @@ homeRoute.get("/:gymId/joingym", async (req, res) => {
             );
         }
 
-        return res.redirect(`/home/gym/${gymId}?success="Congratulations you have joined the gym successfully"`);
+        return res.redirect(`/home/gym/${gymId}?success=Congratulations you have joined the gym successfully`);
 
     } catch (error) {
         console.error("Error joining gym:", error);

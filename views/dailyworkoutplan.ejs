@@ -6,6 +6,17 @@
     <title>Personalized Workout Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        body {
+            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
+        }
         @keyframes fadeInUp {
             0% {
                 opacity: 0;
@@ -94,7 +105,7 @@
         </div>
 
         <!-- Workout Days List -->
-        <div class="card-container">
+        <div class="card-container flex sm:flex-col md:flex-row">
             <% workoutPlan.workoutDays.forEach(function(day, index) { %>
                 <a href="/home/workout-day/<%= index+1 %>" class="block">
                     <div class="card p-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-300">

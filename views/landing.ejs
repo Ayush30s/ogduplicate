@@ -3,13 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Slider</title>
+    <title>All Gyms</title>
     <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Swiper CSS CDN -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 
     <style>
+        /* Background Image Styling */
+        body {
+            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        /* Dark Overlay to Enhance Text Visibility */
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
+        }
+
         /* Responsive AI button and div */
         @media (max-width: 640px) {
             #aidiv {
@@ -22,11 +36,11 @@
         }
     </style>
 </head>
-<body class="bg-black text-white">
+<body class="text-white">
     <%- include("./Partials/nav.ejs") %>
 
-    <!-- Explore Gyms Section -->
-    <div class="bg-black text-white py-12">
+    <!-- Overlay div to darken the background image for better text readability -->
+    <div class="overlay py-12">
         <div class="container mx-auto text-center">
             <h1 class="text-5xl font-extrabold text-red-600 mb-4">Explore Gyms in Your Area</h1>
             <p class="text-lg text-gray-300 mx-5">Find the best gyms near you to kickstart your fitness journey. Explore their facilities, read reviews, and connect with trainers.</p>
@@ -38,7 +52,7 @@
         <button id="ai" class="border border-white p-2 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all">Ask AI</button>
     </div>
 
-    <div class="container mx-auto overflow-y-auto pb-10">
+    <div class="container mx-auto overflow-y-auto pb-10 overlay">
         <%- include("./Partials/alerts.ejs") %>
         <%- include("./Partials/success.ejs") %>
     
