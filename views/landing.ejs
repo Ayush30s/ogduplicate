@@ -24,6 +24,20 @@
             background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
         }
 
+        /* Ensure consistent card height */
+        .gym-card {
+            height: 100%;
+        }
+
+        /* Consistent card image height */
+        .gym-card img {
+            height: 200px; /* Fixed height for images */
+            width: 100%;
+            object-fit: contain; /* Ensure the entire image is visible */
+            padding: 5px; /* Add padding to prevent image from being tightly cropped */
+            border-radius: 10px; /* Optional: add slight border radius to the image */
+        }
+
         /* Responsive AI button and div */
         @media (max-width: 640px) {
             #aidiv {
@@ -59,23 +73,26 @@
         <% if (allgyms.length === 0) { %>
             <h1 class="text-center my-[10%] font-bold text-4xl text-white">NO GYMS TO EXPLORE</h1>
         <% } else { %>
-            <div class="flex flex-wrap items-center m-5">
+            <div class="flex flex-wrap items-center justify-center m-5">
                 <% allgyms?.forEach(gym => { %>
                     <!-- Each slide -->
-                    <div class="text-sm rounded-lg mx-4 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-1/5">
+                    <div class="gym-card bg-black text-sm rounded-lg mx-4 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-[25%] p-3">
 
-                            <div class="bg-black rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-                                <img src="<%= gym.profileImage %>" alt="<%= gym.gymname %>" class="object-cover w-full h-40 transition-opacity duration-500 hover:opacity-90">
+                            <div class="rounded-lg overflow-hidden transition-transform transform hover:scale-105">
+                                <img src="<%= gym.profileImage %>" alt="<%= gym.gymname %>" class="object-cover w-full">
                                 
                                 <div class="p-4">
-                                    <h2 class="text-2xl font-bold mb-2"><%= gym.gymname.toUpperCase() %></h2>
-                                    <p class="text-white mb-2"><%= gym.location %></p>
-                                    <p class="text-white mb-2">Owned by: <span class="text-white"><%= gym.fullname %></span></p>
-                                    <p class="text-white mb-2">Email: <span class="text-white"><%= gym.email %></span></p>
-                                    <p class="text-white mb-2">Rating: <span class="text-white"><%= gym.rating %></span> / 5</p>
-                                    <p class="text-sm text-white">Created on: <%= new Date(gym.createdAt).toLocaleDateString() %></p>
+                                    <h2 class="text-2xl font-extrabold text-red-600 mb-2"><%= gym.gymname.toUpperCase() %></h2>
+                                    <p class="text-gray-400 text-sm mb-2"><%= gym.location %></p>
+
+                                    <!-- Emphasized Owner and Rating -->
+                                    <p class="text-lg font-bold text-white mb-2">Owner: <span class="text-red-600"><%= gym.fullname %></span></p>
+                                    <p class="text-lg font-bold text-white mb-2">Rating: <span class="text-red-600"><%= gym.rate > 0 ? gym.rate.toFixed(1) : 0 %></span> / 5</p>
+
+                                    <p class="text-sm text-gray-400">Created on: <%= new Date(gym.createdAt).toLocaleDateString() %></p>
+                                    
                                     <div class="mt-4">
-                                        <a href="/home/gym/<%= gym._id %>" class="block w-full font-semibold text-center py-2 rounded-lg hover:text-white transition-all">
+                                        <a href="/home/gym/<%= gym._id %>" class="block w-full font-semibold text-center py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all">
                                             View More
                                         </a>
                                     </div>
@@ -86,7 +103,7 @@
             </div>
         <% } %>
     </div>
-    
+
     <!-- AI Message Script -->
     <script src="/socket.io/socket.io.js"></script>
     <script>

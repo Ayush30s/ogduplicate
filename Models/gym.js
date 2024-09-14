@@ -32,8 +32,7 @@ const gymSchema = new mongoose.Schema({
         required: true,
     },
     rating: {
-        type: Number,
-        default: 0,
+        type: Array
     },
     profileImage: {
         type: String,

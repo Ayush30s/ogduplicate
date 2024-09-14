@@ -203,6 +203,18 @@ homeRoute.get("/", async (req, res) => {
             //if you are user show all the gyms you have not joined
             gymNotJoined = [];
             allGyms.forEach((gym) => {
+
+                //rating logic
+                let rate = 0;
+                for(let i = 0; i < gym.rating.length; i++) {
+                    rate += gym.rating[i]
+                }
+
+                console.log(rate)
+
+                rate = gym.rating.length > 0 ? Number(rate) / gym.rating.length : 0;
+                gym["rate"] = rate;
+
                 // Check if the user is in the joinedby array
                 let hasJoined;
                 if(gym.joinedby.length > 0) {
@@ -1000,6 +1012,31 @@ homeRoute.post("/profile/shiftdetail/update/:shiftId", async(req,res) => {
     )
     console.log(newshiftData);
 })
+
+homeRoute.post('/rating/:gymId', async (req, res) => {
+    const { gymId } = req.params;
+    const { rating } = req.body;
+
+    console.log(rating)
+
+    try {
+        // Find the gym by its ID and update the rating
+        const gym = await gymModel.findById(gymId);
+        if (gym) {
+            // Update the gym's rating (you may need to implement your own rating logic)
+            gym.rating.push(parseInt(rating, 10));
+            await gym.save();
+
+            // Redirect to the gym's page or show success
+            res.redirect(`/home/gym/${gymId}`);
+        } else {
+            res.status(404).send('Gym not found');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 module.exports = {
     homeRoute

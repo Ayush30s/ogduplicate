@@ -4,7 +4,7 @@
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <style>
     body {
@@ -13,49 +13,143 @@
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
+        font-family: 'Roboto', sans-serif;
     }
 
     .overlay {
         background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
     }
+
+    .text-shadow {
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .hover-scale {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        background-color: rgba(0, 0, 0, 0.85);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0px 25px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .rating-stars {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.6rem;
+        transition: all 0.3s ease;
+    }
+
+    .rating-stars button {
+        font-size: 2rem;
+        color: gray;
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .rating-stars button:hover,
+    .rating-stars button:hover ~ button {
+        transform: scale(1.2);
+        color: gold;
+    }
+
+    .active-star {
+        color: gold;
+        transform: scale(1.2);
+    }
+
+    #submitRating {
+        background-color: #FF5733;
+        color: white;
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    #submitRating:hover {
+        background-color: white;
+        color: #FF5733;
+        box-shadow: 0 0 15px rgba(255, 87, 51, 0.7);
+    }
+
+    /* Make elements responsive */
+    @media (max-width: 768px) {
+        .card {
+            padding: 15px;
+        }
+
+        .text-shadow {
+            font-size: 1.25rem; /* Smaller fonts for smaller screens */
+        }
+
+        .rating-stars button {
+            font-size: 1.5rem; /* Smaller stars on smaller screens */
+        }
+
+        #submitRating {
+            padding: 8px 20px; /* Adjust button padding */
+        }
+    }
 </style>
+
 <body class="min-h-screen flex flex-col bg-black text-white font-sans">
 
     <!-- Navigation Bar -->
     <%- include("./Partials/nav.ejs") %>
-
     <%- include("./Partials/success.ejs") %>
     <%- include("./Partials/alerts.ejs") %>
 
     <!-- Main Content -->
-    <div class="flex-grow flex items-center justify-center sm:px-8 sm:py-12 overflow-hidden">
+    <div class="flex-grow flex items-center justify-center px-6 py-10 overflow-hidden animate-fadeIn">
 
         <!-- Gym Information Container -->
-        <div class="bg-black sm:p-8 shadow-lg w-full max-w-6xl rounded-lg transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/70 animate-fadeIn flex flex-col sm:space-y-8">
+        <div class="card w-full max-w-6xl p-6 md:p-12 flex flex-col sm:space-y-8 hover-scale space-y-12"> <!-- Added space-y-12 for spacing -->
 
             <!-- Gym Name -->
-            <h2 class="text-3xl mb-5 sm:text-4xl font-extrabold text-red-600 tracking-wide uppercase text-center py-5">
+            <h2 class="text-4xl md:text-5xl font-bold text-red-600 tracking-wide uppercase text-center text-shadow py-5">
                 <%= gymData.gymname %>
             </h2>
 
             <!-- Main Content Section -->
-            <div class="flex flex-col my-2  p-6 md:justify-center items-center md:space-y-0 md:space-x-6 w-full">
-
+            <div class="flex flex-col md:flex-row justify-center items-center md:space-x-6 w-full space-y-8 md:space-y-0"> <!-- Added space-y-8 for vertical spacing on mobile -->
                 <!-- Left Section: Gym Image and Join Button -->
-                <div class="flex flex-col space-y-4 w-full md:w-1/3 items-center mb-6">
-                    <!-- Gym Image -->
+                <div class="flex flex-col items-center space-y-6 w-full md:w-1/3">
                     <div class="relative w-full">
-                        <img src="<%= gymData.profileImage %>" alt="<%= gymData.gymname %>" class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-lg transition-transform duration-300 hover:scale-110 border-4 border-red-600">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-70 rounded-lg"></div>
+                        <img src="<%= gymData.profileImage %>" alt="<%= gymData.gymname %>" class="w-full h-auto sm:h-64 object-cover rounded-lg shadow-lg hover-scale border-4 border-red-600">
                     </div>
-
-                    <!-- Join Button -->
                     <% if (locals?.flag) { %>
-                        <a href="/home/<%= gymData._id %>/leavegym" class="bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-all duration-300 transform hover:scale-110 hover:shadow-red-600/50 border-2 border-black w-full sm:w-[50%] text-center">
+                        <a href="/home/<%= gymData._id %>/leavegym" class="bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-transform hover-scale mt-4"> <!-- Added mt-4 for margin-top -->
                             Leave
                         </a>
-                        <% } else { %>
-                        <a id="join" href="/home/<%= gymData._id %>/joingym" class="bg-red-600 text-white uppercase px-4 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-all duration-300 transform hover:scale-110 hover:shadow-red-600/50 border-2 border-black w-full sm:w-[50%] text-center">
+                    <% } else { %>
+                        <a href="/home/<%= gymData._id %>/joingym" class="bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-transform hover-scale mt-4"> <!-- Added mt-4 for margin-top -->
                             Join
                         </a>
                     <% } %>
@@ -63,140 +157,89 @@
 
                 <!-- Right Section: Gym Details and Description -->
                 <div class="flex flex-col w-full md:w-2/3 space-y-6">
-
-                    <div class="flex flex-row justify-between">
-                        <span class="text-lg font-medium text-white text-center shadow-inner shadow-lg shadow-red-500 px-2 py-3 mr-2 rounded-lg inline w-full sm:w-[20%] lg:w-[20%] ">Members : <%= locals.gymData.joinedby.length %></span>
+                    <div class="flex justify-between">
+                        <span class="text-lg font-medium text-white shadow-inner shadow-red-500 px-4 py-3 rounded-lg inline-block">
+                            Members: <%= locals.gymData.joinedby.length %>
+                        </span>
                         <% if (locals.flag) { %>
-                            <span class="text-lg font-medium text-white text-center shadow-inner shadow-lg shadow-red-500 px-2 py-3 ml-2 rounded-lg inline w-full sm:w-[60%] lg:w-[30%] ">Days left to Month: <%= locals.daysLeftToMonth || 0 %></span>
+                            <span class="font-medium text-white shadow-inner shadow-red-500 px-4 py-3 rounded-lg inline-block">
+                                Days left to Month: <%= locals.daysLeftToMonth || 0 %>
+                            </span>
                         <% } %>
                     </div>
 
-                    <!-- Owner, Location, Contact Number, and Email -->
-                    <div class="bg-black p-4 sm:p-6 rounded-lg shadow-inner shadow-lg shadow-red-500 overflow-y-auto max-h-56 sm:max-h-64 md:max-h-80">
-                        <div class="flex flex-col w-full md:w-1/2 text-left">
-                            <p class="text-lg font-semibold text-gray-400">Owned by: <span class="text-white"><%= gymData.fullname %></span></p>
-                            <p class="text-lg font-semibold text-gray-400">Location: <span class="text-white"><%= gymData.location %></span></p>
-                        </div>
-
-                        <!-- Email and Contact Number -->
-                        <div class="flex flex-col w-full md:w-1/2 text-left">
-                            <p class="text-lg font-semibold text-gray-400">Contact Number: <span class="text-white"><%= gymData.contactnumber %></span></p>
-                            <p class="text-lg font-semibold text-gray-400">Email: <span class="text-white"><%= gymData.email %></span></p>
-                        </div>
+                    <!-- Owner and Location -->
+                    <div class="bg-gray-900 p-6 rounded-lg shadow-inner shadow-lg space-y-2"> <!-- Added space-y-4 for spacing -->
+                        <p class="text-gray-400">Owned by: <span class="text-white"><%= gymData.fullname %></span></p>
+                        <p class="text-gray-400">Location: <span class="text-white"><%= gymData.location %></span></p>
+                        <p class="text-gray-400">Contact Number: <span class="text-white"><%= gymData.contactnumber %></span></p>
+                        <p class="text-gray-400">Email: <span class="text-white"><%= gymData.email %></span></p>
                     </div>
 
                     <!-- Description -->
-                    <div class="bg-black p-4 sm:p-6 rounded-lg shadow-inner shadow-lg shadow-red-500 overflow-y-auto max-h-56 sm:max-h-64 md:max-h-80">
-                        <p class="text-gray-300 text-justify leading-relaxed"><%= gymData.description %></p>
+                    <div class="bg-gray-900 p-6 rounded-lg shadow-inner shadow-lg max-h-48 overflow-y-auto mt-6"> <!-- Added mt-6 for margin-top -->
+                        <p class="text-gray-300 leading-relaxed"><strong>Description</strong> : <%= gymData.description %></p>
                     </div>
-
-                    <!-- Gym Member Avatars -->
-                    <div class="flex items-center overflow-x-auto justify-start space-x-2 p-10 flex-wrap">
-                        <% locals.gymData.joinedby.forEach(function(user, index) { %>
-                            <a href="/home/profile/<%= user.user?._id %>" class="relative group">
-                                <img src="<%= user.user?.profileImage %>" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow-lg shadow-red-500 z-10 hover:z-20 transition-transform duration-300 transform hover:scale-110">
-                                <!-- Tooltip -->
-                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
-                                    <%= user.user?.fullname %>
-                                </div>
-                            </a>
-                        <% }); %>
-                    </div>                                             
                 </div>
             </div>
 
-            <% if (locals.flag === true) { %>
-                <%- include("./Partials/alerts.ejs") %>
-
-                <!-- Shifts Section -->
-                <div class="w-full mt-6">
-                    <% if (gymData.shifts.length > 0) { %>
-                        <h3 class="text-2xl sm:text-3xl font-bold text-red-600 uppercase mb-4 text-center">Shifts</h3>
-                        <div class="flex flex-col md:flex-row justify-center items-center">
-                            <% gymData.shifts.forEach(function(shift, index) { %>
-                                <% if (shift.limit >= shift.joinedby.length && shift.sex.toUpperCase() == user.gender.toUpperCase()) { %>
-                                    <div class="relative p-4 m-4 shadow-lg w-[90%] shadow-red-500 rounded-lg shadow-lg hover:shadow-white animate-fadeInUp <%= shiftJoined && (shiftJoined == index + 1 ? 'bg-purple-900' : '') %>">
-                                        <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
-                                        <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
-                                        <p class="text-sm text-gray-400 mb-2">Gender: <span class="text-white"><%= shift.sex %></span></p>
-                                        <p class="text-sm text-gray-400 mb-2">Limit: <span class="text-white"><%= shift.limit %></span></p>
-                                        <a href="/home/gym/<%= gymData._id %>/join-shift/<%= shift._id %>">
-                                            <button class="absolute top-24 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase transform transition-transform hover:scale-105">Join</button>
-                                        </a>
-                                    </div>
-                                <% } %>
-                            <% }); %>
-                        </div>
-                    <% } else { %>
-                        <h3  class="text-2xl sm:text-3xl font-bold text-red-600 uppercase mb-4 text-center">No Shifts to join</h3>
-                    <% } %>
-                    
+            <!-- Rating Form -->
+            <% if (locals.flag) { %>
+                <div class="text-center bg-gray-900 py-6 rounded-lg shadow-lg"> <!-- Added mt-10 for margin-top -->
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">Rate this Gym:</h3>
+                    <div id="stars" class="rating-stars mt-2 mb-5"></div>
+                    <form id="ratingForm" action="/home/rating/<%= gymData._id %>" method="POST">
+                        <input type="hidden" name="rating" id="ratingInput" value="0">
+                        <button type="submit" id="submitRating">Submit Rating</button>
+                    </form>
                 </div>
-            <% } else { %>
-                <h1 class="text-center mb-5">To join any shift first join the Gym</h1>
-            <% } %>            
+            <% } %>
         </div>
     </div>
 
-    <!-- Smooth Scroll Script -->
+    <!-- JavaScript for Star Rating -->
     <script>
-        document.documentElement.style.scrollBehavior = "smooth";
-    </script>
-    <script src="/socket.io/socket.io.js"></script>
-
-    <script>
-        const socket = io();
-
-        // Handle button click to join gym
-        document.getElementById("join").addEventListener("click", (event) => {
-            socket.emit("joingym")
+        document.addEventListener("DOMContentLoaded", function() {
+            const ratingDiv = document.getElementById("stars");
+            const ratingInput = document.getElementById("ratingInput");
+            let rating = 0; // Initialize rating
+    
+            // Create stars dynamically
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('button');
+                star.innerText = '⭐';
+                star.className = 'text-gray-400 text-xl'; // Initially unfilled star
+                star.dataset.value = i + 1;
+                star.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent form submission when selecting stars
+                    rating = star.dataset.value;
+                    updateStars();
+                    updateRatingInput(); // Update the hidden input value
+                });
+                ratingDiv.appendChild(star);
+            }
+    
+            // Update stars based on the current rating
+            function updateStars() {
+                const stars = ratingDiv.querySelectorAll('button');
+                stars.forEach(star => {
+                    if (star.dataset.value <= rating) {
+                        star.innerText = '🌟'; // Change to filled star
+                        star.classList.add('text-yellow-600');
+                        star.classList.remove('text-gray-400');
+                    } else {
+                        star.innerText = '⭐'; // Change to unfilled star
+                        star.classList.add('text-gray-400');
+                        star.classList.remove('text-yellow-600');
+                    }
+                });
+            }
+    
+            // Update the hidden input value
+            function updateRatingInput() {
+                ratingInput.value = rating; // Update the hidden form input with the rating
+            }
         });
-
-        // Listen for confirmation from the server
-        socket.on("joinConfirmation", (data) => {
-            console.log("Server Confirmation:", data);
-            alert(data);  // Display the confirmation to the user
-        });
-    </script>
-
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .animate-fadeIn {
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 40px rgba(255, 0, 0, 0.8), 0 0 50px rgba(255, 0, 0, 0.6); }
-        }
-        .animate-textGlow {
-            animation: textGlow 2s ease-in-out infinite;
-        }
-
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            .max-h-56 {
-                max-height: 56vh;
-            }
-            .max-h-64 {
-                max-height: 64vh;
-            }
-            .max-h-80 {
-                max-height: 80vh;
-            }
-        }
-    </style>
-    <script>
-        
     </script>
 </body>
 </html>

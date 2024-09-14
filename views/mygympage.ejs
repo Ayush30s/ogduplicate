@@ -17,7 +17,7 @@
         .overlay {
             background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
         }
-        
+
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
 
         body {
@@ -174,7 +174,7 @@
                 </button>
                 <div id="shiftsAccordionContent" class="hidden mt-4 flex flex-col items-center space-y-6 w-full max-w-6xl">
                     <!-- Visible on smaller devices -->
-                    <a href="/app/edit-gym/<%= gymData._id %>" class=" bg-black text-white uppercase px-2 text-center w-1/4 py-1 shadow-sm hover:bg-black hover:text-red-600 shadow-red-600/50 border-2 border-black mt-6 block text-center">
+                    <a href="/app/edit-gym/<%= gymData._id %>" class=" rounded-lg backdrop-blur-2xl text-white uppercase px-2 text-center w-1/4 py-1 shadow-sm hover:text-red-600 shadow-white  mt-6 block text-center">
                         Add Shift
                     </a>
                     
@@ -182,7 +182,7 @@
                         <% if (gymData.shifts.length > 0) { %>
                             <% gymData.shifts.forEach(function(shift, index) { %>
                                 <a href="/home/profile/shiftdetail/<%= gymData._id %>/<%= shift._id %>">
-                                    <div class="relative p-4 rounded-lg shadow-sm shadow-red-600/50 m-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
+                                    <div class="relative backdrop-blur-2xl p-4 rounded-lg shadow-sm shadow-red-600/50 m-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
                                         <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
                                         <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
                                         <p class="text-sm text-gray-400 mb-2">Gender: <span class="text-white"><%= shift.sex %></span></p>
@@ -230,7 +230,7 @@
                         %>
                             <div class="w-full flex flex-wrap sm:flex-nowrap justify-between items-center p-3 shadow-sm hover:shadow-lg rounded-lg transition-shadow duration-300 bg-white">
                                 <a href="/home/profile/<%= user.user._id %>" class="flex-shrink-0 mx-4 rounded-full">
-                                    <img src="<%= user.user.profileImage %>" alt="Member" class="w-14 h-14 rounded-full border-2 border-red-600 shadow-[inset_0_4px_6px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_4px_6px_rgba(255,255,255,0.8)] transition-shadow duration-300">
+                                    <img src="<%= user.user.profileImage %>" alt="Member" class="w-14 h-14 rounded-full border-2 border-red-600 hover:p-1 transition-shadow duration-500">
                                 </a> 
                                 <div class="flex-grow mx-4 text-lg font-semibold text-gray-800">
                                     <%= user.user.fullname %>
