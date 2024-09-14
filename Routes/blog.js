@@ -291,6 +291,21 @@ blogRouter.post("/save/:blogId", async (req, res) => {
     return res.redirect(`/blog/${blogId}`); // Redirect to the blog page or wherever you want
 });
 
+blogRouter.get("/saveblogs" , async(req,res) => {
+    try {
+        let userDoc;
+    
+        if(req.user) {
+            userDoc = await userModel.findById(req.user._id).populate('Savedblogs').exec();
+        }
+
+        conosole.log(userDoc)
+
+        return res.send("done");
+    } catch (error) {
+        return res.status(500).send('Internal Server Error');
+    }
+})
 
 module.exports = {
     blogRouter
