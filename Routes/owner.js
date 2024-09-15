@@ -260,8 +260,16 @@ const uploadToCloudinary = (fileBuffer) => {
 // Register as a gym owner
 ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
     try {
-        const { fullname, email, password, location, rating, gymname, description, gender, contactnumber } = req.body;
-
+        // Extract fields from req.body and convert them to lowercase
+        const fullname = req.body.fullname;
+        const email = req.body.email.toLowerCase();
+        const password = req.body.password.toLowerCase();
+        const location = req.body.location.toLowerCase();
+        const gymname = req.body.gymname.toLowerCase();
+        const description = req.body.description.toLowerCase();
+        const gender = req.body.gender.toLowerCase();
+        const contactnumber = req.body.contactnumber.toLowerCase();
+        
         // Ensure all fields are filled
         if (!fullname || !email || !password || !location || !gymname || !description || !gender || !contactnumber) {
             return res.status(400).send("All fields are required");
@@ -291,7 +299,7 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
             email,
             password,
             location,
-            rating,
+            rating: req.body.rating, // Assuming rating is a number or could have special validation
             gymname,
             description,
             gender,
@@ -309,7 +317,12 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
 // Register as a user
 ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
     try {
-        const { fullname, email, password, gender, contactnumber } = req.body;
+        // Extract fields from req.body and convert them to lowercase
+        const fullname = req.body.fullname;
+        const email = req.body.email.toLowerCase();
+        const password = req.body.password.toLowerCase();
+        const gender = req.body.gender.toLowerCase();
+        const contactnumber = req.body.contactnumber.toLowerCase();
 
         // Ensure all fields are filled
         if (!fullname || !email || !password || !gender || !contactnumber) {
@@ -328,9 +341,13 @@ ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
             }
         }
 
+        // Debugging: Log the email to see what is being checked
+        console.log("Checking if the email exists in gymModel:", email);
+
         // Check if the email is already registered in the gym model
         const checkEmailInGymModel = await gymModel.findOne({ email: email });
         if (checkEmailInGymModel) {
+            console.log("Email is already registered:", email);
             return res.render("frontpage", { msg: "This Email is already registered." });
         }
 
@@ -344,11 +361,16 @@ ownerRoute.post("/user", upload.single("profileImage"), async (req, res) => {
             profileImage: cloudImageURL // Save the Cloudinary URL
         });
 
+        // Redirect to sign-in form upon successful registration
         return res.redirect("/app/signin-form");
+
     } catch (error) {
-        return res.render("frontpage", { msg: "This Email is already registered." });
+        // Log the actual error message to debug what's happening
+        console.error("Error during registration process:", error);
+        return res.status(500).render("frontpage", { msg: "An error occurred during registration." });
     }
 });
+
 
 // Sign in route
 ownerRoute.post("/signin", async (req, res) => {
