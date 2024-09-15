@@ -7,14 +7,14 @@
     <title>Workout Plan</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.2.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Simple Background */
+        /* Dark Background */
         body {
-            background-color: #f9fafb; /* Light grey background */
+            background-color: #111827; /* Dark grey background */
             display: flex;
             justify-content: center;
             padding: 20px;
             margin: 0;
-            font-family: sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         /* Container */
@@ -23,47 +23,59 @@
             width: 100%;
         }
 
-        /* Simple Card Styling */
+        /* Card Styling with Black, White, and Red Theme */
         .card {
-            background-color: #ffffff; /* White card */
-            border: 1px solid #e5e7eb; /* Light border */
+            background-color: #1f2937; /* Dark background for cards */
+            border: 1px solid #ef4444; /* Red border */
             border-radius: 0.5rem;
-            padding: 1rem;
+            padding: 1.5rem;
             margin-bottom: 1rem;
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s;
             text-decoration: none; /* Remove underline */
-            color: #111827; /* Default text color */
+            color: #f9fafb; /* White text */
         }
 
         .card:hover {
             transform: translateY(-5px); /* Slight lift on hover */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4); /* Red shadow on hover */
         }
 
         /* Typography */
         h1 {
-            color: #111827; /* Darker heading */
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
+            color: #f9fafb; /* White heading */
+            font-size: 2rem;
+            margin-bottom: 2rem;
             text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         h2 {
-            color: #111827; /* Darker subheading */
-            font-size: 1.25rem;
+            color: #ef4444; /* Red subheading */
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
 
         p {
-            color: #374151; /* Dark grey text */
+            color: #d1d5db; /* Light grey text */
             margin-bottom: 0.25rem;
         }
 
-        /* Responsive Layout */
+        /* Responsive Grid Layout */
         .grid {
             display: grid;
-            gap: 1rem;
+            gap: 1.5rem;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        /* Card hover effect */
+        .card:hover h2 {
+            color: #ffffff; /* Turn subheading white on hover */
+        }
+
+        /* Card hover effect for text */
+        .card:hover p {
+            color: #f3f4f6; /* Slightly lighter text on hover */
         }
     </style>
 </head>

@@ -3,6 +3,7 @@ const gymModel = require("../Models/gym");
 const userModel = require("../Models/user");
 const ShiftModel = require("../Models/shift");
 const followModel = require("../Models/follow");
+const ratingModel = require("../Models/rating")
 
 const homeRoute = Router();
 
