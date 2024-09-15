@@ -32,8 +32,14 @@ const gymSchema = new mongoose.Schema({
         required: true,
     },
     rating: {
-        type: Array
+        type: Number,
+        default: 0, // For average rating
     },
+    ratedby: [{
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "userModel" },
+        rating: { type: Number, required: true, default: 0 },
+        ratedAt: { type: Date, default: Date.now }
+    }],
     profileImage: {
         type: String,
         default: "/images/gym.jpg",

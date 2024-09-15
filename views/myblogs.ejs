@@ -12,24 +12,23 @@
             }
 
             @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1); }
-        }
+                0%, 100% { opacity: 0; transform: scale(0.95); }
+                50% { opacity: 1; transform: scale(1); }
+            }
 
-        @keyframes moveBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+            @keyframes moveBackground {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
 
-        .animate-fade {
-            animation: fadeInOut 2s ease-in-out infinite;
-        }
+            .animate-fade {
+                animation: fadeInOut 2s ease-in-out infinite;
+            }
 
-        .animate-bg {
-            animation: moveBackground 10s ease-in-out infinite;
-        }
-
+            .animate-bg {
+                animation: moveBackground 10s ease-in-out infinite;
+            }
         </style>
     </head>
     <body>
@@ -38,13 +37,16 @@
         <div class="mt-4 flex flex-wrap">
             <% if (blogs.length > 0) { %>
                 <% blogs?.forEach(blog => { %>
-                    <div class="max-w-sm mx-auto bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-1 transition duration-300 ease-in-out cursor-pointer m-3">
+                    <div class="max-w-sm mx-auto bg-white rounded-lg shadow-lg  overflow-hidden hover:shadow-2xl transform hover:scale-1 transition duration-300 ease-in-out cursor-pointer m-3">
                         <img class="w-full h-48 object-cover" src="<%= blog?.coverImage %>" alt="Blog Image">
                         <div class="p-6">
                             <h2 class="text-2xl font-semibold text-gray-800 hover:text-gray-600 transition duration-300"><%= blog?.title %></h2>
-                            <p class="text-gray-600 mt-4 text-sm">
-                                <%= blog?.content.slice(0, 100) %>...
-                            </p>
+                            <!-- Add a data attribute for the blog content -->
+                            <p id="myblog-<%= blog._id %>" class="text-gray-600 mt-4 text-sm"></p>
+                            <script>
+                                // Set the blog content dynamically for each blog item
+                                document.getElementById("myblog-<%= blog._id %>").innerHTML = `<%- blog?.content.slice(0, 200) %>`;
+                            </script>
                         
                             <div class="mt-4 flex justify-between items-center">
                                 <a href="/blog/<%= blog?._id %>" class="bg-gray-100 font-semibold rounded-xl px-3 py-1 text-red-500 hover:text-blue-500 transition duration-300">View</a>

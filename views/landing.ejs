@@ -87,7 +87,7 @@
 
                                     <!-- Emphasized Owner and Rating -->
                                     <p class="text-lg font-bold text-white mb-2">Owner: <span class="text-red-600"><%= gym.fullname %></span></p>
-                                    <p class="text-lg font-bold text-white mb-2">Rating: <span class="text-red-600"><%= gym.rate > 0 ? gym.rate.toFixed(1) : 0 %></span> / 5</p>
+                                    <p class="text-lg font-bold text-white mb-2">Rating: <span class="text-red-600"><%= gym.rating > 0 ? gym.rating.toFixed(1) : 0 %></span> / 5</p>
 
                                     <p class="text-sm text-gray-400">Created on: <%= new Date(gym.createdAt).toLocaleDateString() %></p>
                                     

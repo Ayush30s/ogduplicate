@@ -3,7 +3,6 @@ const gymModel = require("../Models/gym");
 const userModel = require("../Models/user");
 const ShiftModel = require("../Models/shift");
 const followModel = require("../Models/follow");
-const ratingModel = require("../Models/rating")
 
 const homeRoute = Router();
 
@@ -204,18 +203,6 @@ homeRoute.get("/", async (req, res) => {
             //if you are user show all the gyms you have not joined
             gymNotJoined = [];
             allGyms.forEach((gym) => {
-
-                //rating logic
-                let rate = 0;
-                for(let i = 0; i < gym.rating.length; i++) {
-                    rate += gym.rating[i]
-                }
-
-                console.log(rate)
-
-                rate = gym.rating.length > 0 ? Number(rate) / gym.rating.length : 0;
-                gym["rate"] = rate;
-
                 // Check if the user is in the joinedby array
                 let hasJoined;
                 if(gym.joinedby.length > 0) {
@@ -283,6 +270,15 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
             return res.status(404).send("Gym not found");
         }
 
+        let ratingdone = false;
+        gymData.ratedby.forEach((rate) => {
+            if(rate.user.toString() == userId) {
+                ratingdone = true;
+            }
+        })
+
+        console.log(ratingdone);
+
         // Check if the user is in the joinedby list
         let isUserJoined;
         let joinedDate;
@@ -300,8 +296,6 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
         const day = currentDate.getDate().toString().padStart(2, '0');
         const daysInMonth = new Date(year, month, 0).getDate() + 1;
         daysLeftToMonth = Number(daysInMonth) - day +  Number(daysInMonth) - (Number(daysInMonth) - Number(joinedDate));
-
-        console.log(daysLeftToMonth);
 
         // Determine if the user has joined any shift
         let shiftJoined = -1;
@@ -322,7 +316,8 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
             shiftJoined: shiftJoined + 1,
             daysLeftToMonth: daysLeftToMonth,
             success: success,
-            msg: req.query.msg
+            msg: req.query.msg,
+            ratingdone: ratingdone
         });
     } catch (error) {
         console.error("Error fetching gym data:", error);
@@ -1017,25 +1012,44 @@ homeRoute.post("/profile/shiftdetail/update/:shiftId", async(req,res) => {
 homeRoute.post('/rating/:gymId', async (req, res) => {
     const { gymId } = req.params;
     const { rating } = req.body;
+    const userId = req.user._id;
 
-    console.log(rating)
+    console.log(" ratingg", rating);
+    const gym = await gymModel.findById(gymId);
+    console.log(gym);
 
-    try {
-        // Find the gym by its ID and update the rating
-        const gym = await gymModel.findById(gymId);
-        if (gym) {
-            // Update the gym's rating (you may need to implement your own rating logic)
-            gym.rating.push(parseInt(rating, 10));
-            await gym.save();
+    if (gym) {
 
-            // Redirect to the gym's page or show success
-            res.redirect(`/home/gym/${gymId}`);
-        } else {
-            res.status(404).send('Gym not found');
+        let present = false;
+        gym.ratedby.forEach((rate) => {
+            if(rate.user.toString() == userId) {
+                present = true;
+            }
+        })
+
+        if(present) {
+            return res.redirect(`/home/gym/${gymId}`);
         }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+
+        // Add the new rating to the `ratedby` array
+        gym.ratedby.push({ user: userId, rating: rating });
+
+        // Recalculate average rating
+        const totalRatings = gym.ratedby.length;
+        const totalScore = gym.ratedby.reduce((sum, r) => sum + r.rating, 0);
+        const averageRating = totalScore / totalRatings;
+
+        console.log(averageRating)
+
+        // Update the gym's average rating
+        gym.rating = averageRating;
+
+        // Save the changes
+        await gym.save();
+
+        return res.redirect(`/home/gym/${gymId}`);
+    } else {
+        return res.send("Gym not Found!");
     }
 });
 
