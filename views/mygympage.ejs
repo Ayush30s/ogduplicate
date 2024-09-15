@@ -129,43 +129,55 @@
         <div class="w-full flex-grow flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12 shadow-sm shadow-white overflow-hidden">
 
             <!-- Gym Information Container -->
-            <div class="relative bg-black p-4 sm:p-8 mb-6 shadow-sm shadow-white w-full max-w-6xl rounded-lg transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/70 animate-fadeIn flex flex-col sm:flex-row">
+            <div class="relative bg-gray-900 p-6 sm:p-10 mb-8 shadow-lg shadow-red-600/50 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/80 animate-fadeIn flex flex-col sm:flex-row gap-6">
 
                 <!-- Left Section: Gym Image -->
-                <div class="flex flex-col w-full sm:w-1/3 items-center mb-4 sm:mb-0 lg:mx-5">
-                    <div class="relative w-full">
-                        <img src="<%= gymData.profileImage %>" alt="gym img" class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-sm transition-transform duration-500 hover:scale-110 border-4 border-red-600 sm:border-0">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-70 rounded-lg"></div>
-                    </div>
+                <div class="w-full sm:w-1/3 relative">
+                    <img src="<%= gymData.profileImage %>" alt="gym img" class="w-full h-56 sm:h-72 object-cover rounded-lg shadow-lg transition-transform duration-500 hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-70 rounded-lg"></div>
                 </div>
-
+            
                 <!-- Right Section: Gym Details -->
-                <div class="flex flex-col w-full sm:w-2/3 space-y-4 sm:space-y-6 pr-4">
-
+                <div class="flex flex-col w-full sm:w-2/3 space-y-6">
+            
                     <!-- Gym Name -->
-                    <h2 class="text-3xl font-extrabold text-red-600 mb-4 tracking-wide uppercase text-center"><%= gymData.gymname %></h2>
-
+                    <h2 class="text-4xl font-bold text-red-500 tracking-widest uppercase text-center sm:text-left">
+                        <%= gymData.gymname %>
+                    </h2>
+            
                     <!-- Owner and Location -->
-                    <div class="flex flex-col sm:flex-row sm:space-x-6 space-y-4 lg:mx-6 sm:space-y-0">
-                        <div class="flex flex-col w-full sm:w-1/2 text-left">
-                            <p class="text-lg font-semibold sm:text-sm text-gray-400">Owned by: <span class="text-white"><%= gymData.fullname %></span></p>
-                            <p class="text-lg font-semibold sm:text-sm text-gray-400">Location: <span class="text-white"><%= gymData.location %></span></p>
+                    <div class="flex flex-col sm:flex-row sm:space-x-10 space-y-4 sm:space-y-0 text-gray-400">
+                        <div class="flex flex-col w-full sm:w-1/2">
+                            <p class="text-base sm:text-lg font-semibold">
+                                <span class="text-white">Owned by: </span><%= gymData.fullname %>
+                            </p>
+                            <p class="text-base sm:text-lg font-semibold">
+                                <span class="text-white">Location: </span><%= gymData.location %>
+                            </p>
                         </div>
-
+            
                         <!-- Email and Contact Number -->
-                        <div class="flex flex-col w-full sm:w-1/2 text-left">
-                            <p class="text-lg font-semibold sm:text-sm  text-gray-400">Contact Number: <span class="text-white"><%= gymData.contactnumber %></span></p>
-                            <p class="text-lg font-semibold sm:text-sm  text-gray-400">Email: <span class="text-white"><%= gymData.email %></span></p>
+                        <div class="flex flex-col w-full sm:w-1/2">
+                            <p class="text-base sm:text-lg font-semibold">
+                                <span class="text-white">Contact Number: </span><%= gymData.contactnumber %>
+                            </p>
+                            <p class="text-base sm:text-lg font-semibold">
+                                <span class="text-white">Email: </span><%= gymData.email %>
+                            </p>
                         </div>
                     </div>
-
+            
                     <!-- Description -->
-                    <div class="bg-black py-4 sm:p-6 rounded-lg shadow-inner max-h-48 sm:max-h-56 md:max-h-64">
-                        <span class="font-bold sm:text-sm text-lg">Description : </span>
-                        <p class="text-gray-300  sm:text-sm  text-justify pb-5 overflow-x-auto leading-relaxed"><%= gymData.description %></p>
+                    <div class="bg-gray-800 p-6 rounded-lg shadow-inner max-h-56 overflow-auto">
+                        <h3 class="text-lg sm:text-xl font-bold text-red-500 mb-2">Description</h3>
+                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed text-justify">
+                            <%= gymData.description %>
+                        </p>
                     </div>
+            
                 </div>
             </div>
+            
 
             <!-- Shifts Accordion -->
             <div class="mt-10 w-full flex flex-col items-center">
@@ -178,11 +190,11 @@
                         Add Shift
                     </a>
                     
-                    <div class="flex flex-row flex-wrap overflow-auto">
+                    <div class="flex flex-row justify-center items-center flex-wrap overflow-auto">
                         <% if (gymData.shifts.length > 0) { %>
                             <% gymData.shifts.forEach(function(shift, index) { %>
                                 <a href="/home/profile/shiftdetail/<%= gymData._id %>/<%= shift._id %>">
-                                    <div class="relative backdrop-blur-2xl p-4 rounded-lg shadow-sm shadow-red-600/50 m-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
+                                    <div class=" backdrop-blur-2xl p-4 rounded-lg shadow-sm shadow-red-600/50 m-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
                                         <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
                                         <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
                                         <p class="text-sm text-gray-400 mb-2">Gender: <span class="text-white"><%= shift.sex %></span></p>

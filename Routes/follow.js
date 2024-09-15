@@ -132,7 +132,11 @@ followRoute.get(`/user/followingList/:user_id`, async (req, res) => {
 
         // If no follow data is found or if the following list is empty
         if (!FollowData || FollowData.following.length == 0) {
-            return res.redirect(`/home/profile/${user_id}`);
+            return res.render("FollowingList", {
+                followingUsers: [],
+                user: req.user,
+                msg: " You are currently not following anyone."
+            })
         }
 
         // Check if the current user is trying to view their own following list
@@ -175,7 +179,11 @@ followRoute.get("/user/followersList/:user_id", async (req, res) => {
 
         // If no follow data is found or if the following list is empty
         if (!userFollowData || userFollowData.followers.length == 0) {
-            return res.redirect(`/home/profile/${user_id}`);
+            return res.render("FollowersList", {
+                userFollowersData: [],
+                user: req.user,
+                msg: "You don't have any Followers"
+            });
         }
 
         if (userId != user_id) {
