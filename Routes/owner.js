@@ -223,7 +223,6 @@ const multer = require('multer');
 const gymModel = require("../Models/gym");
 const userModel = require("../Models/user");
 const PhyModel = require("../Models/userphy");
-const signModel = require("../Models/siginin");
 const { createHmac } = require("crypto");
 const { createToken } = require("../services/auth");
 const cloudinary = require("cloudinary").v2;
@@ -356,21 +355,6 @@ ownerRoute.post("/signin", async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        //make sure only one user can use this email to login
-        const usersignin = await signModel.findOne({ email });
-
-        //if no one has singed in using this email then go aheas and signin
-        if(usersignin) {
-            return res.render("signin", {
-                msg: "Someone has already sined in using this email"
-            })
-        } else {
-            // else stop the user 
-            await signModel.create({
-                email: email
-            });
-        }
-
         let user = await gymModel.findOne({ email });
 
         if (!user) {
@@ -403,12 +387,6 @@ ownerRoute.post("/signin", async (req, res) => {
 
 // Sign out route
 ownerRoute.get("/signout", async (req, res) => {
-    const {email} = req.user;
-
-    await signModel.findOneAndDelete(
-        { email: email } // Find and delete a document where the email matches the provided email
-    )
-
     return res.clearCookie('token').redirect("/app");
 });
 
