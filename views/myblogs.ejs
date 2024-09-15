@@ -37,23 +37,30 @@
         <div class="mt-4 flex flex-wrap">
             <% if (blogs.length > 0) { %>
                 <% blogs?.forEach(blog => { %>
-                    <div class="max-w-sm mx-auto bg-white rounded-lg shadow-lg  overflow-hidden hover:shadow-2xl transform hover:scale-1 transition duration-300 ease-in-out cursor-pointer m-3">
-                        <img class="w-full h-48 object-cover" src="<%= blog?.coverImage %>" alt="Blog Image">
-                        <div class="p-6">
-                            <h2 class="text-2xl font-semibold text-gray-800 hover:text-gray-600 transition duration-300"><%= blog?.title %></h2>
-                            <!-- Add a data attribute for the blog content -->
-                            <p id="myblog-<%= blog._id %>" class="text-gray-600 mt-4 text-sm"></p>
-                            <script>
-                                // Set the blog content dynamically for each blog item
-                                document.getElementById("myblog-<%= blog._id %>").innerHTML = `<%- blog?.content.slice(0, 200) %>`;
-                            </script>
-                        
-                            <div class="mt-4 flex justify-between items-center">
-                                <a href="/blog/<%= blog?._id %>" class="bg-gray-100 font-semibold rounded-xl px-3 py-1 text-red-500 hover:text-blue-500 transition duration-300">View</a>
-                                <span class="text-gray-700 text-sm bg-gray-100 rounded-xl px-3 py-1 "><%= blog?.createdAt.toLocaleDateString() %></span>
+                    <div class="stagger-animation m-4 border-2 border-red-600 fade-in w-[90%] sm:w-[45%] md:w-[30%] card-container rounded-lg overflow-hidden transition-transform duration-500 ease-out mb-8">
+                        <!-- Image Section -->
+                        <div class="overflow-hidden rounded-t-lg p-4">
+                            <img class="w-full rounded-xl h-48 object-cover transition-transform duration-500 ease-out hover:scale-110"
+                                src="<%= blog?.coverImage %>" alt="Blog Image">
+                        </div>
+    
+                        <!-- Content Section -->
+                        <div class="p-4 rounded-b-lg">
+                            <h3 class="text-lg font-semibold card-title transition-colors duration-300">
+                                <%= blog?.title %>
+                            </h3>
+    
+                            <!-- Buttons and Date -->
+                            <div class="mt-6 flex justify-between items-center">
+                                <a href="/blog/<%= blog?._id %>" class="inline-block view-button bg-red-600 font-semibold rounded-full px-4 py-1 transition-colors duration-300">
+                                    View
+                                </a>
+                                <span class="text-xs published-date rounded-full bg-gray-700 px-4 py-1">
+                                    Published: <%= blog?.createdAt.toLocaleDateString() %>
+                                </span>
                             </div>
                         </div>
-                    </div>                       
+                    </div>                    
                 <% }) %>
             <% } else { %>
                 <div class="flex -z-10 inline fixed top-0 items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-bg w-full">
