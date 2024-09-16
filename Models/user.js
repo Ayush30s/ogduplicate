@@ -58,6 +58,16 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "blogModel"
     }],
+    workout: [{
+        time: {
+            type: Number,   // The workout time (e.g., duration in minutes)
+            required: true
+        },
+        pushedAt: {
+            type: Date,     // The time when the workout was logged
+            default: Date.now  // Automatically set when a new entry is created
+        }
+    }],
     salt: {
         type: String,
     }

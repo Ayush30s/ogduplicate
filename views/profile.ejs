@@ -1,28 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include("./Partials/head") %>
-<style>
-    body {
-            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
-        }
-</style>
-<body class="min-h-screen flex flex-col bg-white text-black font-sans">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed text-white font-sans" style="background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');">
 
     <!-- Navigation Bar -->
     <%- include("./Partials/nav.ejs") %>
 
     <!-- Main Content -->
-    <div class="flex-grow flex items-center justify-center px-4 py-10 md:py-20 overflow-hidden">
+    <div class="flex flex-col items-center justify-center px-4 py-10 md:py-20">
         <!-- Profile Container -->
-        <div class="relative bg-white p-6 md:p-5 shadow-lg w-full max-w-xl md:max-w-4xl rounded-lg border border-gray-300 transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl animate-fadeIn flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
+        <div class="relative bg-black p-6 md:p-5 shadow-lg w-full max-w-xl md:max-w-4xl rounded-lg border border-red-500 transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
             
             <!-- Edit Button -->
             <% if (!locals.showFollowButton) { %>
@@ -34,10 +21,10 @@
             <!-- Profile Image -->
             <div class="w-full md:w-1/3 flex flex-col items-center">
                 <div class="relative">
-                    <img src="<%= userData?.profileImage %>" alt="Profile Image" class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full border-4 border-black shadow-md">
+                    <img src="<%= userData?.profileImage %>" alt="Profile Image" class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full border-4 border-red-600 shadow-md">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-50 rounded-full"></div>
                 </div>
-                <h1 class="text-2xl md:text-3xl font-bold m-2 text-black text-center"><%= userData?.fullname %></h1>
+                <h1 class="text-2xl md:text-3xl font-bold mt-2 text-white text-center"><%= userData?.fullname %></h1>
             </div>
 
             <!-- Profile Details -->
@@ -45,19 +32,20 @@
                 <!-- User Details -->
                 <div class="space-y-1 md:space-y-2">
 
+                    <!-- Followers and Following -->
                     <div class="flex flex-row my-2">
-                        <a href="/request/user/followersList/<%= userData._id %>" class="w-full md:w-auto px-2 md:px-4 py-2 mr-2 bg-black text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-600">
+                        <a href="/request/user/followersList/<%= userData._id %>" class="w-full md:w-auto px-2 md:px-4 py-2 mr-2 bg-red-600 text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-700">
                             Followers: <%= followersCount %>
                         </a>
-                        <a href="/request/user/followingList/<%= userData._id %>" class="w-full md:w-auto px-2 md:px-4 py-2 ml-2 bg-black text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-600">
+                        <a href="/request/user/followingList/<%= userData._id %>" class="w-full md:w-auto px-2 md:px-4 py-2 ml-2 bg-red-600 text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-700">
                             Following: <%= followingCount %>
                         </a>
                     </div>
 
-                    <p class="text-sm md:text-[16px] font-medium font-medium text-black">Email: <span class="text-gray-700"><%= userData?.email %></span></p>
-                    <p class="text-sm md:text-[16px] font-medium font-medium text-black">Contact Number: <span class="text-gray-700"><%= userData?.contactnumber %></span></p>
+                    <p class="text-sm md:text-[16px] font-medium">Email: <span class="text-gray-300"><%= userData?.email %></span></p>
+                    <p class="text-sm md:text-[16px] font-medium">Contact Number: <span class="text-gray-300"><%= userData?.contactnumber %></span></p>
 
-                    <!-- Following, Followers, and Follow Buttons -->
+                    <!-- Follow/Unfollow Button -->
                     <div class="flex flex-col md:flex-row justify-start space-y-2 md:space-y-0 md:space-x-2 my-2 md:my-4">
                         <% if (locals.showFollowButton === true) { %>
                             <form action="<%= locals.followingOrNot == 'Following' ? '/request/unfollow/user/' + userData._id : locals.followingOrNot == 'Follow' ? '/request/follow/user/' + userData._id : '/request/cancelrequest/user/' + userData._id %>" method="POST" class="w-full md:w-auto">
@@ -68,14 +56,16 @@
                         <% } %>
                     </div>
 
+                    <!-- Owner's Gym Link -->
                     <% if (locals.usertype == 'OWNER') { %>
-                        <a href="/home/mygyms" class="block px-4 py-2 my-2 bg-black text-white font-bold rounded-md shadow-md hover:bg-red-600 transition-all duration-200 text-center">
+                        <a href="/home/mygyms" class="block px-4 py-2 my-2 bg-red-600 text-white font-bold rounded-md shadow-md hover:bg-red-700 transition-all duration-200 text-center">
                             My Gym
                         </a>
                     <% } %>
 
-                    <div class="p-2 border-b border-black">
-                        <p class="text-xs md:text-sm text-black overflow-auto py-1">
+                    <!-- Bio or Description -->
+                    <div class="p-2 border-b border-red-600">
+                        <p class="text-xs md:text-sm text-white overflow-auto py-1">
                             <% if (locals.usertype == "OWNER") { %>
                                 <%= userData.description %>
                             <% } else { %>
@@ -84,58 +74,65 @@
                         </p>
                     </div>
 
+                    <!-- Joined Gyms Button -->
                     <% if (locals.userData.usertype == "USER" && !locals.showFollowButton) { %>
-                        <a href="/home/joinedgyms" class="block px-4 py-2 my-10 md:my-2 bg-red-600 text-white font-bold rounded-full shadow-md hover:bg-red-600 transition-all duration-200 text-center">
+                        <a href="/home/joinedgyms" class="block px-4 py-2 my-10 md:my-2 bg-red-600 text-white font-bold rounded-full shadow-md hover:bg-red-700 transition-all duration-200 text-center">
                             Joined Gyms
                         </a>
                     <% } %>
-                    
                 </div>
             </div>
         </div>
+
+        <!-- Heatmap Section -->
+        <div class="w-full max-w-4xl mt-10">
+            <!-- Accordion Button -->
+            <button id="heatmap-toggle" class="w-full px-4 py-2 bg-red-600 text-white font-bold rounded-md shadow-md hover:bg-red-700 transition-all duration-200 text-center">
+                Toggle Heatmap
+            </button>
+
+            <!-- Accordion Content -->
+            <div id="heatmap-content" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
+                <% for (let month = 0; month < 12; month++) { %>
+                    <div class="bg-black p-4 rounded-lg border border-red-600 shadow-md">
+                        <!-- Month Label -->
+                        <div class="text-lg font-bold mb-2 text-white">
+                            <%= new Date(0, month).toLocaleString('default', { month: 'long' }) %>
+                        </div>
+                        <!-- Heatmap Days -->
+                        <div class="grid grid-cols-7 gap-1">
+                            <% exerciseArray[month].forEach(time => { %>
+                                <div class="w-6 h-6 rounded-sm 
+                                    <% if (time == 0) { %>
+                                        bg-gray-900
+                                    <% } else if(time <= 30) { %>
+                                        bg-red-300
+                                    <% } else if(time <= 60) { %>
+                                        bg-red-500
+                                    <% } else { %>
+                                        bg-red-700
+                                    <% } %>"
+                                    title="Minutes: <%= time %>">
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Smooth Scroll Script -->
+    <!-- Smooth Scroll -->
     <script>
         document.documentElement.style.scrollBehavior = "smooth";
-    </script>                                                  
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .animate-fadeIn {
-            animation: fadeIn 1.2s ease-in-out;
-        }
-
-        /* Hover effects */
-        .hover\:scale-105:hover {
-            transform: scale(1.05);
-        }
-
-        .hover\:shadow-2xl:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-        }
-    </style>
-
-    <script>
-        // JavaScript to toggle visibility of additional details
-        document.getElementById('toggleDetails').addEventListener('click', function() {
-            const detailsDiv = document.getElementById('additionalDetails');
-            if (detailsDiv.classList.contains('hidden')) {
-                detailsDiv.classList.remove('hidden');
-                this.textContent = 'Hide Details';
-            } else {
-                detailsDiv.classList.add('hidden');
-                this.textContent = 'See All Details';
-            }
+        // Toggle heatmap visibility
+        document.getElementById('heatmap-toggle').addEventListener('click', function() {
+            const content = document.getElementById('heatmap-content');
+            content.classList.toggle('hidden');
         });
     </script>
+
 </body>
 </html>

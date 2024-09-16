@@ -15,10 +15,9 @@
         }
 
         .overlay {
-            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay for better contrast */
+            background-color: rgba(0, 0, 0, 0.8);
         }
 
-        /* Button hover effect */
         .hover-grow {
             transition: transform 0.3s ease-in-out, background-color 0.3s;
         }
@@ -26,7 +25,6 @@
             transform: scale(1.1);
         }
 
-        /* Fade in animation */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -35,7 +33,6 @@
             animation: fadeIn 1s ease-in;
         }
 
-        /* Flashing border */
         .flashing-border {
             animation: flashing 2s infinite;
         }
@@ -45,7 +42,6 @@
             100% { border-color: red; }
         }
 
-        /* Enhanced text shadow for better readability */
         .text-shadow {
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         }
@@ -53,7 +49,7 @@
 </head>
 <body class="bg-black text-white h-screen flex justify-center items-center">
 
-    <div class="overlay w-full h-full absolute top-0 left-0"></div>
+    <div class="overlay w-full h-full absolute top-0 left-0"><%= locals.day %></div>
 
     <div class="relative z-10 max-w-lg mx-auto p-8 bg-gray-900 rounded-lg shadow-sm shadow-white">
         <!-- Title Section -->
@@ -67,6 +63,22 @@
             <p class="mt-4 leading-relaxed text-gray-300"><%= exerciseObj.details %></p>
         </div>
 
+        <!-- Timer Section -->
+        <div class="text-center mt-8">
+            <form id="timer-form" action="/home/exercise/<%= exerciseObj.name %>/ <%= exerciseObj.focus %>/<%= locals.day %>" method="post">
+                <!-- Input field for user to input time in minutes -->
+                <input type="number" id="timer-input" name="time" class="w-24 px-4 py-2 text-black text-center rounded-md" placeholder="Minutes" min="1" required>
+        
+                <!-- Button to start the timer -->
+                <button type="submit" id="start-timer" class="inline-block px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out mt-4">
+                    Start Timer
+                </button>
+            </form>
+        
+            <!-- Timer display area -->
+            <div id="timer-display" class="mt-4 text-3xl font-bold"></div>
+        </div>
+        
         <!-- Video Section -->
         <div class="text-center mt-8">
             <a href="<%= exerciseObj.videoUrl %>" target="_blank" class="inline-block px-10 py-4 text-lg font-bold text-white bg-red-500 rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out">
@@ -75,5 +87,40 @@
         </div>
     </div>
 
+    <script>
+        const startButton = document.getElementById("start-timer");
+        const timerDisplay = document.getElementById("timer-display");
+        const timerInput = document.getElementById("timer-input");
+        let timerInterval;
+
+        startButton.addEventListener("click", function() {
+            const userMinutes = parseInt(timerInput.value);
+            if (isNaN(userMinutes) || userMinutes <= 0) {
+                alert("Please enter a valid number of minutes.");
+                return;
+            }
+
+            let timeRemaining = userMinutes * 60; // Convert minutes to seconds
+            clearInterval(timerInterval); // Clear any previous timer
+
+            // Start the countdown
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+
+                // Display the time
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+                // When the timer ends
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Time's up!";
+                    alert("Your timer is complete!");
+                }
+
+                timeRemaining--;
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

@@ -6,6 +6,27 @@ const followModel = require("../Models/follow");
 
 const homeRoute = Router();
 
+function getDaysInMonth(year, month) {
+    // Month is 0-based: January is 0, February is 1, etc.
+    const date = new Date(year, month + 1, 0);
+    return date.getDate();
+}
+
+function getColorForExerciseTime(time) {
+    // Define thresholds (in minutes)
+    if (time === 0) {
+        return 'bg-gray-200'; // Tailwind's light gray (equivalent to #f0f0f0)
+    } else if (time <= 30) {
+        return 'bg-blue-200'; // Tailwind's light blue (equivalent to #a8d5e2)
+    } else if (time <= 60) {
+        return 'bg-blue-500'; // Tailwind's medium blue (equivalent to #47a1c1)
+    } else {
+        return 'bg-teal-800'; // Tailwind's dark teal (equivalent to #005f73)
+    }
+}
+
+
+
 const workoutPlan = {
     user: {
         height: 145, // cm
@@ -482,7 +503,47 @@ homeRoute.get("/profile/:userId", async (req, res) => {
         // Check if the logged-in user has joined this gym
         showjoinedgym = userData.joinedby.some(joined => joined.user.toString() === req.user._id.toString());
     }
-   
+
+    const monthJoined = userData.createdAt.getMonth();
+    const joinedDate = userData.createdAt.getDate();
+    const joinedYear = userData.createdAt.getYear();
+
+    const dateObj = {
+        "monthJoined": monthJoined,
+        "joinedDate": joinedDate,
+        "joinedYear": joinedYear
+    }
+
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const dayInCurrentMonth = getDaysInMonth(today.getYear(), today.getMonth());
+    const todattotaltime = 0;
+    let exerciseArray = new Array(12);
+
+    for(let i = 1; i <= 12; i++) {
+        const days = getDaysInMonth(today.getYear(), i);
+        exerciseArray[i-1] = new Array(days);
+
+        for(let j = 1; j <= days; j++) {
+            let timeExercise = 0;
+
+            userData.workout.forEach((day) => {
+                if(day.pushedAt.getMonth() == i && day.pushedAt.getDate() == j) {
+                    timeExercise += day.time;
+                }
+            })
+            
+            exerciseArray[i-1][j-1] = timeExercise;
+        }
+    }
+
+    // exerciseArray.forEach((day) => {
+    //     day.forEach((i) => {
+    //         console.log(i);
+    //     })
+    //     console.log("\n")
+    // })
+
     return res.render("profile", {
         userData: userData,
         user: req.user,
@@ -492,7 +553,8 @@ homeRoute.get("/profile/:userId", async (req, res) => {
         followingOrNot: followingOrNot,
         followersCount: followersCount,
         followingCount: followingCount,
-        userFollowMe:userFollowMe
+        userFollowMe:userFollowMe,
+        exerciseArray: exerciseArray
     });
     
 });
@@ -977,7 +1039,7 @@ homeRoute.get("/workout-day/:index", async(req,res) => {
 homeRoute.get("/workout-day/:day/workout/:index/:exercisename", async(req,res) => {
     const { day, index, exercisename } = req.params;
     let dayindex = Number(day)
-
+ 
     let exerciseObj;
     workoutPlan.workoutDays.forEach((day) => {
         day.exercises.forEach((exercise) => {
@@ -987,11 +1049,10 @@ homeRoute.get("/workout-day/:day/workout/:index/:exercisename", async(req,res) =
         })
     })
 
-    console.log(exerciseObj)
-
     //make a call to chatgpt which will give data about that "exerciseObj"
     return res.render("exercisepage", {
-        exerciseObj: exerciseObj
+        exerciseObj: exerciseObj,
+        day: day
     });
 })
 
@@ -1052,6 +1113,59 @@ homeRoute.post('/rating/:gymId', async (req, res) => {
         return res.send("Gym not Found!");
     }
 });
+
+homeRoute.post('/exercise/:exercisetype/:focuspart/:day', async (req, res) => {
+    try {
+        const { exercisetype, focuspart, day } = req.params; // Getting the params for exercise type and focus part
+        const { time } = req.body;  // Extracting the workout time from the request body
+        const userId = req.user._id;  // Assuming the user is authenticated and the ID is available in req.user
+
+        // Check if the time is a valid number
+        if (!time || isNaN(time)) {
+            return res.status(400).send('Invalid time provided');
+        }
+
+        const workoutEntry = {
+            time: parseInt(time),  // Store workout time
+            pushedAt: new Date()   // Store the timestamp when it was added
+        };
+        
+
+        // Update the user's workout array by pushing the new workout time
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            {
+                $push: {
+                    workout: workoutEntry 
+                }
+            },
+            { new: true }  // Return the updated document
+        );
+
+        // If no user was found, return an error
+        if (!updatedUser) {
+            return res.status(404).send('User not found');
+        }
+
+        let exerciseObj;
+        workoutPlan.workoutDays.forEach((day) => {
+            day.exercises.forEach((exercise) => {
+                if(exercise.name == exercisetype) { 
+                    exerciseObj = exercise;
+                }
+            })
+        })
+
+        // Send a success response
+        return res.render("exercisepage", {
+            exerciseObj: exerciseObj
+        });
+    } catch (error) {
+        console.error("Error updating workout time:", error);
+        return res.status(500).send("Internal Server Error");
+    }
+});
+
 
 module.exports = {
     homeRoute
