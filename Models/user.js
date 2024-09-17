@@ -66,6 +66,14 @@ const userSchema = new mongoose.Schema({
         pushedAt: {
             type: Date,     // The time when the workout was logged
             default: Date.now  // Automatically set when a new entry is created
+        },
+        focusPart: {
+            type: String,
+            required: true
+        },
+        name: {
+            type: String,
+            required: true
         }
     }],
     salt: {

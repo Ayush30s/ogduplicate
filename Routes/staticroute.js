@@ -197,7 +197,9 @@ staticRoute.get("/addmoredetails", async(req,res) => {
 });
 
 staticRoute.get("/transform", async(req,res) => {
-    return res.render("userphy");
+    return res.render("userphy", {
+        user: req.user
+    });
 })
 
 staticRoute.get("/blogs", async(req,res) => {

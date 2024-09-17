@@ -129,54 +129,57 @@
         <div class="w-full flex-grow flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12 shadow-sm shadow-white overflow-hidden">
 
             <!-- Gym Information Container -->
-            <div class="relative bg-gray-900 p-6 sm:p-10 mb-8 shadow-lg shadow-red-600/50 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-600/80 animate-fadeIn flex flex-col sm:flex-row gap-6">
-
+            <div class="relative bg-gray-800 p-6 sm:p-10 mb-8 shadow-lg shadow-red-500/60 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-700/80 flex flex-col sm:flex-row gap-6">
+                <!-- Edit Profile Button -->
+                <a href="/app/editprofile" class="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold px-4 py-2 rounded-full border border-red-500 shadow-md hover:shadow-lg transition-transform hover:scale-110 duration-300 text-sm md:text-base">
+                    Edit Profile
+                </a>
+            
                 <!-- Left Section: Gym Image -->
-                <div class="w-full sm:w-1/3 relative">
-                    <img src="<%= gymData.profileImage %>" alt="gym img" class="w-full h-56 sm:h-72 object-cover rounded-lg shadow-lg transition-transform duration-500 hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-70 rounded-lg"></div>
+                <div class="w-full sm:w-1/3 relative overflow-hidden rounded-xl shadow-xl transform hover:scale-110 transition-transform duration-500">
+                    <img src="<%= gymData.profileImage %>" alt="gym img" class="w-full h-56 sm:h-72 object-cover rounded-lg">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60 rounded-lg"></div>
                 </div>
             
                 <!-- Right Section: Gym Details -->
                 <div class="flex flex-col w-full sm:w-2/3 space-y-6">
-            
                     <!-- Gym Name -->
-                    <h2 class="text-4xl font-bold text-red-500 tracking-widest uppercase text-center sm:text-left">
+                    <h2 class="text-4xl font-extrabold text-red-600 tracking-widest uppercase text-center sm:text-left">
                         <%= gymData.gymname %>
                     </h2>
             
                     <!-- Owner and Location -->
                     <div class="flex flex-col sm:flex-row sm:space-x-10 space-y-4 sm:space-y-0 text-gray-400">
                         <div class="flex flex-col w-full sm:w-1/2">
-                            <p class="text-base sm:text-lg font-semibold">
-                                <span class="text-white">Owned by: </span><%= gymData.fullname %>
+                            <p class="text-base sm:text-lg font-semibold flex items-center">
+                                <span class="text-white mr-2">💼 Owned by: </span><%= gymData.fullname %>
                             </p>
-                            <p class="text-base sm:text-lg font-semibold">
-                                <span class="text-white">Location: </span><%= gymData.location %>
+                            <p class="text-base sm:text-lg font-semibold flex items-center">
+                                <span class="text-white mr-2">📍 Location: </span><%= gymData.location %>
                             </p>
                         </div>
             
                         <!-- Email and Contact Number -->
                         <div class="flex flex-col w-full sm:w-1/2">
-                            <p class="text-base sm:text-lg font-semibold">
-                                <span class="text-white">Contact Number: </span><%= gymData.contactnumber %>
+                            <p class="text-base sm:text-lg font-semibold flex items-center">
+                                <span class="text-white mr-2">📞 Contact Number: </span><%= gymData.contactnumber %>
                             </p>
-                            <p class="text-base sm:text-lg font-semibold">
-                                <span class="text-white">Email: </span><%= gymData.email %>
+                            <p class="text-base sm:text-lg font-semibold flex items-center">
+                                <span class="text-white mr-2">✉️ Email: </span><%= gymData.email %>
                             </p>
                         </div>
                     </div>
             
                     <!-- Description -->
-                    <div class="bg-gray-800 p-6 rounded-lg shadow-inner max-h-56 overflow-auto">
+                    <div class="bg-gray-700 p-6 rounded-lg shadow-inner max-h-56 overflow-auto transition-all duration-300 hover:bg-gray-600">
                         <h3 class="text-lg sm:text-xl font-bold text-red-500 mb-2">Description</h3>
                         <p class="text-gray-300 text-sm sm:text-base leading-relaxed text-justify">
                             <%= gymData.description %>
                         </p>
                     </div>
-            
                 </div>
             </div>
+            
             
 
             <!-- Shifts Accordion -->

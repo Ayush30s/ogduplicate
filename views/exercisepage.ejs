@@ -49,7 +49,7 @@
 </head>
 <body class="bg-black text-white h-screen flex justify-center items-center">
 
-    <div class="overlay w-full h-full absolute top-0 left-0"><%= locals.day %></div>
+    <div class="overlay w-full h-full absolute top-0 left-0"></div>
 
     <div class="relative z-10 max-w-lg mx-auto p-8 bg-gray-900 rounded-lg shadow-sm shadow-white">
         <!-- Title Section -->
@@ -65,7 +65,12 @@
 
         <!-- Timer Section -->
         <div class="text-center mt-8">
-            <form id="timer-form" action="/home/exercise/<%= exerciseObj.name %>/ <%= exerciseObj.focus %>/<%= locals.day %>" method="post">
+            <form id="timer-form">
+                <!-- Hidden fields for form data -->
+                <input type="hidden" name="exercisetype" value="<%= exerciseObj.name %>">
+                <input type="hidden" name="focuspart" value="<%= exerciseObj.focus %>">
+                <input type="hidden" name="day" value="<%= locals.day %>">
+                
                 <!-- Input field for user to input time in minutes -->
                 <input type="number" id="timer-input" name="time" class="w-24 px-4 py-2 text-black text-center rounded-md" placeholder="Minutes" min="1" required>
         
@@ -77,6 +82,8 @@
         
             <!-- Timer display area -->
             <div id="timer-display" class="mt-4 text-3xl font-bold"></div>
+            <!-- Response message area -->
+            <div id="response-message" class="mt-4 text-xl font-bold"></div>
         </div>
         
         <!-- Video Section -->
@@ -88,6 +95,30 @@
     </div>
 
     <script>
+        document.getElementById('timer-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries()); // Convert form data to an object
+
+            fetch(`/home/exercise/${data.exercisetype}/${data.focuspart}/${data.day}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(text => {
+                // Display success message
+                document.getElementById('response-message').innerText = 'Workout time updated successfully!';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response-message').innerText = 'An error occurred while updating the workout time.';
+            });
+        });
+
         const startButton = document.getElementById("start-timer");
         const timerDisplay = document.getElementById("timer-display");
         const timerInput = document.getElementById("timer-input");

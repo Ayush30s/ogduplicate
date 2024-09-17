@@ -515,12 +515,16 @@ homeRoute.get("/profile/:userId", async (req, res) => {
     }
 
     const today = new Date();
-    const currentMonth = today.getMonth();
-    const dayInCurrentMonth = getDaysInMonth(today.getYear(), today.getMonth());
-    const todattotaltime = 0;
+    // const currentMonth = today.getMonth();
+    // const dayInCurrentMonth = getDaysInMonth(today.getYear(), today.getMonth());
+    // const todattotaltime = 0;
+
     let exerciseArray = new Array(12);
+    let exerciseName = new Map();
+    let muscleGroup = new Map(); 
 
     for(let i = 1; i <= 12; i++) {
+
         const days = getDaysInMonth(today.getYear(), i);
         exerciseArray[i-1] = new Array(days);
 
@@ -528,6 +532,18 @@ homeRoute.get("/profile/:userId", async (req, res) => {
             let timeExercise = 0;
 
             userData.workout.forEach((day) => {
+                if (exerciseName.has(day.focusPart)) {
+                    exerciseName.set(day.focusPart, exerciseName.get(day.focusPart) + 1);  
+                } else {
+                    exerciseName.set(day.focusPart, 1);  
+                }
+
+                if (muscleGroup.has(day.name)) {
+                    muscleGroup.set(day.name, muscleGroup.get(day.name) + 1);  
+                } else {
+                    muscleGroup.set(day.name, 1);  
+                }
+
                 if(day.pushedAt.getMonth() == i && day.pushedAt.getDate() == j) {
                     timeExercise += day.time;
                 }
@@ -537,12 +553,31 @@ homeRoute.get("/profile/:userId", async (req, res) => {
         }
     }
 
-    // exerciseArray.forEach((day) => {
-    //     day.forEach((i) => {
-    //         console.log(i);
-    //     })
-    //     console.log("\n")
-    // })
+    //fetching keys and value from map
+    const muscles = []
+    const muscleCount = []
+    const exercise = []
+    const exerciseCount = []
+    let totalexerciseDone = 0;
+    let tottalMuscleTrained = 0;
+
+    exerciseName.forEach((value, key) => {
+        totalexerciseDone += value;
+    })
+
+    muscleGroup.forEach((value, key) => {
+        tottalMuscleTrained += value;
+    })
+
+    exerciseName.forEach((value, key) => {
+        exerciseCount.push(((value/totalexerciseDone) * 100).toFixed(1));
+        exercise.push(key);
+    })
+
+    muscleGroup.forEach((value, key) => {
+        muscleCount.push(((value/tottalMuscleTrained) * 100).toFixed(1));
+        muscles.push(key);
+    })
 
     return res.render("profile", {
         userData: userData,
@@ -554,7 +589,13 @@ homeRoute.get("/profile/:userId", async (req, res) => {
         followersCount: followersCount,
         followingCount: followingCount,
         userFollowMe:userFollowMe,
-        exerciseArray: exerciseArray
+        exerciseArray: exerciseArray,
+        muscles: muscles,
+        muscleCount: muscleCount,
+        exercise: exercise,
+        exerciseCount: exerciseCount,
+        totalexerciseDone: totalexerciseDone,
+        tottalMuscleTrained: tottalMuscleTrained
     });
     
 });
@@ -1127,7 +1168,9 @@ homeRoute.post('/exercise/:exercisetype/:focuspart/:day', async (req, res) => {
 
         const workoutEntry = {
             time: parseInt(time),  // Store workout time
-            pushedAt: new Date()   // Store the timestamp when it was added
+            pushedAt: new Date(),
+            focusPart: focuspart,
+            name: exercisetype 
         };
         
 
@@ -1136,7 +1179,7 @@ homeRoute.post('/exercise/:exercisetype/:focuspart/:day', async (req, res) => {
             userId,
             {
                 $push: {
-                    workout: workoutEntry 
+                    workout: workoutEntry,
                 }
             },
             { new: true }  // Return the updated document
