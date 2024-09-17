@@ -3,7 +3,7 @@ const JWT = require("jsonwebtoken");
 const secretKey = "BKLwtfsffewqkxvmcxc";
 
 const createToken = (user) => {
-    const { email, password, fullname, gender, profileImage } = user;
+    const { email, password, fullname, gender, profileImage, usertype } = user;
 
     const userPayload = {
         _id: user._id,
@@ -11,7 +11,8 @@ const createToken = (user) => {
         password: password ,
         name: fullname,
         gender: gender,
-        profileImage: profileImage
+        profileImage: profileImage,
+        usertype: usertype
     };
 
     const token = JWT.sign(userPayload, secretKey);

@@ -53,8 +53,10 @@
                 <div class="hidden sm:flex sm:ml-6 items-center space-x-6">
                     <a href="/home" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Home</a>
                     <a href="/home/about" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">About</a>
-                    <a href="/app/transform" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Transformation</a>
-                    <a href="/app/blogs" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Blogs</a>
+                    <% if (locals.user.usertype == "USER") { %>
+                        <a href="/app/transform" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Transformation</a>
+                        <a href="/app/blogs" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Blogs</a>
+                    <% } %>
 
                     <!-- Dropdown Menu on Right Side (Visible on larger screens) -->
                     <div class="relative group hidden sm:block">
@@ -69,8 +71,10 @@
                         <% if (locals.user) { %>
                             <div class="absolute right-1 mt-2 w-44 text-center bg-black shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 ease-out dropdown-enter dropdown-enter-active z-10">
                                 <a href="/home/profile/<%= user._id %>" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">My Profile</a>
-                                <a href="/blog/my-blogs" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">My Blogs</a>
-                                <a href="/blog/add-blog" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">New Blog</a>
+                                <% if (locals.user.usertype == "USER") { %>
+                                    <a href="/blog/my-blogs" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">My Blogs</a>
+                                    <a href="/blog/add-blog" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">New Blog</a>
+                                <% } %>
                                 <a href="/register/signout" class="block px-4 py-1 my-1 text-red-500 border-1 mx-1 text-center font-semibold hover:text-black hover:bg-red-500 border border-red-500">SignOut</a>
                             </div>
                         <% } %>
@@ -100,13 +104,16 @@
                     <button id="blog-toggle" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">
                         Blogs
                     </button>
-                    <div id="blog-menu" class="pl-4 space-y-1 hidden">
-                        <a href="/app/blogs" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">All Blogs</a>
-                        <% if (locals.user) { %>
-                            <a href="/blog/my-blogs" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">My Blogs</a>
-                            <a href="/blog/add-blog" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">New Blog</a>
-                        <% } %>
-                    </div>
+
+                    <% if (locals.user.usertype == "USER") { %>
+                        <div id="blog-menu" class="pl-4 space-y-1 hidden">
+                            <a href="/app/blogs" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">All Blogs</a>
+                            <% if (locals.user) { %>
+                                <a href="/blog/my-blogs" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">My Blogs</a>
+                                <a href="/blog/add-blog" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">New Blog</a>
+                            <% } %>
+                        </div>
+                    <% } %>
                 </div>
 
                 <% if (locals.user) { %>

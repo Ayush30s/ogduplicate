@@ -577,7 +577,7 @@ homeRoute.get("/profile/:userId", async (req, res) => {
     muscleGroup.forEach((value, key) => {
         muscleCount.push(((value/tottalMuscleTrained) * 100).toFixed(1));
         muscles.push(key);
-    })
+    });
 
     return res.render("profile", {
         userData: userData,

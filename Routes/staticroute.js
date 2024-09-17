@@ -196,16 +196,27 @@ staticRoute.get("/addmoredetails", async(req,res) => {
     });
 });
 
-staticRoute.get("/transform", async(req,res) => {
+staticRoute.get("/transform", (req,res,next) => {
+    if(req.user.usertype == "OWNER") {
+        return res.send("To use Transformatoion service use a userId");
+    } else {
+        next();
+    }
+} , async(req,res) => {
     return res.render("userphy", {
         user: req.user
     });
 })
 
-staticRoute.get("/blogs", async(req,res) => {
+staticRoute.get("/blogs",(req,res,next) => {
+    console.log(req.user)
+    if(req.user.usertype == "OWNER") {
+        return res.send("To use Blog service use a user type userId");
+    } else {
+        next();
+    }
+} , async(req,res) => {
     const allblogs = await blogModel.find({}).populate("createdBy");
-    console.log(allblogs)
-
     return res.render("home", {
         user: req.user,
         blogs: allblogs

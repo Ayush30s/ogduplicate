@@ -13,6 +13,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const {authenticateUser} = require("./Middleware/authentication");
 const { blogRouter } = require("./Routes/blog")
+const userModel = require("./Models/user");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -88,6 +89,25 @@ app.use("/home" , (req,res,next) => {
     next();
 } , homeRoute);
 app.use("/request", followRoute);
-app.use("/blog", blogRouter);
+
+//only allow users to use blog service
+app.use("/blog", async(req, res, next) => {
+    console.log(req.user)
+    const userData = await userModel.findOne({email : req.user.email});
+
+    // Ensure req.user exists and usertype is accessible
+    if (!req.user) {
+        return res.status(401).send("User not authenticated");
+    }
+
+    // Check if the user is an OWNER
+    if (!userData) {
+        return res.send("Owner Id can't be used to create blog, use a user Id.");
+    }
+
+    // If user is not an OWNER, proceed
+    next();
+}, blogRouter);
+
 
 server.listen(PORT, () => console.log("Server running at PORT:", PORT));
