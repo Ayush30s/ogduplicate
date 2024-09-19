@@ -55,6 +55,9 @@ const gymSchema = new mongoose.Schema({
             joinedAt: { type: Date, default: Date.now },
         },
     ],
+    monthlyCharge: {
+        type: Number,
+    },
     description: {
         type: String,
         required: true,
@@ -72,6 +75,10 @@ const gymSchema = new mongoose.Schema({
             ref: "ShiftModel",
         },
     ],
+    plans: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "planModel"
+    }
 }, { timestamps: true });
 
 // Hashing the password for security purposes

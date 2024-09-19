@@ -126,16 +126,20 @@ followRoute.get(`/user/followingList/:user_id`, async (req, res) => {
         const { user_id } = req.params;
         const userId = req.user._id;
 
+        console.log(user_id, userId);
+
         // Fetch the follow data for the user
         const FollowData = await followModel.findById(user_id);
         let followingMeOrNot = false;
+
+        console.log(FollowData)
 
         // If no follow data is found or if the following list is empty
         if (!FollowData || FollowData.following.length == 0) {
             return res.render("FollowingList", {
                 followingUsers: [],
                 user: req.user,
-                msg: " You are currently not following anyone."
+                msg: "You are currently not following anyone."
             })
         }
 
@@ -157,7 +161,11 @@ followRoute.get(`/user/followingList/:user_id`, async (req, res) => {
         const followingUsers = FollowData.following;
         const dataForFollowingPage = await Promise.all(followingUsers.map(async (followedUserId) => {
             // Fetch user data for each user in the following list
-            return await userModel.findById(followedUserId);
+            let data = await userModel.findById(followedUserId);
+            if(!data) {
+                data = await gymModel.findById(followedUserId);
+            }
+            return data;
         }));
 
         return res.render("FollowingList", {
@@ -176,6 +184,8 @@ followRoute.get("/user/followersList/:user_id", async (req, res) => {
 
         // Fetch follow data for the specified user
         const userFollowData = await followModel.findById(user_id);
+
+        console.log(userFollowData)
 
         // If no follow data is found or if the following list is empty
         if (!userFollowData || userFollowData.followers.length == 0) {
@@ -210,7 +220,11 @@ followRoute.get("/user/followersList/:user_id", async (req, res) => {
         const userFollowersData = await Promise.all(
             userFollowList.map(async (followerId) => {
                 // Fetch profile data for each follower
-                return await userModel.findById(followerId);
+                let data = await userModel.findById(followerId);
+                if(!data) {
+                    data = await gymModel.findById(followerId);
+                }
+                return data;
             })
         );
 

@@ -32,6 +32,17 @@
                 <!-- User Details -->
                 <div class="space-y-1 md:space-y-2">
 
+                    <!-- Follow/Unfollow Button -->
+                    <div class="flex flex-col w-full md:flex-row justify-start space-y-2 md:space-y-0 md:space-x-2 my-2 md:my-4">
+                        <% if (locals.showFollowButton === true) { %>
+                            <form action="<%= locals.followingOrNot == 'Following' ? '/request/unfollow/user/' + userData._id : locals.followingOrNot == 'Follow' ? '/request/follow/user/' + userData._id : '/request/cancelrequest/user/' + userData._id %>" method="POST" class="w-full md:w-auto">
+                                <button type="submit" class="w-full md:w-auto px-4 py-2 bg-red-600 shadow-sm text-white font-bold rounded-full hover:bg-red-700 transition-all duration-200">
+                                    <%= locals.followingOrNot %>
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+
                     <!-- Followers and Following -->
                     <div class="flex flex-row my-2">
                         <a href="/request/user/followersList/<%= userData._id %>" class="w-full md:w-auto px-2 md:px-4 py-2 mr-2 bg-red-600 text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-700">
@@ -42,19 +53,8 @@
                         </a>
                     </div>
 
-                    <p class="text-sm md:text-[16px] font-medium">Email: <span class="text-gray-300"><%= userData?.email %></span></p>
-                    <p class="text-sm md:text-[16px] font-medium">Contact Number: <span class="text-gray-300"><%= userData?.contactnumber %></span></p>
-
-                    <!-- Follow/Unfollow Button -->
-                    <div class="flex flex-col md:flex-row justify-start space-y-2 md:space-y-0 md:space-x-2 my-2 md:my-4">
-                        <% if (locals.showFollowButton === true) { %>
-                            <form action="<%= locals.followingOrNot == 'Following' ? '/request/unfollow/user/' + userData._id : locals.followingOrNot == 'Follow' ? '/request/follow/user/' + userData._id : '/request/cancelrequest/user/' + userData._id %>" method="POST" class="w-full md:w-auto">
-                                <button type="submit" class="w-full md:w-auto px-4 py-2 bg-red-600 shadow-sm text-white font-bold rounded-full hover:bg-red-700 transition-all duration-200">
-                                    <%= locals.followingOrNot %>
-                                </button>
-                            </form>
-                        <% } %>
-                    </div>
+                    <p class="text-sm md:text-[16px] px-2 pt-2 font-medium">Email: <span class="text-gray-300"><%= userData?.email %></span></p>
+                    <p class="text-sm md:text-[16px] px-2 font-medium">Contact Number: <span class="text-gray-300"><%= userData?.contactnumber %></span></p>
 
                     <!-- Owner's Gym Link -->
                     <% if (locals.usertype == 'OWNER') { %>
@@ -64,7 +64,7 @@
                     <% } %>
 
                     <!-- Bio or Description -->
-                    <div class="p-1 border-b border-red-600">
+                    <div class="px-2 border-b border-red-600">
                         <p class="text-xs md:text-sm text-white overflow-auto py-1">
                             <% if (locals.usertype == "OWNER") { %>
                                 <%= userData.description %>
@@ -97,7 +97,7 @@
                     <div class="bg-black p-4 rounded-lg border border-red-600 shadow-md">
                         <!-- Month Label -->
                         <div class="text-lg font-bold mb-2 text-white">
-                            <%= new Date(0, month).toLocaleString('default', { month: 'long' }) %>
+                            <%= new Date(0, month+1).toLocaleString('default', { month: 'long' }) %>
                         </div>
                         <!-- Heatmap Days -->
                         <div class="grid grid-cols-7 gap-1">
@@ -167,21 +167,27 @@
         const muscleCount = <%- JSON.stringify(locals.muscleCount) %>; // e.g., [10, 15, 20, 5]
         const exercise = <%- JSON.stringify(locals.exercise) %>; // e.g., ['Running', 'Cycling', 'Swimming', 'Gym']
         const exerciseCount = <%- JSON.stringify(locals.exerciseCount) %>; // e.g., [50, 40, 30, 60]
-    
+        const backgroundColor = [
+            '#E63946', '#343A40', '#F72585', '#6C757D', '#FFB703', '#023047',
+            '#FFFFFF', '#FF0000', '#AF0000', '#C92A2A', '#495057', '#E64980',
+            '#FF6B6B', '#DEE2E6', '#FFD60A', '#212529', '#E5383B', '#A4161A',
+            '#B1B1B1', '#660708'
+        ]
+
+        const color = backgroundColor.slice(0, 9);
+
         // Initialize Chart.js for the first chart
         if (muscles.length > 0) {
             const ctx1 = document.getElementById('myChart1').getContext('2d');
             new Chart(ctx1, { 
                 type: 'doughnut',
                 data: {
-                    labels: muscles,
+                    labels: muscles.slice(0, 9),
                     datasets: [{
                         label: 'Muscle Groups',
-                        data: muscleCount,
+                        data: muscleCount.slice(0, 9),
                         borderWidth: 1,
-                        backgroundColor: [
-                            '#E63946', '#343A40', '#F72585', '#6C757D', '#FFB703', '#023047'
-                        ]
+                        backgroundColor: color
                     }]
                 },
                 options: {
@@ -206,14 +212,12 @@
             new Chart(ctx2, { 
                 type: 'doughnut',
                 data: {
-                    labels: exercise,
+                    labels: exercise.slice(0, 9),
                     datasets: [{
                         label: 'Exercises',
-                        data: exerciseCount,
+                        data: exerciseCount.slice(0, 9),
                         borderWidth: 1,
-                        backgroundColor: [
-                            '#E63946', '#343A40', '#F72585', '#6C757D', '#FFB703', '#023047'
-                        ]
+                        backgroundColor: color
                     }]
                 },
                 options: {
@@ -225,13 +229,12 @@
                         },
                         title: {
                             display: true,
-                            text: 'Muscle Group Distribution in %'
+                            text: 'Exercise Distribution in %'
                         }
                     }
                 }
             });
         }
     </script>
-    
 </body>
 </html>

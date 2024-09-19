@@ -3,6 +3,7 @@ const gymModel = require("../Models/gym");
 const userModel = require("../Models/user");
 const ShiftModel = require("../Models/shift");
 const followModel = require("../Models/follow");
+const gymnameModel = require("../Models/gymname");
 
 const homeRoute = Router();
 
@@ -24,8 +25,6 @@ function getColorForExerciseTime(time) {
         return 'bg-teal-800'; // Tailwind's dark teal (equivalent to #005f73)
     }
 }
-
-
 
 const workoutPlan = {
     user: {
@@ -201,7 +200,6 @@ const workoutPlan = {
     ]
 };
 
-
 homeRoute.get("/", async (req, res) => {
     const userId = req.user._id;
     const {msg} = req.query;
@@ -291,14 +289,44 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
             return res.status(404).send("Gym not found");
         }
 
+        let followersCount = 0;
+        let followingCount = 0;
+        let followingOrNot = "Follow";
+        const followData = await followModel.findById(gymId);
+
+        if (!followData) {
+            followersCount = 0;
+            followingCount = 0;
+        } else {
+            followersCount = followData.followers.length;
+            followingCount = followData.following.length;
+
+            if (followData.followers.includes(req.user._id)) {
+                followingOrNot = "Following";
+            } else if (followData.followRequests.includes(req.user._id)) {
+                followingOrNot = "Requested";
+            }
+        }
+
+        let userFollowMe = false;
+        if(followData?.following?.includes(req.user._id)) {
+            userFollowMe = true;
+        }
+
+        console.log(gymId , req.user._id);
+
+        let showFollowButton = true;
+        if (gymId === req.user._id) {
+            showFollowButton = false;
+        }
+
+        console.log(showFollowButton);
         let ratingdone = false;
         gymData.ratedby.forEach((rate) => {
             if(rate.user.toString() == userId) {
                 ratingdone = true;
             }
         })
-
-        console.log(ratingdone);
 
         // Check if the user is in the joinedby list
         let isUserJoined;
@@ -329,6 +357,7 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
                 });
             });
         }
+        console.log(followingCount,followersCount)
 
         return res.render("gympage", {
             gymData: gymData,
@@ -338,7 +367,12 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
             daysLeftToMonth: daysLeftToMonth,
             success: success,
             msg: req.query.msg,
-            ratingdone: ratingdone
+            ratingdone: ratingdone,
+            followingOrNot: followingOrNot,
+            followersCount: followersCount,
+            followingCount: followingCount,
+            userFollowMe: userFollowMe,
+            showFollowButton: showFollowButton
         });
     } catch (error) {
         console.error("Error fetching gym data:", error);
@@ -412,6 +446,18 @@ homeRoute.get("/mygyms", async (req, res) => {
             return res.redirect("/home?msg=You do not have ownership of any gym. Please use a different ID to register a new gym.");
         }
 
+        let followersCount = 0;
+        let followingCount = 0;
+        const followData = await followModel.findById(req.user._id);
+
+        if (!followData) {
+            followersCount = 0;
+            followingCount = 0;
+        } else {
+            followersCount = followData.followers.length;
+            followingCount = followData.following.length;
+        }
+
         // Check if the gym ID matches the user ID
         let gymIdSameUserId = false;
         if (Mygymdata._id.toString() === req.user._id.toString()) {
@@ -429,11 +475,40 @@ homeRoute.get("/mygyms", async (req, res) => {
             });
         });
 
+        let activeMonths = new Map();
+
+        // Initialize the Map with months from 1 to 12 and set counts to 0
+        for (let i = 1; i <= 12; i++) {
+            activeMonths.set(i, 0);
+        }
+        
+        // Iterate over each gym data
+        Mygymdata.joinedby.forEach((gym) => {
+            const userjoinedMonth = gym.joinedAt;
+            const joinedAtDate = new Date(userjoinedMonth);
+            const monthIndex = joinedAtDate.getMonth() + 1; // Adjust to 1-based month
+        
+            // Increment the count for the corresponding month
+            if (activeMonths.has(monthIndex)) {
+                activeMonths.set(monthIndex, activeMonths.get(monthIndex) + 1);
+            }
+        });
+
+        const montharray = [];
+        activeMonths.forEach((key, value) => {
+            montharray.push(key);
+        })
+
+        console.log(montharray)
+
         return res.render("mygympage", {
             gymData: Mygymdata,
             user: req.user,
             gymIdSameUserId: gymIdSameUserId,
-            userToshiftMap: userToshiftMap
+            userToshiftMap: userToshiftMap,
+            followersCount: followersCount,
+            followingCount: followingCount,
+            montharray: montharray
         });
 
     } catch (error) {
@@ -534,7 +609,7 @@ homeRoute.get("/profile/:userId", async (req, res) => {
             userData.workout.forEach((day) => {
                 if (exerciseName.has(day.focusPart)) {
                     exerciseName.set(day.focusPart, exerciseName.get(day.focusPart) + 1);  
-                } else {
+                } else { 
                     exerciseName.set(day.focusPart, 1);  
                 }
 
@@ -544,14 +619,18 @@ homeRoute.get("/profile/:userId", async (req, res) => {
                     muscleGroup.set(day.name, 1);  
                 }
 
-                if(day.pushedAt.getMonth() == i && day.pushedAt.getDate() == j) {
+                if(Number(day.pushedAt.getMonth()) == Number(i) && Number(day.pushedAt.getDate()) == Number(j)) {
+                    console.log(Number(day.pushedAt.getMonth()) , Number(i) , Number(day.pushedAt.getDate()) , Number(j))
                     timeExercise += day.time;
                 }
             })
-            
+
             exerciseArray[i-1][j-1] = timeExercise;
         }
     }
+
+    let sortedMuscleMap = new Map([...muscleGroup.entries()].sort((a, b) => b[1] - a[1]));
+    let sortedExerciseMap = new Map([...exerciseName.entries()].sort((a, b) => b[1] - a[1]));
 
     //fetching keys and value from map
     const muscles = []
@@ -561,20 +640,20 @@ homeRoute.get("/profile/:userId", async (req, res) => {
     let totalexerciseDone = 0;
     let tottalMuscleTrained = 0;
 
-    exerciseName.forEach((value, key) => {
+    sortedExerciseMap.forEach((value, key) => {
         totalexerciseDone += value;
     })
 
-    muscleGroup.forEach((value, key) => {
+    sortedMuscleMap.forEach((value, key) => {
         tottalMuscleTrained += value;
     })
 
-    exerciseName.forEach((value, key) => {
+    sortedExerciseMap.forEach((value, key) => {
         exerciseCount.push(((value/totalexerciseDone) * 100).toFixed(1));
         exercise.push(key);
     })
 
-    muscleGroup.forEach((value, key) => {
+    sortedMuscleMap.forEach((value, key) => {
         muscleCount.push(((value/tottalMuscleTrained) * 100).toFixed(1));
         muscles.push(key);
     });
@@ -1172,6 +1251,8 @@ homeRoute.post('/exercise/:exercisetype/:focuspart/:day', async (req, res) => {
             focusPart: focuspart,
             name: exercisetype 
         };
+
+        console.log(workoutEntry)
         
 
         // Update the user's workout array by pushing the new workout time
@@ -1184,6 +1265,8 @@ homeRoute.post('/exercise/:exercisetype/:focuspart/:day', async (req, res) => {
             },
             { new: true }  // Return the updated document
         );
+
+        console.log(updatedUser)
 
         // If no user was found, return an error
         if (!updatedUser) {

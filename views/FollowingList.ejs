@@ -29,6 +29,7 @@
                     <div class="flex flex-row justify-between items-center p-3 shadow-sm shadow-red-500 hover:shadow-white bg-gray-900 rounded-lg transition-all duration-300 hover:bg-gray-800">
                         <img src="<%= following.profileImage %>" alt="<%= following.fullname %>"
                             class="w-12 h-12 object-cover rounded-full mr-4">
+                        <h1 class="font-bold"><%= following.usertype %></h1>
                         <a href="/home/profile/<%= following._id %>"
                             class="text-lg font-medium text-white transition-all duration-300 hover:text-red-500">
                             <%= following.fullname %>

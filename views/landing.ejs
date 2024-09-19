@@ -69,35 +69,50 @@
     <div class="container mx-auto overflow-y-auto pb-10 overlay">
         <%- include("./Partials/alerts.ejs") %>
         <%- include("./Partials/success.ejs") %>
+
+        <%= console.log(allgyms) %>
     
-        <% if (allgyms.length === 0) { %>
+        <% if (allgyms.length === 0 || allgyms == null) { %>
             <h1 class="text-center my-[10%] font-bold text-4xl text-white">NO GYMS TO EXPLORE</h1>
         <% } else { %>
-            <div class="flex flex-wrap items-center justify-center m-5">
-                <% allgyms?.forEach(gym => { %>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap justify-center items-center md:mx-32">
+                <!-- Show All Gyms Button -->
+                <button id="show-all-gyms" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg m-2">
+                    Show All Gyms
+                </button>
+
+                <!-- Rating > 4 -->
+                <button id="filter-high-rating" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg m-2">
+                    Rating more than 4
+                </button>
+            </div>
+
+            <div id="gym-container" class="flex flex-wrap items-center justify-center my-3">
+                <% allgyms?.forEach((gym, index) => { %>
                     <!-- Each slide -->
-                    <div class="gym-card bg-black text-sm rounded-lg mx-4 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-[25%] p-3">
+                    <div id="gym<%=index%>" class="gym-card bg-black text-sm rounded-lg mx-3 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-[25%] p-3" data-rating="<%= gym?.rating %>" data-monthly-charge="<%= gym?.monthlyCharges %>">
+                        <div class="rounded-lg overflow-hidden transition-transform transform hover:scale-105">
+                            <img src="<%= gym?.profileImage %>" alt="<%= gym?.gymname %>" class="w-[100%] h-[30%]">
+                            <div class="p-2">
+                                <h2 class="text-2xl font-extrabold text-red-600 mb-2"><%= gym?.gymname.toUpperCase() %></h2>
+                                <p class="text-gray-400 text-sm mb-2"><%= gym?.location %></p>
 
-                            <div class="rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-                                <img src="<%= gym.profileImage %>" alt="<%= gym.gymname %>" class="object-cover w-full">
+                                <!-- Emphasized Owner and Rating -->
+                                <p class="text-lg font-bold text-white mb-2">Owner: <span class="text-red-600"><%= gym?.fullname %></span></p>
+                                <p class="text-lg font-bold text-white mb-2">Rating: <span class="text-red-600"><%= gym?.rating > 0 ? gym?.rating.toFixed(1) : 0 %></span> / 5</p>
+
+                                <p class="text-lg font-bold text-white mb-2">Monthly Charges: <span class="text-red-600">₹<%= gym?.monthlyCharge %></p>
+                                <p class="text-sm text-gray-400">Created on: <%= new Date(gym?.createdAt).toLocaleDateString() %></p>
                                 
-                                <div class="p-4">
-                                    <h2 class="text-2xl font-extrabold text-red-600 mb-2"><%= gym.gymname.toUpperCase() %></h2>
-                                    <p class="text-gray-400 text-sm mb-2"><%= gym.location %></p>
-
-                                    <!-- Emphasized Owner and Rating -->
-                                    <p class="text-lg font-bold text-white mb-2">Owner: <span class="text-red-600"><%= gym.fullname %></span></p>
-                                    <p class="text-lg font-bold text-white mb-2">Rating: <span class="text-red-600"><%= gym.rating > 0 ? gym.rating.toFixed(1) : 0 %></span> / 5</p>
-
-                                    <p class="text-sm text-gray-400">Created on: <%= new Date(gym.createdAt).toLocaleDateString() %></p>
-                                    
-                                    <div class="mt-4">
-                                        <a href="/home/gym/<%= gym._id %>" class="block w-full font-semibold text-center py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all">
-                                            View More
-                                        </a>
-                                    </div>
+                                <div class="mt-4">
+                                    <a href="/home/gym/<%= gym?._id %>" class="block w-full font-semibold text-center py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all">
+                                        View More
+                                    </a>
                                 </div>
                             </div>
+                        </div>
                     </div>
                 <% }) %>
             </div>
@@ -148,7 +163,7 @@
                 if (message) {  // Ensure that message is not empty
                     // Append the user's question to the chat history
                     appendToChatHistory("You", message);
-                    //send msg to the server
+                    // Send message to the server
                     socket.emit("aiMessage", message);  // Emit message to the server
                     document.getElementById("aiMessage").value = "";  // Clear the input field
                 }
@@ -194,8 +209,29 @@
 
         // Socket event listener for server messages (AI's response)
         socket.on("serverMessage", (data) => {
-            // Append AI's answer we are etting from the server to the chat history
+            // Append AI's answer we are getting from the server to the chat history
             appendToChatHistory("AI", data);
+        });
+
+        // Filter by rating > 4
+        document.getElementById("filter-high-rating").addEventListener("click", () => {
+            const gymCards = document.querySelectorAll('.gym-card');
+            gymCards.forEach(card => {
+                const rating = parseFloat(card.getAttribute('data-rating'));
+                if (rating > 4) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Show All Gyms Button Functionality
+        document.getElementById("show-all-gyms").addEventListener("click", () => {
+            const gymCards = document.querySelectorAll('.gym-card');
+            gymCards.forEach(card => {
+                card.style.display = 'block'; // Show all gym cards
+            });
         });
     </script>
 </body>

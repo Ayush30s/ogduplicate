@@ -225,6 +225,7 @@ const userModel = require("../Models/user");
 const PhyModel = require("../Models/userphy");
 const { createHmac } = require("crypto");
 const { createToken } = require("../services/auth");
+const gymnameModel = require("../Models/gymname");
 const cloudinary = require("cloudinary").v2;
 
 const ownerRoute = Router();
@@ -292,6 +293,9 @@ ownerRoute.post("/owner", upload.single('profileImage'), async (req, res) => {
         if (checkEmailInUserModel) {
             return res.render("frontpage", { msg: "This Email is already registered." });
         }
+
+        const data = await gymnameModel.create({ name: gymname});
+        console.log(data);
 
         // Create a new gym owner entry in the gym model with the Cloudinary URL
         const newGymOwner = await gymModel.create({

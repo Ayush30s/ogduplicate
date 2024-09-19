@@ -5,7 +5,7 @@ const { createHmac, randomBytes } = require("crypto");
 const userSchema = new mongoose.Schema({
     fullname: {
         type: String,
-        required: true
+        required: true,
     },
     email: {
         type: String,

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/rec.js"></script>
     <style>
         /* Custom Dropdown Animation */
         .dropdown-enter {
@@ -46,8 +47,11 @@
                 <!-- Logo -->
                 <div class="flex-shrink-0">
                     <a href="#" class="text-red-500 text-3xl font-extrabold tracking-widest hover:text-white transition-all duration-300 ease-in-out">
-                        My<span class="text-white">Gym</span>
+                        My<span id="t" class="text-white">Gym</span>
                     </a>
+                </div>
+                <div>
+                    <input id="inp" class="bg-black" type="text">
                 </div>
                 <!-- Menu Items (Hidden on Small Devices) -->
                 <div class="hidden sm:flex sm:ml-6 items-center space-x-6">
@@ -57,6 +61,7 @@
                         <a href="/app/transform" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Transformation</a>
                         <a href="/app/blogs" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Blogs</a>
                     <% } %>
+                    
 
                     <!-- Dropdown Menu on Right Side (Visible on larger screens) -->
                     <div class="relative group hidden sm:block">
@@ -97,13 +102,17 @@
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="/home" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600">Home</a>
                 <a href="/home/about" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600">About</a>
-                <a href="/app/transform" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600">Ask AI</a>
+                <% if (locals.user.usertype == "USER") { %>
+                    <a href="/app/transform" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600">Ask AI</a>
+                <% } %>
 
                 <!-- Accordion for Blogs -->
                 <div>
-                    <button id="blog-toggle" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">
-                        Blogs
-                    </button>
+                    <% if (locals.user.usertype == "USER") { %>
+                        <button id="blog-toggle" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">
+                            Blogs
+                        </button>
+                    <% } %>
 
                     <% if (locals.user.usertype == "USER") { %>
                         <div id="blog-menu" class="pl-4 space-y-1 hidden">
@@ -125,6 +134,16 @@
             </div>
         </div>
     </nav>
+
+    <script>
+        const recInput = document.getElementById("inp");
+        
+        recInput.addEventListener("keydown", () => {
+
+            const inputtext = recInput.value;  // Use 'value' to get the text from an input element
+            document.getElementById("t").innerText = inputtext
+        });
+    </script>
 
     <script>
         // JavaScript for toggling the mobile menu with smooth opening/closing
@@ -149,4 +168,4 @@
         });
     </script>
 </body>
-</html>
+</html> 

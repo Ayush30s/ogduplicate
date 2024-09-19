@@ -129,16 +129,15 @@
         <div class="w-full flex-grow flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12 shadow-sm shadow-white overflow-hidden">
 
             <!-- Gym Information Container -->
-            <div class="relative bg-gray-800 p-6 sm:p-10 mb-8 shadow-lg shadow-red-500/60 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-700/80 flex flex-col sm:flex-row gap-6">
+            <div class="relative bg-gray-800 p-6 sm:p-10 mb-8 border border-red-600 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-700/80 flex flex-col sm:flex-row gap-6">
                 <!-- Edit Profile Button -->
                 <a href="/app/editprofile" class="absolute z-10 top-4 right-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold px-4 py-2 rounded-full border border-red-500 shadow-md hover:shadow-lg transition-transform hover:scale-110 duration-300 text-sm md:text-base">
                     Edit Profile
                 </a>
             
                 <!-- Left Section: Gym Image -->
-                <div class="w-full sm:w-1/3 relative overflow-hidden rounded-xl shadow-xl transform hover:scale-110 transition-transform duration-500">
+                <div class="w-full sm:w-1/3 relative overflow-hidden rounded-xl shadow-xl ">
                     <img src="<%= gymData.profileImage %>" alt="gym img" class="w-full h-56 sm:h-72 object-cover rounded-lg">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60 rounded-lg"></div>
                 </div>
             
                 <!-- Right Section: Gym Details -->
@@ -169,105 +168,200 @@
                             </p>
                         </div>
                     </div>
+
+                    <div class="rounded-lg w-full">
+                        <div class="flex flex-row my-2">
+                            <a href="/request/user/followersList/<%= gymData._id %>" class="w-full px-2 md:px-4 py-2 mr-2 bg-red-600 text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-700">
+                                Followers: <%= followersCount %>
+                            </a>
+                            <a href="/request/user/followingList/<%= gymData._id %>" class="w-full px-2 md:px-4 py-2 ml-2 bg-red-600 text-center shadow-sm text-white font-bold rounded-full transition-all duration-200 hover:bg-red-700">
+                                Following: <%= followingCount %>
+                            </a>
+                        </div>
+                    </div>
             
                     <!-- Description -->
                     <div class="bg-gray-700 p-6 rounded-lg shadow-inner max-h-56 overflow-auto transition-all duration-300 hover:bg-gray-600">
                         <h3 class="text-lg sm:text-xl font-bold text-red-500 mb-2">Description</h3>
-                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed text-justify">
+                        <p class="text-gray-300 text-sm sm:text-base font-semibold leading-relaxed text-justify">
                             <%= gymData.description %>
                         </p>
                     </div>
                 </div>
             </div>
-            
-            
 
-            <!-- Shifts Accordion -->
-            <div class="mt-10 w-full flex flex-col items-center">
-                <button id="shiftsAccordionButton" class="max-w-md bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black w-full text-center">
-                    Show Shifts
-                </button>
-                <div id="shiftsAccordionContent" class="hidden mt-4 flex flex-col items-center space-y-6 w-full max-w-6xl">
-                    <!-- Visible on smaller devices -->
-                    <a href="/app/edit-gym/<%= gymData._id %>" class=" rounded-lg backdrop-blur-2xl text-white uppercase px-2 text-center w-1/4 py-1 shadow-sm hover:text-red-600 shadow-white  mt-6 block text-center">
-                        Add Shift
-                    </a>
+            <!-- Plan Section -->
+            <div id="planAccordionContent" class="bg-black text-white rounded-lg p-4 mt-4 ml-auto w-full flex flex-col items-center">
+                <h3 class="text-lg sm:text-xl font-bold text-red-500 mb-2">Gym Plan</h3>
+                <p class="text-gray-300 text-sm sm:text-base font-semibold leading-relaxed text-justify">
+                    <!-- Placeholder for the plan content. Replace with actual plan details -->
+                    Here you can include details about the gym's plans, such as membership options, pricing, and any special offers.
+                </p>
+            </div>
+            
+            <!-- Cards for Shifts, Members, and Analytics -->
+            <div class="flex flex-col text-sm md:p-10 sm:p-6 md:flex-row w-full md:justify-between gap-4 m-auto">
+                <!-- Shifts Accordion -->
+                <div class="w-full md:w-[30%]">
+                    <div class="flex justify-between items-center space-x-4">
+                        <!-- Show Shifts Button -->
+                        <button id="shiftsAccordionButton" class="w-full bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black text-center transition-transform transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-600/50">
+                            Show Shifts
+                        </button>
                     
-                    <div class="flex flex-row justify-center items-center flex-wrap overflow-auto">
-                        <% if (gymData.shifts.length > 0) { %>
-                            <% gymData.shifts.forEach(function(shift, index) { %>
-                                <a href="/home/profile/shiftdetail/<%= gymData._id %>/<%= shift._id %>">
-                                    <div class=" backdrop-blur-2xl p-4 rounded-lg shadow-sm shadow-red-600/50 m-4 hover:shadow-white transform transition-transform hover:scale-105 animate-fadeInUp">
-                                        <h4 class="text-lg sm:text-xl font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
-                                        <p class="text-sm text-gray-400 mb-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
-                                        <p class="text-sm text-gray-400 mb-2">Gender: <span class="text-white"><%= shift.sex %></span></p>
-                                        <p class="text-sm text-gray-400 mb-2">Limit: <span class="text-white"><%= shift.limit %></span></p>
-                                        <% if (!locals.gymIdSameUserId) { %>
-                                            <a href="/home/gym/<%= gymData._id %>/join-shift/<%= shift._id %>">
-                                                <button class="absolute top-24 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase transform transition-transform hover:scale-105">Join</button>
-                                            </a>
-                                        <% } %>
+                        <!-- Add Shift Link -->
+                        <a href="/app/edit-gym/<%= gymData._id %>" class="w-full bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black text-center transition-transform transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-600/50">
+                            Add Shift
+                        </a>
+                    </div>
+                    
+                    <div id="shiftsAccordionContent" class="hidden bg-black rounded-lg p-4 mt-4 flex flex-col items-center space-y-6">
+                        <!-- Visible on smaller devices -->
+                        <div class="w-full flex-row justify-center items-center flex-wrap overflow-auto">
+                            <% if (gymData.shifts.length > 0) { %>
+                                <% gymData.shifts.forEach(function(shift, index) { %>
+                                    <a href="/home/profile/shiftdetail/<%= gymData._id %>/<%= shift._id %>" class="w-full">
+                                        <div class="w-full flex flex-col justify-between items-start align-middle my-3 p-2 bg-black border-b border-red-500 transition-all duration-300 shadow-lg">
+                                            <h4 class="font-bold text-white mb-2">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
+                                            <div class="flex sm:flex-col md:flex-row">
+                                                <p class="text-sm text-gray-400 mb-2 pr-2">Members: <span class="text-white"><%= shift.joinedby.length %></span></p>
+                                                <p class="text-sm text-gray-400 mb-2 pr-2">Gender: <span class="text-white"><%= shift.sex %></span></p>
+                                                <p class="text-sm text-gray-400 mb-2 pr-2">Limit: <span class="text-white"><%= shift.limit %></span></p>
+                                            </div>
+                                            <% if (!locals.gymIdSameUserId) { %>
+                                                <a href="/home/gym/<%= gymData._id %>/join-shift/<%= shift._id %>">
+                                                    <button class="absolute top-24 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold uppercase transform transition-transform hover:scale-105">Join</button>
+                                                </a>
+                                            <% } %>
+                                        </div>
+                                    </a>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="w-full text-center p-6 bg-black rounded-lg shadow-lg">
+                                    <h1 class="text-2xl font-bold text-red-600">No Active Shift</h1>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Members Accordion -->
+                <div class="w-full md:w-[30%]">
+                    <!-- Button to Show Members -->
+                    <button id="membersAccordionButton" class="w-full bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black text-center transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-600/50">
+                        Show Members
+                    </button>
+                
+                    <!-- Members Accordion Content -->
+                    <div id="membersAccordionContent" class="hidden bg-black p-4 mt-4 w-full flex flex-col items-center space-y-4">
+                        <% if (gymData.joinedby.length > 0) { %>        
+                            <!-- Members List -->
+                            <% gymData.joinedby.forEach(function(user) { 
+                                let shiftIndex = userToshiftMap.get((user.user._id).toString());
+                            %>
+                                <div class="w-full flex flex-row items-center p-4 bg-black rounded-lg border-2 border-red-600 transition-all duration-300 shadow-lg">
+                                    <!-- Profile Image -->
+                                    <a href="/home/profile/<%= user.user._id %>" class="w-[15%] h-[15%] mr-4 text-center rounded-full">
+                                        <img src="<%= user.user.profileImage %>" alt="Member" class="w-10 h-10 rounded-full border-2 border-white hover:p-1 hover:border-red-600 transition-all duration-300 transform hover:scale-110">
+                                    </a>
+                
+                                    <!-- Member Details -->
+                                    <div class="flex-grow flex flex-row sm:items-center justify-between text-center sm:text-left">
+                                        <!-- Member Name -->
+                                        <div class="mb-2 sm:mb-0 sm:w-1/3 font-semibold">
+                                            <%= user.user.fullname %>
+                                        </div>
+                
+                                        <!-- Joined Date -->
+                                        <div class="mb-2 sm:mb-0 sm:w-1/3">
+                                            <%= user.user.createdAt?.toLocaleDateString() %>
+                                        </div>
+                
+                                        <!-- Shift Info -->
+                                        <div class="font-bold sm:w-1/3">
+                                            <span class="bg-red-600 px-2 py-1 rounded-full text-black shadow-lg">Shift: <%= shiftIndex %></span>
+                                        </div>
                                     </div>
-                                </a>
+                                </div>
                             <% }); %>
+                
                         <% } else { %>
-                            <h1 class="text-2xl text-center font-bold w-full">No Shift for the gym</h1>
+                            <!-- No Members Message -->
+                            <div class="w-full text-center p-6 bg-black rounded-lg shadow-lg">
+                                <h1 class="text-2xl font-bold text-red-600">No Members Have Joined Yet</h1>
+                            </div>
                         <% } %>
                     </div>
                 </div>
-            </div>
-
-            <!-- Members Accordion -->
-            <div class="mt-10 w-full max-w-md flex flex-col justify-center items-center">
-                <button id="membersAccordionButton" class="bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-sm hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black w-full text-center">
-                    Show Members
-                </button>
                 
-                <div id="membersAccordionContent" class="hidden mt-4 w-full flex flex-col items-center space-y-4">
-                    <% if (gymData.joinedby.length > 0) { %>
-                        <div class="w-full flex flex-row justify-between items-center align-middle p-2 border-b-2 border-red-500 rounded-lg">
-                            <div class="mx-2">                        
-                                profile
-                            </div>
-                            <div class="mx-2">
-                                Name
-                            </div>
-                            <div class="mx-2 font-bold text-sm">
-                                Joined At
-                            </div>
-                            <div class="mx-2 font-bold text-sm">
-                                Shift
-                            </div>
-                        </div>
 
-                        <% gymData.joinedby.forEach(function(user) { 
-                            let shiftIndex = userToshiftMap.get((user.user._id).toString());
-                        %>
-                            <div class="w-full flex flex-wrap sm:flex-nowrap justify-between items-center p-3 shadow-sm hover:shadow-lg rounded-lg transition-shadow duration-300 bg-white">
-                                <a href="/home/profile/<%= user.user._id %>" class="flex-shrink-0 mx-4 rounded-full">
-                                    <img src="<%= user.user.profileImage %>" alt="Member" class="w-14 h-14 rounded-full border-2 border-red-600 hover:p-1 transition-shadow duration-500">
-                                </a> 
-                                <div class="flex-grow mx-4 text-lg font-semibold text-gray-800">
-                                    <%= user.user.fullname %>
-                                </div>
-                                <div class="mx-4 text-sm text-gray-600">
-                                    <%= user.user.createdAt?.toLocaleDateString() %>
-                                </div>
-                                <div class="mx-4 font-bold text-sm text-gray-700">
-                                    Shift: <%= shiftIndex %>
-                                </div>
-                            </div>
-                        <% }); %>
-                        
-                    <% } else { %>
-                        <h1 class="text-2xl font-bold text-center">No members have Joined</h1>
-                    <% } %>
+                <!-- Analytics Toggle Button -->
+                <div class="w-full md:w-[40%] flex flex-col items-center">
+                    <button id="analyticsAccordionButton" class="w-full bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black text-center transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-600/50">
+                        Show Analytics
+                    </button>
+                    <div id="analyticsAccordionContent" class="hidden bg-black rounded-lg p-2 mt-4 w-full flex flex-col items-center">
+                        <canvas id="myChart1" width="400" height="400" class="w-full h-64 md:h-80"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     <% } %>
 
-    <!-- Smooth Scroll Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // Data from the backend, replace this with your actual data
+        const activeMonth = <%- JSON.stringify(locals.montharray) %>;
+
+        const ctx1 = document.getElementById('myChart1').getContext('2d');
+        new Chart(ctx1, { 
+            type: 'bar',
+            data: {
+                labels: months, // Set months on X-axis
+                datasets: [{
+                    label: 'Number of Users Joined',
+                    data: activeMonth, // Data for Y-axis
+                    borderWidth: 1,
+                    backgroundColor: [
+                        '#E63946', '#F72585', '#FFB703', '#023047', '#6C757D', '#343A40', '#E63946', '#F72585', '#FFB703', '#023047', '#6C757D', '#343A40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Monthly User Join Statistics'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Users'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
     <script>
         document.documentElement.style.scrollBehavior = "smooth";
 
@@ -295,6 +389,18 @@
             }
         });
 
+        // Toggle Analytics Accordion
+        document.getElementById('analyticsAccordionButton').addEventListener('click', function() {
+            var content = document.getElementById('analyticsAccordionContent');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                this.textContent = 'Hide Analytics';
+            } else {
+                content.classList.add('hidden');
+                this.textContent = 'Show Analytics';
+            }
+        });
+
         const socket = io();
 
         // Register as admin when connected
@@ -306,5 +412,6 @@
             alert(`New join request: ${data.message}`);
         });
     </script>
+
 </body>
 </html>
