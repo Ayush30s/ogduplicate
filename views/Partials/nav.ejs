@@ -61,7 +61,41 @@
                         <a href="/app/transform" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Transformation</a>
                         <a href="/app/blogs" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Blogs</a>
                     <% } %>
-                    
+
+                    <% if (locals.home == "landing124") { %>
+                        <div class="relative">
+                            <!-- Notification Bell Icon -->
+                            <button id="notification-button" class="text-red-500 focus:outline-none relative hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V9a6 6 0 00-12 0v5c0 .538-.214 1.055-.595 1.405L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <!-- Notification Count Badge -->
+                                <span id="notification-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">3</span>
+                            </button>
+                            
+                            <!-- Notification Dropdown -->
+                            <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-black text-white border border-red-500 rounded-lg shadow-lg">
+                                <div class="px-4 py-2 border-b border-red-500">
+                                    <h2 class="text-lg font-bold">Notifications</h2>
+                                </div>
+                                <div id="notification-content" class="max-h-64 overflow-y-auto">
+                                    <% (requestData).forEach((notification, index) => { %>
+                                        <div class="px-4 py-2 flex justify-between text-sm hover:bg-red-500 transition-colors cursor-pointer border-b border-red-500">
+                                            <span><%= notification.userId.fullname || notification.gymId.gymname %></span>
+                                            <% if (locals.user.usertype == "USER") { %>
+                                                <span><%= notification.status%></sp>
+                                            <% } else { %>
+                                                <div class="flex justify-between">
+                                                    <button id="<%= "accept-button" + index %>" class="bg-red-600 m-1 text-white font-bold rounded-lg hover:text-black border border-black p-1">Accept</button>
+                                                    <button id="<%= "reject-button" + index %>" class="bg-red-600 m-1 text-white font-bold rounded-lg hover:text-black border border-black p-1">Reject</button>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
 
                     <!-- Dropdown Menu on Right Side (Visible on larger screens) -->
                     <div class="relative group hidden sm:block">
@@ -74,7 +108,7 @@
                         </button>
                         <!-- Dropdown Items -->
                         <% if (locals.user) { %>
-                            <div class="absolute right-1 mt-2 w-44 text-center bg-black shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 ease-out dropdown-enter dropdown-enter-active z-10">
+                            <div class="absolute right-1 mt-2 w-44 text-center bg-black  shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 ease-out dropdown-enter dropdown-enter-active z-10">
                                 <a href="/home/profile/<%= user._id %>" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">My Profile</a>
                                 <% if (locals.user.usertype == "USER") { %>
                                     <a href="/blog/my-blogs" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">My Blogs</a>
@@ -135,37 +169,72 @@
         </div>
     </nav>
 
+    
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        const recInput = document.getElementById("inp");
-        
-        recInput.addEventListener("keydown", () => {
+        const user = <%- JSON.stringify(locals.user) %>;
+        const array = <%- JSON.stringify(locals.requestData) %>;
+        const len = array.length;
 
-            const inputtext = recInput.value;  // Use 'value' to get the text from an input element
-            document.getElementById("t").innerText = inputtext
-        });
+        const socket = io();
+    
+        for(let i = 0; i < len; i++) {
+            document.getElementById("accept-button"+i).addEventListener("click" , () => {
+                socket.emit('reqaccept', {
+                    gymId: user._id,
+                    userId: array[i]
+                });
+            })
+        }
+
+        for(let i = 0; i < len; i++) {
+            document.getElementById("reject-button"+i).addEventListener("click" , () => {
+                socket.emit('reqreject', {
+                    gymId: user._id,
+                    userId: array[i]
+                });
+            })
+        }
+
+        socket.on("backendacc", (data) => {
+            if(data == "accepted") {
+                fetch(`/home/${data.gymId}/data`, {
+                    method: 'GET', // HTTP method
+                    headers: {
+                        'Content-Type': 'application/json' // Header for JSON data
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+            }
+        })
     </script>
 
+    <!-- JavaScript to handle mobile menu and notification dropdown -->
     <script>
-        // JavaScript for toggling the mobile menu with smooth opening/closing
+        // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-        const blogToggle = document.getElementById('blog-toggle');
-        const blogMenu = document.getElementById('blog-menu');
-
         mobileMenuButton.addEventListener('click', () => {
-            if (mobileMenu.classList.contains('max-h-0')) {
-                mobileMenu.classList.remove('max-h-0');
-                mobileMenu.classList.add('max-h-screen');
-            } else {
-                mobileMenu.classList.add('max-h-0');
-                mobileMenu.classList.remove('max-h-screen');
-            }
+            mobileMenu.style.maxHeight = mobileMenu.style.maxHeight ? null : `${mobileMenu.scrollHeight}px`;
         });
 
-        // Toggle the Blogs accordion menu
-        blogToggle.addEventListener('click', () => {
-            blogMenu.classList.toggle('hidden');
+        // Blog accordion toggle
+        const blogToggle = document.getElementById('blog-toggle');
+        const blogMenu = document.getElementById('blog-menu');
+        if (blogToggle) {
+            blogToggle.addEventListener('click', () => {
+                blogMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Toggle notification dropdown on bell click
+        const notificationButton = document.getElementById('notification-button');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        notificationButton.addEventListener('click', () => {
+            notificationDropdown.classList.toggle('hidden');
         });
     </script>
 </body>
-</html> 
+</html>

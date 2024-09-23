@@ -4,6 +4,7 @@ const userModel = require("../Models/user");
 const ShiftModel = require("../Models/shift");
 const followModel = require("../Models/follow");
 const gymnameModel = require("../Models/gymname");
+const RequestModel = require("../Models/request");
 
 const homeRoute = Router();
 
@@ -234,12 +235,20 @@ homeRoute.get("/", async (req, res) => {
             });
         }
 
+        let requestData;
+        if(req.user.usertype == "OWNER") {
+            requestData = await RequestModel.find({gymId : userId}).populate("userId");
+        } else {
+            requestData = await RequestModel.find({userId : userId}).populate("gymId");
+        }
+        
         return res.render("landing", {
             allgyms: gymNotJoined,
             user: req.user,
-            msg: msg
+            msg: msg,
+            home: "landing124",
+            requestData: requestData
         });
-
     } catch (error) {
         console.error("Error fetching gyms:", error);
         return res.status(500).send("Internal Server Error");
@@ -313,14 +322,11 @@ homeRoute.get("/gym/:gymId", async (req, res) => {
             userFollowMe = true;
         }
 
-        console.log(gymId , req.user._id);
-
         let showFollowButton = true;
         if (gymId === req.user._id) {
             showFollowButton = false;
         }
 
-        console.log(showFollowButton);
         let ratingdone = false;
         gymData.ratedby.forEach((rate) => {
             if(rate.user.toString() == userId) {
@@ -834,7 +840,7 @@ homeRoute.post("/edit-gym/:gymId/:shiftId", async (req, res) => {
             { new: true } // This option returns the updated document
         );
 
-        console.log(data);
+        // console.log(data);
         return res.redirect(`/home/gym/${gymId}`);
     } catch (error) {
         console.error(error);
@@ -1197,7 +1203,7 @@ homeRoute.post('/rating/:gymId', async (req, res) => {
 
     console.log(" ratingg", rating);
     const gym = await gymModel.findById(gymId);
-    console.log(gym);
+    // console.log(gym);
 
     if (gym) {
 

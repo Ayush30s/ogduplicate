@@ -190,15 +190,6 @@
                 </div>
             </div>
 
-            <!-- Plan Section -->
-            <div id="planAccordionContent" class="bg-black text-white rounded-lg p-4 mt-4 ml-auto w-full flex flex-col items-center">
-                <h3 class="text-lg sm:text-xl font-bold text-red-500 mb-2">Gym Plan</h3>
-                <p class="text-gray-300 text-sm sm:text-base font-semibold leading-relaxed text-justify">
-                    <!-- Placeholder for the plan content. Replace with actual plan details -->
-                    Here you can include details about the gym's plans, such as membership options, pricing, and any special offers.
-                </p>
-            </div>
-            
             <!-- Cards for Shifts, Members, and Analytics -->
             <div class="flex flex-col text-sm md:p-10 sm:p-6 md:flex-row w-full md:justify-between gap-4 m-auto">
                 <!-- Shifts Accordion -->
@@ -309,7 +300,6 @@
     <% } %>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
 
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -401,16 +391,6 @@
             }
         });
 
-        const socket = io();
-
-        // Register as admin when connected
-        socket.emit('registerAdmin');
-
-        // Listen for new join requests from users
-        socket.on('newJoinRequest', (data) => {
-            console.log(`New join request: ${data.message}`);
-            alert(`New join request: ${data.message}`);
-        });
     </script>
 
 </body>

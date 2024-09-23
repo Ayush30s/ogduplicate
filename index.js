@@ -14,6 +14,7 @@ const cookieParser = require("cookie-parser");
 const {authenticateUser} = require("./Middleware/authentication");
 const { blogRouter } = require("./Routes/blog")
 const userModel = require("./Models/user");
+const RequestModel = require("./Models/request")
 
 const app = express();
 const PORT = process.env.PORT;
@@ -21,48 +22,60 @@ const PORT = process.env.PORT;
 app.use(cors());
 
 const server = http.createServer(app);
-const io = new Server(server);
-
+const io = new Server(server, {
+    cors: {
+      origin: "*",  // Adjust this to your client URL in production for security
+      methods: ["GET", "POST"]
+    }
+});
+  
 // Create a map to store admin or profile socket IDs
 let adminSocketID = null;
+const connections = [];
 
-// Handle user connections
-io.on('connection', (socket) => {
-    console.log('A new user connected with socket ID:', socket.id);
+io.on("connection", (socket) => {
+    // Listen for the 'joinRequest' event from the first page
+    console.log("new user connected : ", socket.id);
+    socket.on("joinrequest", async(data) => {
+        connections[data.userId] = socket.id;
+        console.log("connections ",connections);
 
-    socket.on("aiMessage", (data) => {
-        console.log('Message received from client:', data);
+        const n = await RequestModel.create({
+            userId: data.userId,
+            gymId: data.gymId,
+            status: "pending"
+        })
 
-        //data is recieved from client know send the data to clicent after gettig from chat gpt
-
-        // Send a response back to the client
-        socket.emit('serverMessage', "protein");
+        console.log(n);
     });
 
-    // Check if the user is the admin (assuming they connect as an admin)
-    socket.on('registerAdmin', () => {
-        adminSocketID = socket.id; // Store the admin's socket ID
-        console.log('Admin connected:', adminSocketID);
+    socket.on("reqaccept", async(data) => {
+        connections[data.gymId] = socket.id;
+        console.log("connection array : ", connections);
+        console.log("Show request data received:", data);
+        const ud = await RequestModel.findOneAndUpdate(
+            {
+                userId: data.userId.userId._id, 
+                gymId: data.gymId
+            },
+            { $set: { status: "accepted" } },
+            { new: true }  // Option to return the updated document
+        );
+        
+        console.log(data.userId.userId._id," " , data.gymId ," ", connections[data.userId.userId._id])
+        socket.to(connections[data.userId.userId._id]).emit("backendacc", {
+            userId: data.userId.userId._id,
+            gymId: data.gymId
+        });
     });
 
-    // Handle the join request from the user
-    socket.on('joinGym', (data) => {
-        console.log(`join gym`);
-
-        // Send a confirmation message back to the user
-        socket.emit('joinConfirmation', 'Your request to join the gym has been sent!');
-    });
-
-    // Handle disconnect
-    socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-        if (socket.id === adminSocketID) {
-            adminSocketID = null; // Admin disconnected
-        }
+    socket.on("reqreject", (data) => {
+        console.log("Show request data received:", data);
     });
 });
 
-mongoose.connect("mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym")
+// mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym
+mongoose.connect("mongodb://127.0.0.1:27017/Gym")
     .then(() => console.log("MonogDB connected Successfully"))
     .catch((err) => console.log("err :", err))
 
