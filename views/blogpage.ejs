@@ -4,83 +4,73 @@
 <head>
     <%- include("./Partials/head") %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added for responsiveness -->
-    <title>Blogs page</title>
+    <title>Blog Page</title>
     <!-- Add Tailwind CSS CDN link -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.2.6/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-cover bg-center bg-no-repeat bg-fixed" style="background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');">
+<body class="bg-black text-white">
     <%- include("./Partials/nav") %>
-    <div class="bg-white rounded-xl flex flex-col justify-center items-center mx-auto my-6 p-4 sm:p-8 max-w-[95%] sm:max-w-[70%] animate-slide-in">
+
+    <!-- Blog Container -->
+    <div class="bg-gray-900 rounded-xl shadow-lg mx-auto my-8 p-6 sm:p-12 max-w-[95%] sm:max-w-[70%]">
         <!-- Blog Image -->
-        <div class="overflow-hidden rounded-lg w-full h-48 sm:h-64 flex justify-center animate-slide-in">
-            <img src="<%= blog?.coverImage %>" alt="Blog Image" class="w-full h-full object-cover rounded-lg shadow-md hover:scale-105 transition-transform duration-500">
+        <div class="overflow-hidden rounded-lg w-full h-64 sm:h-80 mb-6">
+            <img src="<%= blog?.coverImage %>" alt="Blog Image" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105 rounded-lg shadow-lg">
         </div>
 
-        <div class="p-4 sm:p-8 flex flex-col w-full">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 p-5 rounded-xl">
-                <!-- Blog Date -->
-                <h3 class="font-bold text-gray-800 animate-fade-in rounded-lg text-sm sm:text-base">
-                    <span>Publisher</span> - <%= blog?.createdBy?.fullname %>
-                </h3>
-                <!-- Blog Title -->
-                <h1 class="text-3xl sm:text-xl font-bold text-gray-800 animate-fade-in"><%= blog?.title %></h1>
-                <p class="text-gray-700 text-xs sm:text-sm animate-fade-in m-2">Published on <%= blog?.createdAt.toLocaleDateString() %></p>
-            </div>
-            <!-- Blog Content -->
-            <div id="contentID" class="text-xs sm:text-sm text-gray-700 border border-gray-200 p-2 leading-relaxed animate-fade-in slide-in p-4 sm:p-5">
-                <%- blog?.content %>
-            </div>
+        <!-- Blog Info -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-red-500 mb-4"><%= blog?.title %></h1>
+            <p class="text-sm sm:text-base text-gray-400">Published by <span class="font-semibold text-white"><%= blog?.createdBy?.fullname %></span> on <%= blog?.createdAt.toLocaleDateString() %></p>
+        </div>
 
-            <div class="flex flex-col items-center my-2 w-full">
-                <% if (locals.user) { %>
-                    <div class="flex flex-row justify-between items-center">
-                        <div class="rounded-2xl w-full">
-                            <form class="p-3 flex flex-row justify-between items-center" id="likeform" method="post" action="/blog/like/<%= blog?._id %>">
-                                <button id="likeButton" data-liked="false" class="p-1 text-[30px] w-[10%] sm:w-[6%] rounded-full transition-transform duration-150 ease-in-out">
-                                    <% if (userHasLiked) { %>
-                                        ❤️
-                                    <% } else { %>
-                                        🤍
-                                    <% } %>
-                                </button>
-                                <span class="text-xs text-black sm:text-sm my-auto m-1 font-bold"><%= likecount %> Likes</span>
-                            </form>
-                        </div>
-                        <div class="rounded-2xl w-full my-2">
-                            <form class="p-2 sm:p-3 flex flex-row justify-between items-center" id="saveform" method="post" action="/blog/save/<%= blog?._id %>">
-                                <button id="saveButton" data-saved="false" class="p-1 text-[30px] w-[15%] sm:w-[8%] rounded-full transition-transform duration-150 ease-in-out">
-                                    <% if (userHasSaved) { %>
-                                        🌟
-                                    <% } else { %>
-                                        ⭐
-                                    <% } %>
-                                </button>
-                                <span class="text-xs text-black sm:text-sm my-auto m-1 font-bold"><%= saveCount %> saves</span>
-                            </form>
-                        </div>
-                    </div>
-                <% } else { %>
-                    <h1 class="text-xs sm:text-sm animate-fade-in">Sign in to like and comment on blogs</h1>
-                <% } %>
+        <!-- Blog Content -->
+        <div class="text-gray-300 leading-relaxed border-l-4 border-red-500 pl-4 sm:pl-6 py-6 mb-8 bg-gray-800 rounded-lg">
+            <%- blog?.content %>
+        </div>
 
-                <div class="bg-white shadow-xl p-3 my-2 rounded-lg w-full">
-                    <h1 class="text-sm sm:text-lg font-bold">Comments (<%= comments.length %>)</h1>
-                    <% if (locals.user) { %>
-                        <form class="py-3 text-xs sm:text-sm" method="post" action="/blog/comment/<%= blog?._id %>">
-                            <input type="text" id="content" name="content" class="border border-gray-200 text-black outline-none p-2 w-full rounded-sm" placeholder="Type your comment...">
-                            <button type="submit" class="bg-black text-white hover:bg-red-600 border border-black my-2 py-2 px-3 rounded-sm">Add</button>
-                        </form>
-                    <% } %>
-                    <div class="w-full max-h-[300px] overflow-auto">
-                        <% locals?.comments.forEach(comment => { %>
-                            <div class="my-5">
-                                <span class="font-semibold text-black bg-gray-100 px-2 py-1 rounded-xl text-xs sm:text-sm"><%= comment.createdBy.fullname %></span>
-                                <h1 class="text-xs text-black sm:text-sm px-2">🚀<%= comment.content %></h1>
-                            </div>
-                        <% }) %>
+        <!-- Like and Save Buttons -->
+        <% if (locals.user) { %>
+            <div class="flex justify-between items-center mb-8">
+                <form class="flex items-center" id="likeform" method="post" action="/blog/like/<%= blog?._id %>">
+                    <button id="likeButton" data-liked="false" class="text-3xl sm:text-4xl transition-transform duration-300 ease-in-out hover:scale-110">
+                        <% if (userHasLiked) { %>❤️<% } else { %>🤍<% } %>
+                    </button>
+                    <span class="text-sm sm:text-base text-gray-400 ml-3"><%= likecount %> Likes</span>
+                </form>
+
+                <form class="flex items-center" id="saveform" method="post" action="/blog/save/<%= blog?._id %>">
+                    <button id="saveButton" data-saved="false" class="text-3xl sm:text-4xl transition-transform duration-300 ease-in-out hover:scale-110">
+                        <% if (userHasSaved) { %>🌟<% } else { %>⭐<% } %>
+                    </button>
+                    <span class="text-sm sm:text-base text-gray-400 ml-3"><%= saveCount %> Saves</span>
+                </form>
+            </div>
+        <% } else { %>
+            <p class="text-center text-gray-400 text-xs sm:text-sm">Sign in to like and save this blog.</p>
+        <% } %>
+
+        <!-- Comments Section -->
+        <div class="bg-gray-800 shadow-lg rounded-lg p-6 sm:p-8">
+            <h2 class="text-lg font-bold text-white mb-4">Comments (<%= comments.length %>)</h2>
+            <% if (locals.user) { %>
+                <form class="mb-6" method="post" action="/blog/comment/<%= blog?._id %>">
+                    <input type="text" id="content" name="content" class="w-full p-3 text-gray-900 rounded-lg bg-gray-100 outline-none focus:ring-2 focus:ring-red-500" placeholder="Type your comment...">
+                    <button type="submit" class="mt-4 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-300">Add Comment</button>
+                </form>
+            <% } else { %>
+                <p class="text-center text-sm text-gray-400 mb-4">Sign in to leave a comment.</p>
+            <% } %>
+
+            <!-- Comments List -->
+            <div class="space-y-4 max-h-64 overflow-y-auto">
+                <% locals?.comments.forEach(comment => { %>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <span class="block font-semibold text-white text-sm mb-2"><%= comment.createdBy.fullname %></span>
+                        <p class="text-sm text-gray-300">🚀 <%= comment.content %></p>
                     </div>
-                </div>
+                <% }) %>
             </div>
         </div>
     </div>
@@ -91,33 +81,17 @@
             const likeButton = document.getElementById('likeButton');
             likeButton.addEventListener('click', () => {
                 const isLiked = likeButton.getAttribute('data-liked') === 'true';
-                if (isLiked) {
-                    likeButton.innerHTML = '🤍'; // Unliked state
-                    likeButton.setAttribute('data-liked', 'false');
-                } else {
-                    likeButton.innerHTML = '❤️'; // Liked state
-                    likeButton.setAttribute('data-liked', 'true');
-                }
+                likeButton.innerHTML = isLiked ? '🤍' : '❤️';
+                likeButton.setAttribute('data-liked', !isLiked);
             });
 
             // Handle save button functionality
             const saveButton = document.getElementById('saveButton');
             saveButton.addEventListener('click', () => {
                 const isSaved = saveButton.getAttribute('data-saved') === 'true';
-                if (isSaved) {
-                    saveButton.innerHTML = '⭐'; // Unsaved state
-                    saveButton.setAttribute('data-saved', 'false');
-                } else {
-                    saveButton.innerHTML = '🌟'; // Saved state
-                    saveButton.setAttribute('data-saved', 'true');
-                }
+                saveButton.innerHTML = isSaved ? '⭐' : '🌟';
+                saveButton.setAttribute('data-saved', !isSaved);
             });
-        });
-
-        // Toggle dropdown menu
-        document.getElementById('dropdownButton').addEventListener('click', () => {
-            const dropdownMenu = document.getElementById('dropdownMenu');
-            dropdownMenu.classList.toggle('hidden');
         });
     </script>
 </body>

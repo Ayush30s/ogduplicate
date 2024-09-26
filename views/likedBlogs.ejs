@@ -3,34 +3,50 @@
 
 <head>
    <%- include("./Partials/head") %>
+   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
+<body class="bg-black text-white">
     <%- include("./Partials/nav") %>
-    <h1 class="text-center text-4xl font-bold mt-5 mb-10">Liked Blogs</h1>
-    <div class="flex flex-wrap">
+
+    <!-- Page Title -->
+    <h1 class="text-center text-4xl font-bold text-red-500 mt-10 mb-10">Liked Blogs</h1>
+
+    <!-- Blog Grid -->
+    <div class="flex flex-wrap justify-center">
         <% Likedblogs.Likedblogs.forEach(blog => { %>
-            <div class=" w-[20%] mx-4 bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-1 transition duration-300 ease-in-out cursor-pointer m-3">
-                <img class="w-full h-auto object-cover" src="<%= blog.coverImage %>" alt="Blog Image">
-                <div class="p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 hover:text-gray-600 transition duration-300"><%= blog.title %></h2>
-                    <p class="text-gray-600 mt-4 text-sm">
-                        <%= blog.content.slice(0, 100) %>...
-                    </p> 
+            <div class="w-full border-2 border-red-500 sm:w-[48%] md:w-[30%] lg:w-[20%] mx-4 bg-gray-900 rounded-lg shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-2 duration-300 ease-in-out m-3">
+                
+                <!-- Blog Image -->
+                <img class="w-full h-40 object-cover rounded-t-lg" src="<%= blog.coverImage %>" alt="Blog Image">
+                
+                <!-- Blog Content -->
+                <div class="p-5">
+                    <h2 class="text-xl font-bold text-white hover:text-red-500 transition-colors duration-300">
+                        <%= blog.title %>
+                    </h2>
+                    
+                    <!-- View and Date Row -->
                     <div class="mt-4 flex justify-between items-center">
-                        <a href="/blog/<%= blog._id %>" class="bg-gray-100 font-semibold rounded-xl px-3 py-1 text-blue-600 hover:text-red-400 transition duration-300">View</a>
-                        <span class="text-gray-700 text-sm bg-gray-100 rounded-xl px-3 py-1"><%= blog.createdAt.toLocaleDateString() %></span>
-                       
+                        <a href="/blog/<%= blog._id %>" class="bg-red-500 text-white text-sm font-semibold rounded-full px-4 py-1 hover:bg-red-600 transition duration-300">
+                            View
+                        </a>
+                        <span class="text-gray-400 text-sm bg-gray-800 rounded-full px-3 py-1">
+                            <%= blog.createdAt.toLocaleDateString() %>
+                        </span>
                     </div>
                 </div>
             </div>
         <% }) %>
     </div>
-   <script>
+
+    <!-- Dropdown Script -->
+    <script>
         document.getElementById('dropdownButton').addEventListener('click', function () {
             var dropdownMenu = document.getElementById('dropdownMenu');
             dropdownMenu.classList.toggle('hidden');
         });
-   </script>
+    </script>
 </body>
+
 </html>

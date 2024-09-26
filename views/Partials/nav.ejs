@@ -37,6 +37,18 @@
         #mobile-menu {
             transition: max-height 0.5s ease-in-out;
         }
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: red;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.2rem 0.4rem;
+            border-radius: 9999px;
+        }
     </style>
 </head>
 <body class="bg-black text-white font-sans">
@@ -50,54 +62,32 @@
                         My<span id="t" class="text-white">Gym</span>
                     </a>
                 </div>
+                <!-- Input Field (Hidden on Small Devices) -->
                 <div>
                     <input id="inp" class="bg-black" type="text">
                 </div>
-                <!-- Menu Items (Hidden on Small Devices) -->
+                <!-- Notification and Menu Items -->
                 <div class="hidden sm:flex sm:ml-6 items-center space-x-6">
                     <a href="/home" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Home</a>
                     <a href="/home/about" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">About</a>
+
+                    <!-- Notification Button -->
+                    <div class="relative">
+                        <button id="notification-button" class="text-red-500 focus:outline-none">
+                            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-4.215a2 2 0 00-1.81-1.285H6.215a2 2 0 00-1.81 1.285L3 17h5m7 0v2a3 3 0 11-6 0v-2m6 0H9" />
+                            </svg>
+                        </button>
+                        <!-- Notification Badge -->
+                        <span id="notification-badge" class="notification-badge hidden">3</span>
+                    </div>
+
                     <% if (locals.user.usertype == "USER") { %>
                         <a href="/app/transform" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Transformation</a>
                         <a href="/app/blogs" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Blogs</a>
                     <% } %>
 
-                    <% if (locals.home == "landing124") { %>
-                        <div class="relative">
-                            <!-- Notification Bell Icon -->
-                            <button id="notification-button" class="text-red-500 focus:outline-none relative hover:text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V9a6 6 0 00-12 0v5c0 .538-.214 1.055-.595 1.405L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <!-- Notification Count Badge -->
-                                <span id="notification-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">3</span>
-                            </button>
-                            
-                            <!-- Notification Dropdown -->
-                            <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-black text-white border border-red-500 rounded-lg shadow-lg">
-                                <div class="px-4 py-2 border-b border-red-500">
-                                    <h2 class="text-lg font-bold">Notifications</h2>
-                                </div>
-                                <div id="notification-content" class="max-h-64 overflow-y-auto">
-                                    <% (requestData).forEach((notification, index) => { %>
-                                        <div class="px-4 py-2 flex justify-between text-sm hover:bg-red-500 transition-colors cursor-pointer border-b border-red-500">
-                                            <span><%= notification.userId.fullname || notification.gymId.gymname %></span>
-                                            <% if (locals.user.usertype == "USER") { %>
-                                                <span><%= notification.status%></sp>
-                                            <% } else { %>
-                                                <div class="flex justify-between">
-                                                    <button id="<%= "accept-button" + index %>" class="bg-red-600 m-1 text-white font-bold rounded-lg hover:text-black border border-black p-1">Accept</button>
-                                                    <button id="<%= "reject-button" + index %>" class="bg-red-600 m-1 text-white font-bold rounded-lg hover:text-black border border-black p-1">Reject</button>
-                                                </div>
-                                            <% } %>
-                                        </div>
-                                    <% }) %>
-                                </div>
-                            </div>
-                        </div>
-                    <% } %>
-
-                    <!-- Dropdown Menu on Right Side (Visible on larger screens) -->
+                    <!-- Profile Dropdown (Large Screen) -->
                     <div class="relative group hidden sm:block">
                         <button class="text-red-500 rounded-full text-lg font-medium border border-red-600 hover:bg-red-500 hover:text-black focus:outline-none transition-transform duration-300 ease-in-out transform hover:scale-105">
                             <% if (locals.user) { %>
@@ -113,6 +103,8 @@
                                 <% if (locals.user.usertype == "USER") { %>
                                     <a href="/blog/my-blogs" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">My Blogs</a>
                                     <a href="/blog/add-blog" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">New Blog</a>
+                                    <a href="/bloglike" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">Liked Blog</a>
+                                    <a href="/blogsave" class="block px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black hover:font-bold border border-black">Saved Blog</a>
                                 <% } %>
                                 <a href="/register/signout" class="block px-4 py-1 my-1 text-red-500 border-1 mx-1 text-center font-semibold hover:text-black hover:bg-red-500 border border-red-500">SignOut</a>
                             </div>
@@ -121,7 +113,18 @@
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <div class="sm:hidden flex items-center">
+                <div class="sm:hidden flex items-center space-x-4">
+                    <!-- Notification Button for Mobile -->
+                    <div class="relative">
+                        <button id="mobile-notification-button" class="text-red-500 focus:outline-none">
+                            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-4.215a2 2 0 00-1.81-1.285H6.215a2 2 0 00-1.81 1.285L3 17h5m7 0v2a3 3 0 11-6 0v-2m6 0H9" />
+                            </svg>
+                        </button>
+                        <!-- Notification Badge -->
+                        <span id="mobile-notification-badge" class="notification-badge hidden">3</span>
+                    </div>
+
                     <button id="mobile-menu-button" class="text-red-500 hover:text-white focus:outline-none">
                         <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -149,11 +152,13 @@
                     <% } %>
 
                     <% if (locals.user.usertype == "USER") { %>
-                        <div id="blog-menu" class="pl-4 space-y-1 hidden">
-                            <a href="/app/blogs" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">All Blogs</a>
+                        <div id="blog-menu" class="pl-4 space-y-1 ">
                             <% if (locals.user) { %>
-                                <a href="/blog/my-blogs" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">My Blogs</a>
-                                <a href="/blog/add-blog" class="text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black">New Blog</a>
+                                <a href="/app/blogs" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">All Blogs</a>
+                                <a href="/blog/my-blogs" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">My Blogs</a>
+                                <a href="/blog/add-blog" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">New Blog</a>
+                                <a href="/bloglike" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">Liked Blogs</a>
+                                <a href="/blogsave" class="w-full text-left text-red-500 block px-3 py-2 rounded-md text-lg font-medium hover:bg-red-500 hover:text-black shadow-2xl shadow-red-600 focus:outline-none">Saved Blogs</a>
                             <% } %>
                         </div>
                     <% } %>
@@ -169,49 +174,10 @@
         </div>
     </nav>
 
-    
-    <script src="/socket.io/socket.io.js"></script>
     <script>
         const user = <%- JSON.stringify(locals.user) %>;
-        const array = <%- JSON.stringify(locals.requestData) %>;
-        const len = array.length;
-
-        const socket = io();
-    
-        for(let i = 0; i < len; i++) {
-            document.getElementById("accept-button"+i).addEventListener("click" , () => {
-                socket.emit('reqaccept', {
-                    gymId: user._id,
-                    userId: array[i]
-                });
-            })
-        }
-
-        for(let i = 0; i < len; i++) {
-            document.getElementById("reject-button"+i).addEventListener("click" , () => {
-                socket.emit('reqreject', {
-                    gymId: user._id,
-                    userId: array[i]
-                });
-            })
-        }
-
-        socket.on("backendacc", (data) => {
-            if(data == "accepted") {
-                fetch(`/home/${data.gymId}/data`, {
-                    method: 'GET', // HTTP method
-                    headers: {
-                        'Content-Type': 'application/json' // Header for JSON data
-                    },
-                })
-                    .then(response => response.json())
-                    .then(data => console.log(data))
-                    .catch(error => console.error('Error:', error));
-            }
-        })
     </script>
 
-    <!-- JavaScript to handle mobile menu and notification dropdown -->
     <script>
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -229,11 +195,26 @@
             });
         }
 
-        // Toggle notification dropdown on bell click
+        // Notification Button Functionality
         const notificationButton = document.getElementById('notification-button');
-        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationBadge = document.getElementById('notification-badge');
+        const mobileNotificationButton = document.getElementById('mobile-notification-button');
+        const mobileNotificationBadge = document.getElementById('mobile-notification-badge');
+
+        // Simulate new notifications on button click
         notificationButton.addEventListener('click', () => {
-            notificationDropdown.classList.toggle('hidden');
+            alert("No new notifications"); // For example purposes
+            notificationBadge.classList.add('hidden'); // Hide badge after viewing
+        });
+
+        mobileNotificationButton.addEventListener('click', () => {
+            alert("No new notifications"); // For example purposes
+            mobileNotificationBadge.classList.add('hidden'); // Hide badge after viewing
+        });
+
+        mobileNotificationButton.addEventListener('click', () => {
+            alert("No new notifications"); // For example purposes
+            mobileNotificationBadge.classList.remove('hidden'); // show badge after viewing
         });
     </script>
 </body>

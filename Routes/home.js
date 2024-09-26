@@ -234,20 +234,11 @@ homeRoute.get("/", async (req, res) => {
                 }
             });
         }
-
-        let requestData;
-        if(req.user.usertype == "OWNER") {
-            requestData = await RequestModel.find({gymId : userId}).populate("userId");
-        } else {
-            requestData = await RequestModel.find({userId : userId}).populate("gymId");
-        }
         
         return res.render("landing", {
             allgyms: gymNotJoined,
             user: req.user,
             msg: msg,
-            home: "landing124",
-            requestData: requestData
         });
     } catch (error) {
         console.error("Error fetching gyms:", error);
@@ -400,12 +391,7 @@ homeRoute.get("/:gymId/joingym", async (req, res) => {
 
         // If the user does not exist, prevent joining if the user is an owner
         if (!user) {
-            return res.render("gympage", {
-                gymData: gymData,
-                user: req.user,
-                msg: "You can't join, if you are an owner of any Gym, use another Id!",
-                shiftJoined: null
-            });
+            return res.redirect(`/home/gym/${gymId}?msg=You can't join, if you are an owner of any Gym, use another Id!`);
         }
 
         // Check if the user has already joined the gym

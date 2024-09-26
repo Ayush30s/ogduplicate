@@ -41,9 +41,9 @@
                             Leave
                         </a>
                     <% } else { %>
-                        <button href="/home/<%= gymData._id %>/joingym"  id="join-request-button" class="bg-red-600 text-white px-6 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-transform duration-300">
+                        <a href="/home/<%= gymData._id %>/joingym" id="joinbtn" class="bg-red-600 text-white cursor-pointer uppercase px-4 py-2 rounded-full shadow-lg hover:bg-black hover:text-red-600 transition-all duration-300 transform hover:scale-110 hover:shadow-red-600/50 border-2 border-black w-full sm:w-[50%] text-center">
                             Join
-                        </button>
+                        </a>
                     <% } %>
                     <% if (locals.showFollowButton === true) { %>
                         <form action="<%= locals.followingOrNot == 'Following' ? '/request/unfollow/user/' + gymData._id : locals.followingOrNot == 'Follow' ? '/request/follow/user/' + gymData._id : '/request/cancelrequest/user/' + gymData._id %>" method="POST" class="w-full md:w-auto">
@@ -152,34 +152,6 @@
             <% } %>            
         </div>
     </div>
-    
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const userdata = <%- JSON.stringify(locals.user) %>;
-        const gymdata = <%- JSON.stringify(locals.gymData) %>;
-
-        // Ensure that the Socket.IO client is initialized
-        const socket = io();
-
-        document.addEventListener("DOMContentLoaded", () => {
-            // Listen for the button click to trigger 'showrequest' event
-            const showRequestButton = document.getElementById("join-request-button");
-            if (showRequestButton) {
-                showRequestButton.addEventListener("click", () => {
-                    // Emit the 'showrequest' event to the server
-                    socket.emit('joinrequest', {
-                        userId: userdata._id,
-                        gymId: gymdata._id
-                    });
-                });
-            }
-
-            // Listen for a response from the backend
-            socket.on("backendacc", (data) => {
-                console.log("Received backend notification:", data);
-            });
-        });
-    </script>
 
     <!-- Smooth Scroll Script -->
     <script>
@@ -227,7 +199,7 @@
                 ratingInput.value = rating; // Update the hidden form input with the rating
             }
         });
-    </script>
+    </scrpt>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
