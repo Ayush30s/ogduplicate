@@ -71,17 +71,6 @@
                     <a href="/home" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Home</a>
                     <a href="/home/about" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">About</a>
 
-                    <!-- Notification Button -->
-                    <div class="relative">
-                        <button id="notification-button" class="text-red-500 focus:outline-none">
-                            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-4.215a2 2 0 00-1.81-1.285H6.215a2 2 0 00-1.81 1.285L3 17h5m7 0v2a3 3 0 11-6 0v-2m6 0H9" />
-                            </svg>
-                        </button>
-                        <!-- Notification Badge -->
-                        <span id="notification-badge" class="notification-badge hidden">3</span>
-                    </div>
-
                     <% if (locals.user.usertype == "USER") { %>
                         <a href="/app/transform" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Transformation</a>
                         <a href="/app/blogs" class="nav-item text-red-500 px-3 py-2 rounded-md text-lg font-medium hover:text-white transition-colors duration-300 ease-in-out">Blogs</a>
@@ -114,17 +103,6 @@
 
                 <!-- Mobile Menu Button -->
                 <div class="sm:hidden flex items-center space-x-4">
-                    <!-- Notification Button for Mobile -->
-                    <div class="relative">
-                        <button id="mobile-notification-button" class="text-red-500 focus:outline-none">
-                            <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-4.215a2 2 0 00-1.81-1.285H6.215a2 2 0 00-1.81 1.285L3 17h5m7 0v2a3 3 0 11-6 0v-2m6 0H9" />
-                            </svg>
-                        </button>
-                        <!-- Notification Badge -->
-                        <span id="mobile-notification-badge" class="notification-badge hidden">3</span>
-                    </div>
-
                     <button id="mobile-menu-button" class="text-red-500 hover:text-white focus:outline-none">
                         <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />

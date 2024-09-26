@@ -18,17 +18,14 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-
         /* Dark Overlay to Enhance Text Visibility */
         .overlay {
             background-color: rgba(0, 0, 0, 0.7); /* Slightly transparent black overlay */
         }
-
         /* Ensure consistent card height */
         .gym-card {
             height: 100%;
         }
-
         /* Consistent card image height */
         .gym-card img {
             height: 200px; /* Fixed height for images */
@@ -37,7 +34,6 @@
             padding: 5px; /* Add padding to prevent image from being tightly cropped */
             border-radius: 10px; /* Optional: add slight border radius to the image */
         }
-
         /* Responsive AI button and div */
         @media (max-width: 640px) {
             #aidiv {
@@ -69,38 +65,33 @@
     <div class="container mx-auto overflow-y-auto pb-10 overlay">
         <%- include("./Partials/alerts.ejs") %>
         <%- include("./Partials/success.ejs") %>
-    
+
         <% if (allgyms.length === 0 || allgyms == null) { %>
             <h1 class="text-center my-[10%] font-bold text-4xl text-white">NO GYMS TO EXPLORE</h1>
         <% } else { %>
-
             <!-- Filter Buttons -->
             <div class="flex flex-wrap justify-center items-center md:mx-32">
                 <!-- Show All Gyms Button -->
                 <button id="show-all-gyms" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg m-2">
                     Show All Gyms
                 </button>
-
                 <!-- Rating > 4 -->
                 <button id="filter-high-rating" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg m-2">
                     Rating more than 4
                 </button>
             </div>
-
             <div id="gym-container" class="flex flex-wrap items-center justify-center my-3">
                 <% allgyms?.forEach((gym, index) => { %>
                     <!-- Each slide -->
                     <div id="gym<%=index%>" class="gym-card bg-black text-sm rounded-lg mx-3 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-[25%] p-3" data-rating="<%= gym?.rating %>" data-monthly-charge="<%= gym?.monthlyCharges %>">
-                        <div class="rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-                            <img src="<%= gym?.profileImage %>" alt="<%= gym?.gymname %>" class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-lg transition-transform duration-300 hover:scale-105 border-4 border-red-600">
+                        <div class="rounded-lg overflow-hidden">
+                            <img src="<%= gym?.profileImage %>" alt="<%= gym?.gymname %>" class="w-[100%] h-[30%] border-2 border-red-600">
                             <div class="p-2">
                                 <h2 class="text-2xl font-extrabold text-red-600 mb-2"><%= gym?.gymname.toUpperCase() %></h2>
                                 <p class="text-gray-400 text-sm mb-2"><%= gym?.location %></p>
-
                                 <!-- Emphasized Owner and Rating -->
                                 <p class="text-lg font-bold text-white mb-2">Owner: <span class="text-red-600"><%= gym?.fullname %></span></p>
                                 <p class="text-lg font-bold text-white mb-2">Rating: <span class="text-red-600"><%= gym?.rating > 0 ? gym?.rating.toFixed(1) : 0 %></span> / 5</p>
-
                                 <p class="text-lg font-bold text-white mb-2">Monthly Charges: <span class="text-red-600">₹<%= gym?.monthlyCharge %></p>
                                 <p class="text-sm text-gray-400">Created on: <%= new Date(gym?.createdAt).toLocaleDateString() %></p>
                                 
@@ -116,47 +107,35 @@
             </div>
         <% } %>
     </div>
-
     <!-- AI Message Script -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const user = <%- JSON.stringify(locals.user) %>;
-
         const socket = io();
-
         // Boolean to track visibility of AI page
         let isAIPageVisible = false;
-
         // Toggle the visibility of the AI message page when the AI button is clicked
         document.getElementById("ai").addEventListener("click", () => {
             const aiPage = document.getElementById("aiPage");
-
             if (!isAIPageVisible) {
                 aiPage.style.display = "block";  // Show the AI page
             } else {
                 aiPage.style.display = "none";   // Hide the AI page
             }
-
             isAIPageVisible = !isAIPageVisible;  // Toggle the visibility status
         });
-
         // Create the AI message page container and insert it into the DOM
         function createAIPage() {
             const aiDiv = document.getElementById("aidiv");
-
             const aiPage = document.createElement("div");
             aiPage.id = "aiPage";
             aiPage.classList.add("fixed", "bottom-16", "rounded-lg", "right-4", "bg-black", "w-11/12", "max-w-md", "h-auto", "p-5", "shadow-lg", "z-50", "hidden");
-
             aiPage.innerHTML = `
                 <h2 class="text-lg font-bold text-red-600 mb-2">Ask AI</h2>
                 <div id="chatHistory" class="overflow-y-auto max-h-48 mb-4 p-2 bg-gray-800 text-white rounded-lg" style="display: none;"></div>
                 <textarea id="aiMessage" placeholder="Ask AI anything" rows="3" maxlength="500" class="w-full max-w-full h-24 p-2 text-black rounded-lg resize-none"></textarea>
                 <button id="sendMessage" class="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Send</button>
             `;
-
             aiDiv.appendChild(aiPage);
-
             // Attach event listener to the send button
             document.getElementById("sendMessage").addEventListener("click", () => {
                 const message = document.getElementById("aiMessage").value.trim(); // Get the message text
@@ -164,58 +143,44 @@
                     // Append the user's question to the chat history
                     appendToChatHistory("You", message);
                     // Send message to the server
-                    socket.emit("aiMessage", {
-                        message: message,
-                        userId: user._id
-                    });  // Emit message to the server
+                    socket.emit("aiMessage", message);  // Emit message to the server
                     document.getElementById("aiMessage").value = "";  // Clear the input field
                 }
             });
         }
-
         // Append questions and answers to the chat history
         function appendToChatHistory(sender, text) {
             const chatHistory = document.getElementById("chatHistory");
-
             // Create message container
             const messageElement = document.createElement("div");
             messageElement.classList.add("text-yellow-600", "text-sm", "mb-1");
-
             // Create sender element
             const senderElement = document.createElement("strong");
             senderElement.classList.add("mr-2", "font-bold");
             senderElement.textContent = `${sender}:`;
-
             // Create text element
             const textElement = document.createElement("div");
             textElement.classList.add("inline");
             textElement.textContent = text;
-
             // Append sender and text to message container
             messageElement.appendChild(senderElement);
             messageElement.appendChild(textElement);
-
             // Append message container to chat history
             chatHistory.appendChild(messageElement);
-
             // Check if there are messages and ensure the chat history is visible
             if (chatHistory.children.length > 0) {
                 chatHistory.style.display = "block";
             }
-
             // Scroll to the bottom of the chat history
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
-
         // Call the function to create the AI page when the page loads 
         createAIPage();
-
         // Socket event listener for server messages (AI's response)
         socket.on("serverMessage", (data) => {
             // Append AI's answer we are getting from the server to the chat history
             appendToChatHistory("AI", data);
         });
-
         // Filter by rating > 4
         document.getElementById("filter-high-rating").addEventListener("click", () => {
             const gymCards = document.querySelectorAll('.gym-card');
@@ -228,7 +193,6 @@
                 }
             });
         });
-
         // Show All Gyms Button Functionality
         document.getElementById("show-all-gyms").addEventListener("click", () => {
             const gymCards = document.querySelectorAll('.gym-card');

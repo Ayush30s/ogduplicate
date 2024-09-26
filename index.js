@@ -20,6 +20,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 
+const server = http.createServer(app);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "*", // or specify your frontend URL
+        methods: ["GET", "POST"]
+    }
+});
+
+
 mongoose.connect("mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym")
     .then(() => console.log("MongoDB connected Successfully"))
     .catch((err) => console.log("err :", err));
