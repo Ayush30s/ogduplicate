@@ -715,7 +715,7 @@ homeRoute.get("/about", async(req,res) => {
 })
 
 homeRoute.post("/update-profile/:userId", async (req, res) => {
-    const { fullname, contactnumber, bio } = req.body;
+    const { fullname, contactnumber, bio, monthlyCharge} = req.body;
     const { userId } = req.params;  // Correctly extract userId from params
 
     // Ensure that the user is updating their own profile
@@ -739,7 +739,8 @@ homeRoute.post("/update-profile/:userId", async (req, res) => {
         const updates = {
             fullname: fullname,
             contactnumber: contactnumber,
-            description: bio
+            description: bio,
+            monthlyCharge: monthlyCharge         
         };
 
         await gymModel.updateOne(
@@ -1281,6 +1282,35 @@ homeRoute.post('/exercise/:exercisetype/:focuspart/:day', async (req, res) => {
     } catch (error) {
         console.error("Error updating workout time:", error);
         return res.status(500).send("Internal Server Error");
+    }
+});
+
+homeRoute.get(`/profile/:userId/:name/remove`, async (req, res) => {
+    const { userId, name } = req.params;
+    const gymId = req.user._id;
+
+    console.log(userId, name);
+
+    // Convert the userId string to a valid ObjectId
+    const objectIdToRemove = (userId);
+
+    try {
+        const d = await gymModel.findByIdAndUpdate(
+            gymId, 
+            { $pull: { joinedby: { user: objectIdToRemove } } }, // Removes the object with the matching 'user' _id
+            { new: true}
+        );
+
+        const c = await userModel.findByIdAndUpdate(
+            userId,
+            { $pull: { joinedgym: gymId } },
+            { new: true}
+        )
+
+        return res.redirect("/home/mygyms");
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Error removing user from the gym');
     }
 });
 

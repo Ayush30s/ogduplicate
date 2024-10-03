@@ -28,6 +28,12 @@ const io = require('socket.io')(server, {
     }
 });
 
+io.on("connection" , (socket) => {
+    socket.on("aiMessage", (data) => {
+        console.log(data);
+        socket.emit("serverMessage", "This Service is temporarly Off");
+    })    
+});
 
 mongoose.connect("mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym")
     .then(() => console.log("MongoDB connected Successfully"))

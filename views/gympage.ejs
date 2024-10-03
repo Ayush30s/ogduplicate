@@ -10,7 +10,6 @@
 
     <!-- Navigation Bar -->
     <%- include("./Partials/nav.ejs") %>
-
     <%- include("./Partials/success.ejs") %>
     <%- include("./Partials/alerts.ejs") %>
 
@@ -156,13 +155,13 @@
     <!-- Smooth Scroll Script -->
     <script>
         document.documentElement.style.scrollBehavior = "smooth";
-
+    
         // JavaScript for Star Rating
         document.addEventListener("DOMContentLoaded", function() {
             const ratingDiv = document.getElementById("stars");
             const ratingInput = document.getElementById("ratingInput");
             let rating = 0; // Initialize rating
-
+    
             // Create stars dynamically
             for (let i = 0; i < 5; i++) {
                 const star = document.createElement('button');
@@ -177,7 +176,7 @@
                 });
                 ratingDiv.appendChild(star);
             }
-
+    
             // Update stars based on the current rating
             function updateStars() {
                 const stars = ratingDiv.querySelectorAll('button');
@@ -193,13 +192,14 @@
                     }
                 });
             }
-
+    
             // Update the hidden input value
             function updateRatingInput() {
                 ratingInput.value = rating; // Update the hidden form input with the rating
             }
         });
-    </scrpt>
+    </script>
+    
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');

@@ -129,7 +129,7 @@
         <div class="w-full flex-grow flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12 shadow-sm shadow-white overflow-hidden">
 
             <!-- Gym Information Container -->
-            <div class="relative bg-gray-800 p-6 sm:p-10 mb-8 border border-red-600 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-700/80 flex flex-col sm:flex-row gap-6">
+            <div class="relative bg-black p-6 sm:p-10 mb-8 border border-red-600 w-full max-w-6xl rounded-xl transform transition-transform duration-500 hover:scale-105 hover:shadow-red-700/80 flex flex-col sm:flex-row gap-6">
                 <!-- Edit Profile Button -->
                 <a href="/app/editprofile" class="absolute z-10 top-4 right-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold px-4 py-2 rounded-full border border-red-500 shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 text-sm md:text-base">
                     Edit Profile
@@ -181,11 +181,11 @@
                     </div>
             
                     <!-- Description -->
-                    <div class="bg-gray-700 p-6 rounded-lg shadow-inner max-h-56 overflow-auto transition-all duration-300 hover:bg-gray-600">
-                        <h3 class="text-lg sm:text-xl font-bold text-red-500 mb-2">Description</h3>
-                        <p class="text-gray-300 text-sm sm:text-base font-semibold leading-relaxed text-justify">
+                    <div class="bg-red-600 p-2 rounded-lg shadow-inner max-h-56 overflow-auto transition-all duration-300">
+                        <h3 class="text-lg sm:text-xl inline font-bold text-white mb-2">Description : </h3>
+                        <span class="text-white inline text-sm sm:text-base leading-relaxed text-justify">
                             <%= gymData.description %>
-                        </p>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -212,8 +212,8 @@
                             <% if (gymData.shifts.length > 0) { %>
                                 <% gymData.shifts.forEach(function(shift, index) { %>
                                     <a href="/home/profile/shiftdetail/<%= gymData._id %>/<%= shift._id %>" class="w-full">
-                                        <div class="w-full flex flex-col justify-between items-start align-middle my-3 p-2 bg-gray-700 rounded-lg transition-all hover:bg-red-500 hover:text-black duration-300 shadow-lg">
-                                            <h4 class="font-bold text-white mb-2 hover:text-black">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
+                                        <div class="w-full flex flex-col justify-between items-start align-middle my-3 p-2 border-2 border-red-700 bg-transparent bacdrop rounded-lg transition-all hover:bg-red-500 hover:text-black duration-300 shadow-lg">
+                                            <h4 class="font-bold text-white mb-2 hover:text-black text-xl">Timing: <%= shift.starttime %> - <%= shift.endtime %></h4>
                                             <div class="flex sm:flex-col md:flex-row">
                                                 <p class="text-sm text-gray-400 mb-2 pr-2">Members: <span class="text-white hover:text-black"><%= shift.joinedby.length %></span></p>
                                                 <p class="text-sm text-gray-400 mb-2 pr-2">Gender: <span class="text-white hover:text-black"><%= shift.sex %></span></p>
@@ -272,6 +272,12 @@
                                         <div class="font-bold sm:w-1/3">
                                             <span class="bg-red-600 px-2 py-1 rounded-full text-black shadow-lg">Shift: <%= shiftIndex %></span>
                                         </div>
+                                        
+                                        <a class="bg-red-600 text-black font-bold py-1 px-2 rounded-full hover:text-black hover:bg-white" href="/home/profile/<%= user.user._id %>/<%= user.user.fullname %>/remove">
+                                            <button>
+                                                x    
+                                            </button>
+                                        </a>
                                     </div>
                                 </div>
                             <% }); %>
@@ -288,10 +294,10 @@
 
                 <!-- Analytics Toggle Button -->
                 <div class="w-full flex flex-col items-center">
-                    <button id="analyticsAccordionButton" class="bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black text-center transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-600/50">
+                    <button id="analyticsAccordionButton" class="w-full bg-red-600 text-white uppercase px-6 py-3 rounded-full shadow-lg hover:bg-black hover:text-red-600 hover:shadow-red-600/50 border-2 border-black text-center transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-600/50">
                         Show Analytics
                     </button>
-                    <div id="analyticsAccordionContent" class="hidden bg-black rounded-lg p-2 mt-4 w-full flex flex-col items-center">
+                    <div id="analyticsAccordionContent" class="hidden bg-black text-red-600 text-2xl py-10 font-bold p-2 mt-4 w-full flex flex-col items-center">
                         <canvas id="myChart1" width="400" height="400" class="w-full h-64 md:h-80"></canvas>
                     </div>
                 </div>
@@ -306,6 +312,14 @@
 
         // Data from the backend, replace this with your actual data
         const activeMonth = <%- JSON.stringify(locals.montharray) %>;
+        let c = 0;
+        activeMonth.forEach(element => {
+            c += element;
+        });
+
+        if(c == 0) {
+            document.getElementById("analyticsAccordionContent").innerHTML = "No Analytics to show."
+        }
 
         const ctx1 = document.getElementById('myChart1').getContext('2d');
         new Chart(ctx1, { 

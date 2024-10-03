@@ -79,11 +79,29 @@
                 <button id="filter-high-rating" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg m-2">
                     Rating more than 4
                 </button>
+                <!-- Monthly Charge Filter Dropdown -->
+                <div class="relative inline-block text-left m-2">
+                    <div>
+                        <button id="monthly-charge-filter" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-lg">
+                            Filter by Charge
+                        </button>
+                    </div>
+                    <!-- Dropdown Menu -->
+                    <div id="price-dropdown" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden">
+                        <div class="py-1" role="none">
+                            <!-- Different price options -->
+                            <button class="price-option text-gray-700 block w-full px-4 py-2 text-sm" data-max-price="500">Less than ₹500</button>
+                            <button class="price-option text-gray-700 block w-full px-4 py-2 text-sm" data-max-price="1000">Less than ₹1000</button>
+                            <button class="price-option text-gray-700 block w-full px-4 py-2 text-sm" data-max-price="2000">Less than ₹2000</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div id="gym-container" class="flex flex-wrap items-center justify-center my-3">
                 <% allgyms?.forEach((gym, index) => { %>
                     <!-- Each slide -->
-                    <div id="gym<%=index%>" class="gym-card bg-black text-sm rounded-lg mx-3 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-[25%] p-3" data-rating="<%= gym?.rating %>" data-monthly-charge="<%= gym?.monthlyCharges %>">
+                    <div id="gym<%=index%>" class="gym-card bg-black text-sm rounded-lg mx-3 mb-6 shadow-sm shadow-white hover:shadow-lg hover:shadow-red-600 w-full lg:w-[25%] p-3" data-rating="<%= gym?.rating %>" data-monthly-charge="<%= gym?.monthlyCharge %>">
                         <div class="rounded-lg overflow-hidden">
                             <img src="<%= gym?.profileImage %>" alt="<%= gym?.gymname %>" class="w-[100%] h-[30%] border-2 border-red-600">
                             <div class="p-2">
@@ -107,6 +125,7 @@
             </div>
         <% } %>
     </div>
+
     <!-- AI Message Script -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -123,6 +142,7 @@
             }
             isAIPageVisible = !isAIPageVisible;  // Toggle the visibility status
         });
+
         // Create the AI message page container and insert it into the DOM
         function createAIPage() {
             const aiDiv = document.getElementById("aidiv");
@@ -148,51 +168,90 @@
                 }
             });
         }
+
         // Append questions and answers to the chat history
         function appendToChatHistory(sender, text) {
             const chatHistory = document.getElementById("chatHistory");
+
             // Create message container
             const messageElement = document.createElement("div");
             messageElement.classList.add("text-yellow-600", "text-sm", "mb-1");
+
             // Create sender element
             const senderElement = document.createElement("strong");
             senderElement.classList.add("mr-2", "font-bold");
             senderElement.textContent = `${sender}:`;
+
             // Create text element
             const textElement = document.createElement("div");
             textElement.classList.add("inline");
             textElement.textContent = text;
+
             // Append sender and text to message container
             messageElement.appendChild(senderElement);
             messageElement.appendChild(textElement);
+
             // Append message container to chat history
             chatHistory.appendChild(messageElement);
+
             // Check if there are messages and ensure the chat history is visible
             if (chatHistory.children.length > 0) {
                 chatHistory.style.display = "block";
             }
+
             // Scroll to the bottom of the chat history
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
+
         // Call the function to create the AI page when the page loads 
         createAIPage();
+
         // Socket event listener for server messages (AI's response)
         socket.on("serverMessage", (data) => {
             // Append AI's answer we are getting from the server to the chat history
             appendToChatHistory("AI", data);
         });
+
         // Filter by rating > 4
         document.getElementById("filter-high-rating").addEventListener("click", () => {
             const gymCards = document.querySelectorAll('.gym-card');
             gymCards.forEach(card => {
                 const rating = parseFloat(card.getAttribute('data-rating'));
-                if (rating > 4) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+                if(card.style.display != 'none') {
+                    if (rating > 4) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
                 }
             });
         });
+
+        // Toggle price dropdown
+        document.getElementById('monthly-charge-filter').addEventListener('click', () => {
+            const dropdown = document.getElementById('price-dropdown');
+            dropdown.classList.toggle('hidden'); // Toggle the visibility
+        });
+
+        // Filter gyms by selected price option
+        document.querySelectorAll('.price-option').forEach(option => {
+            option.addEventListener('click', function () {
+                const maxPrice = parseFloat(this.getAttribute('data-max-price'));
+                const gymCards = document.querySelectorAll('.gym-card');
+                gymCards.forEach(card => {
+                    const monthlyCharge = parseFloat(card.getAttribute('data-monthly-charge'));
+                    if(card.style.display != 'none') {
+                        if (monthlyCharge <= maxPrice) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }
+                });
+                document.getElementById('price-dropdown').classList.add('hidden'); // Hide the dropdown after selection
+            });
+        });
+
         // Show All Gyms Button Functionality
         document.getElementById("show-all-gyms").addEventListener("click", () => {
             const gymCards = document.querySelectorAll('.gym-card');
