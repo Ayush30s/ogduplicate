@@ -45,6 +45,14 @@
         .text-shadow {
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .max-w-lg {
+                max-width: 75%;
+            }
+        }
+
     </style>
 </head>
 <body class="bg-black text-white h-screen flex justify-center items-center">
@@ -65,6 +73,11 @@
 
         <!-- Timer Section -->
         <div class="text-center mt-8">
+            <!-- Explanation Section -->
+            <p class="text-sm mb-4 text-teal-200">
+                Set a timer to track your exercise duration. This will help us monitor your progress and display your workout sessions on a heatmap, giving you a clear picture of your performance.
+            </p>
+
             <form id="timer-form">
                 <!-- Hidden fields for form data -->
                 <input type="hidden" name="exercisetype" value="<%= exerciseObj.name %>">
