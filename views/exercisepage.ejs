@@ -98,13 +98,17 @@
             <!-- Response message area -->
             <div id="response-message" class="mt-4 text-xl font-bold"></div>
         </div>
-        
+
         <!-- Video Section -->
         <div class="text-center mt-8">
             <a href="<%= exerciseObj.videoUrl %>" target="_blank" class="inline-block px-10 py-4 text-lg font-bold text-white bg-red-500 rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out">
                 Watch Video Tutorial
             </a>
         </div>
+
+        <!-- Custom Audio for timer end -->
+        <audio id="timer-audio" src="/Public/audio/mixkit-sport-start-bleeps-918.wav" preload="auto"></audio>
+
     </div>
 
     <script>
@@ -135,6 +139,7 @@
         const startButton = document.getElementById("start-timer");
         const timerDisplay = document.getElementById("timer-display");
         const timerInput = document.getElementById("timer-input");
+        const timerAudio = document.getElementById("timer-audio");  // Audio element
         let timerInterval;
 
         startButton.addEventListener("click", function() {
@@ -159,6 +164,10 @@
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
                     timerDisplay.textContent = "Time's up!";
+                    
+                    // Play audio when time is up
+                    timerAudio.play();
+                    
                     alert("Your timer is complete!");
                 }
 
