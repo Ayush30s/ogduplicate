@@ -1,179 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= exerciseObj.name %></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background-image: url('https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
+      body {
+        background-image: url("https://img.freepik.com/premium-photo/gym-with-red-wall-black-bench-with-red-light-it_911201-3385.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
 
-        .overlay {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
+      .overlay {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
 
-        .hover-grow {
-            transition: transform 0.3s ease-in-out, background-color 0.3s;
-        }
-        .hover-grow:hover {
-            transform: scale(1.1);
-        }
+      .hover-grow {
+        transition: transform 0.3s ease-in-out, background-color 0.3s;
+      }
+      .hover-grow:hover {
+        transform: scale(1.1);
+      }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
         }
-        .fade-in {
-            animation: fadeIn 1s ease-in;
+        to {
+          opacity: 1;
         }
+      }
+      .fade-in {
+        animation: fadeIn 1s ease-in;
+      }
 
-        .flashing-border {
-            animation: flashing 2s infinite;
+      .flashing-border {
+        animation: flashing 2s infinite;
+      }
+      @keyframes flashing {
+        0% {
+          border-color: red;
         }
-        @keyframes flashing {
-            0% { border-color: red; }
-            50% { border-color: white; }
-            100% { border-color: red; }
+        50% {
+          border-color: white;
         }
+        100% {
+          border-color: red;
+        }
+      }
 
-        .text-shadow {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      }
 
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            .max-w-lg {
-                max-width: 75%;
-            }
+      /* Responsive adjustments */
+      @media (min-width: 768px) {
+        .max-w-lg {
+          max-width: 75%;
         }
-
+      }
     </style>
-</head>
-<body class="bg-black text-white h-screen flex justify-center items-center">
+  </head>
+  <body>
+    <%- include('./Partials/nav') %>
+    <div class="bg-black text-white h-screen flex justify-center items-center">
+      <div class="overlay w-full h-full absolute top-0 left-0"></div>
 
-    <div class="overlay w-full h-full absolute top-0 left-0"></div>
-
-    <div class="relative z-10 max-w-lg mx-auto p-8 bg-gray-900 rounded-lg shadow-sm shadow-white">
+      <div
+        class="relative z-10 max-w-lg mx-auto p-8 bg-gray-900 rounded-lg shadow-sm shadow-white"
+      >
         <!-- Title Section -->
-        <h1 class="text-4xl font-extrabold text-center text-red-500 mb-6 animate-pulse text-shadow"><%= exerciseObj.name %></h1>
-   
+        <h1
+          class="text-4xl font-extrabold text-center text-red-500 mb-6 animate-pulse text-shadow"
+        >
+          <%= exerciseObj.name %>
+        </h1>
+
         <!-- Exercise Info Section -->
         <div class="text-lg mb-4 space-y-3">
-            <p><span class="font-semibold text-red-500">Sets:</span> <%= exerciseObj.sets %></p>
-            <p><span class="font-semibold text-red-500">Reps:</span> <%= exerciseObj.reps %></p>
-            <p><span class="font-semibold text-red-500">Focus:</span> <%= exerciseObj.focus %></p>
-            <p class="mt-4 leading-relaxed text-gray-300"><%= exerciseObj.details %></p>
+          <p>
+            <span class="font-semibold text-red-500">Sets:</span> <%=
+            exerciseObj.sets %>
+          </p>
+          <p>
+            <span class="font-semibold text-red-500">Reps:</span> <%=
+            exerciseObj.reps %>
+          </p>
+          <p>
+            <span class="font-semibold text-red-500">Focus:</span> <%=
+            exerciseObj.focus %>
+          </p>
+          <p class="mt-4 leading-relaxed text-gray-300">
+            <%= exerciseObj.details %>
+          </p>
+          <p>
+            <span class="font-semibold text-red-500">Calories you will Burn:</span id="cal"> <%=
+            exerciseObj.caloriesPerMinute %>
+          </p>
         </div>
 
         <!-- Timer Section -->
         <div class="text-center mt-8">
-            <!-- Explanation Section -->
-            <p class="text-sm mb-4 text-teal-200">
-                Set a timer to track your exercise duration. This will help us monitor your progress and display your workout sessions on a heatmap, giving you a clear picture of your performance.
-            </p>
+          <!-- Explanation Section -->
+          <p class="text-sm mb-4 text-teal-200">
+            Set a timer to track your exercise duration. This will help us
+            monitor your progress and display your workout sessions on a
+            heatmap, giving you a clear picture of your performance.
+          </p>
 
-            <form id="timer-form">
-                <!-- Hidden fields for form data -->
-                <input type="hidden" name="exercisetype" value="<%= exerciseObj.name %>">
-                <input type="hidden" name="focuspart" value="<%= exerciseObj.focus %>">
-                <input type="hidden" name="day" value="<%= locals.day %>">
-                
-                <!-- Input field for user to input time in minutes -->
-                <input type="number" id="timer-input" name="time" class="w-24 px-4 py-2 text-black text-center rounded-md" placeholder="Minutes" min="1" required>
-        
-                <!-- Button to start the timer -->
-                <button type="submit" id="start-timer" class="inline-block px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out mt-4">
-                    Start Timer
-                </button>
-            </form>
-        
-            <!-- Timer display area -->
-            <div id="timer-display" class="mt-4 text-3xl font-bold"></div>
-            <!-- Response message area -->
-            <div id="response-message" class="mt-4 text-xl font-bold"></div>
+          <form id="timer-form">
+            <!-- Hidden fields for form data -->
+            <input
+              type="hidden"
+              name="exercisetype"
+              value="<%= exerciseObj.name %>"
+            />
+            <input
+              type="hidden"
+              name="focuspart"
+              value="<%= exerciseObj.focus %>"
+            />
+            <input type="hidden" name="day" value="<%= locals.day %>" />
+
+            <!-- Input field for user to input time in minutes -->
+            <input
+              type="number"
+              id="timer-input"
+              name="time"
+              class="w-24 px-4 py-2 text-black text-center rounded-md"
+              placeholder="Minutes"
+              min="1"
+              required
+            />
+
+            <!-- Button to start the timer -->
+            <button
+              type="submit"
+              id="start-timer"
+              class="inline-block px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out mt-4"
+            >
+              Start Timer
+            </button>
+          </form>
+
+          <!-- Timer display area -->
+          <div id="timer-display" class="mt-4 text-3xl font-bold"></div>
+          <!-- Response message area -->
+          <div id="response-message" class="mt-4 text-xl font-bold"></div>
         </div>
+
+        <h1 id="calorie"></h1>
 
         <!-- Video Section -->
         <div class="text-center mt-8">
-            <a href="<%= exerciseObj.videoUrl %>" target="_blank" class="inline-block px-10 py-4 text-lg font-bold text-white bg-red-500 rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out">
-                Watch Video Tutorial
-            </a>
+          <a
+            href="<%= exerciseObj.videoUrl %>"
+            target="_blank"
+            class="inline-block px-10 py-4 text-lg font-bold text-white bg-red-500 rounded-md hover:bg-red-600 hover-grow transition duration-300 ease-in-out"
+          >
+            Watch Video Tutorial
+          </a>
         </div>
-
-        <!-- Custom Audio for timer end -->
-        <audio id="timer-audio" src="/Public/audio/mixkit-sport-start-bleeps-918.wav" preload="auto"></audio>
-
+      </div>
     </div>
 
     <script>
-        document.getElementById('timer-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
+      document
+        .getElementById("timer-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries()); // Convert form data to an object
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData.entries()); // Convert form data to an object
 
-            fetch(`/home/exercise/${data.exercisetype}/${data.focuspart}/${data.day}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+          fetch(
+            `/home/exercise/${data.exercisetype}/${data.focuspart}/${data.day}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            }
+          )
+            .then((response) => response.text())
+            .then((text) => {
+              // Display success message
+              document.getElementById("response-message").innerText =
+                "Workout time updated successfully!";
             })
-            .then(response => response.text())
-            .then(text => {
-                // Display success message
-                document.getElementById('response-message').innerText = 'Workout time updated successfully!';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('response-message').innerText = 'An error occurred while updating the workout time.';
+            .catch((error) => {
+              console.error("Error:", error);
+              document.getElementById("response-message").innerText =
+                "An error occurred while updating the workout time.";
             });
         });
 
-        const startButton = document.getElementById("start-timer");
-        const timerDisplay = document.getElementById("timer-display");
-        const timerInput = document.getElementById("timer-input");
-        const timerAudio = document.getElementById("timer-audio");  // Audio element
-        let timerInterval;
+      const startButton = document.getElementById("start-timer");
+      const timerDisplay = document.getElementById("timer-display");
+      const timerInput = document.getElementById("timer-input");
+      const timerAudio = document.getElementById("timer-audio"); // Audio element
+      let timerInterval;
 
-        startButton.addEventListener("click", function() {
-            const userMinutes = parseInt(timerInput.value);
-            if (isNaN(userMinutes) || userMinutes <= 0) {
-                alert("Please enter a valid number of minutes.");
-                return;
-            }
+      const inputTime = document.getElementById("timer-input").value;
+      document.getElementById("calorie").innerHTML = `Calories burned : ${exerciseObj.caloriesPerMinute * inputTime}`
 
-            let timeRemaining = userMinutes * 60; // Convert minutes to seconds
-            clearInterval(timerInterval); // Clear any previous timer
+      startButton.addEventListener("click", function () {
+        const cal = document.getElementById("cal");
+        const calorieRate = cal.innerText;
 
-            // Start the countdown
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
+        const userMinutes = parseInt(timerInput.value);
+        document.getElementById("cal").innerText = calorieRate * userMinutes;
+        console.log(calorieRate * userMinutes);
 
-                // Display the time
-                timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        if (isNaN(userMinutes) || userMinutes <= 0) {
+          alert("Please enter a valid number of minutes.");
+          return;
+        }
 
-                // When the timer ends
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    timerDisplay.textContent = "Time's up!";
-                    
-                    // Play audio when time is up
-                    timerAudio.play();
-                    
-                    alert("Your timer is complete!");
-                }
+        let timeRemaining = userMinutes * 60; // Convert minutes to seconds
+        clearInterval(timerInterval); // Clear any previous timer
 
-                timeRemaining--;
-            }, 1000);
-        });
+        // Start the countdown
+        timerInterval = setInterval(() => {
+          const minutes = Math.floor(timeRemaining / 60);
+          const seconds = timeRemaining % 60;
+
+          // Display the time
+          timerDisplay.textContent = `${minutes}:${
+            seconds < 10 ? "0" : ""
+          }${seconds}`;
+
+          // When the timer ends
+          if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "Time's up!";
+
+            // Play audio when time is up
+            timerAudio.play();
+
+            alert("Your timer is complete!");
+          }
+
+          timeRemaining--;
+        }, 1000);
+      });
     </script>
-</body>
+  </body>
 </html>

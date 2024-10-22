@@ -71,7 +71,7 @@ app.get("/blogsave", async(req,res) => {
     }
 
     const Savedblogs = await userModel.findById(req.user._id).populate("Savedblogs");
-    return res.render("savedBlogs", {
+    return res.render("savedblogs", {
         Savedblogs: Savedblogs,
         user: req.user
     });
@@ -89,7 +89,6 @@ app.use("/request", followRoute);
 
 // Only allow users to use blog service
 app.use("/blog", async (req, res, next) => {
-    console.log("-----------------", req.user);
     if (!req.user) {
         return res.redirect("/app/signin-form");
     }

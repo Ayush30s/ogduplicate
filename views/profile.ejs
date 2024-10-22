@@ -97,18 +97,18 @@
                         </div>
                         <!-- Heatmap Days -->
                         <div class="grid grid-cols-7 gap-1">
-                            <% exerciseArray[month].forEach(time => { %>
+                            <% exerciseArray[month].forEach(data => { %>
                                 <div class="w-6 h-6 rounded-sm 
-                                    <% if (time == 0) { %>
-                                        bg-gray-900
-                                    <% } else if(time <= 30) { %>
-                                        bg-red-300
-                                    <% } else if(time <= 60) { %>
-                                        bg-red-500
+                                    <% if (data.time == 0) { %>
+                                        bg-white
+                                    <% } else if(data.time <= 30) { %>
+                                        bg-blue-300
+                                    <% } else if(data.time <= 60) { %>
+                                        bg-blue-500
                                     <% } else { %>
-                                        bg-red-700
+                                        bg-blue-700
                                     <% } %>"
-                                    title="Minutes: <%= time %>">
+                                    title="Minutes: <%= data.time + " Date: " + data.date %>">
                                 </div>
                             <% }) %>
                         </div>
