@@ -35,7 +35,7 @@ io.on("connection" , (socket) => {
     })    
 });
 
-mongoose.connect("mongodb+srv://ayushgym:ayushgymapp@cluster0.c2fwa.mongodb.net/gym")
+mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("MongoDB connected Successfully"))
     .catch((err) => console.log("err :", err));
 
