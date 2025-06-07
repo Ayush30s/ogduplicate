@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat&family=Oswald:wght@400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Oswald:wght@396&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Orbitron:wght@400..900&family=Oswald:wght@396&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ql-toolbar {
+  @apply border-gray-700 bg-gray-900 rounded-t-lg !important;
+}
+
+.ql-container {
+  @apply border-gray-700 rounded-b-lg !important;
+}
+
+.ql-editor {
+  @apply min-h-[400px] text-gray-100;
+}
+
+.ql-picker-label {
+  @apply text-gray-300 !important;
+}
+
+.ql-picker-options {
+  @apply bg-gray-900 border border-gray-700 rounded-lg !important;
+}
+
+.ql-stroke {
+  @apply stroke-gray-300 !important;
+}
+
+.ql-fill {
+  @apply fill-gray-300 !important;
+}
+
+.ql-active .ql-stroke {
+  @apply stroke-indigo-400 !important;
+}
+
+.ql-active .ql-fill {
+  @apply fill-indigo-400 !important;
+}
+
+.ql-editor a {
+  @apply text-indigo-400 hover:text-indigo-300 transition-colors;
+}
+
+@keyframes flash {
+  0% {
+    box-shadow: 0 0 0px rgba(255, 255, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 40px 10px rgba(255, 255, 0, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(255, 255, 0, 0.7);
+  }
+}
+
+.animate-flash {
+  animation: flash 1.5s ease-in-out;
+}
