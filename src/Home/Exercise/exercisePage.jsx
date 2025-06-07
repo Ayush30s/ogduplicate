@@ -24,7 +24,7 @@ const ExercisePage = ({ exercise, onClose }) => {
       }, 1000);
     } else if (timeLeft === 0 && isRunning) {
       setIsRunning(false);
-      setShowDialog(true); // Show modal when time is up
+      setShowDialog(true);
     }
     return () => clearTimeout(timer);
   }, [isRunning, timeLeft, customTime, circumference]);
@@ -254,7 +254,7 @@ const ExercisePage = ({ exercise, onClose }) => {
       </div>
 
       {/* Confirmation Modal */}
-      {showDialog && customTime >= 1 && (
+      {showDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">
