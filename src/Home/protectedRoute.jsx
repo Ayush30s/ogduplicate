@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 const ProtectedRoute = ({ children }) => {
   const [isAuth, setIsAuth] = useState(null);
   const [loading, setLoading] = useState(true);
+  console.log(isAuth);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -18,6 +19,8 @@ const ProtectedRoute = ({ children }) => {
         } else {
           setIsAuth(false);
         }
+
+        console.log(isAuth);
       } catch (err) {
         setIsAuth(false);
       } finally {
@@ -26,7 +29,9 @@ const ProtectedRoute = ({ children }) => {
     };
 
     verifyToken();
-  }, []);
+  }, [isAuth]);
+
+  console.log(isAuth);
 
   if (loading) {
     return (
