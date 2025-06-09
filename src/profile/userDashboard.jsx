@@ -16,6 +16,7 @@ import { profileDataThuk } from "../store/thunk/profile-management";
 import AnalyticsDashboard from "../common/chart";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Loading from "../common/loading";
 
 const UserDashboard = () => {
   const dispatch = useDispatch();
@@ -32,11 +33,7 @@ const UserDashboard = () => {
   }, [dispatch, data.user.userType]);
 
   if (profileData.loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (profileData.error) {
