@@ -1,20 +1,18 @@
-import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
 
 const FollowingList = () => {
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const loggedinUser = useSelector((store) => store.login);
 
+  const [followingList, setFollowingList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    const FetchFollowingList = async () => {
+    const fetchFollowingList = async () => {
       try {
         setLoading(true);
         const response = await fetch(
@@ -24,215 +22,157 @@ const FollowingList = () => {
             credentials: "include",
           }
         );
+        const result = await response.json();
 
-        const data = await response.json();
-
-        if (data.message) {
-          setError(data.message);
-          setData([]);
-          return;
+        if (result.message) {
+          setError(result.message);
+          setFollowingList([]);
+        } else {
+          setFollowingList(result.followingUsers);
         }
-
-        setData(data.followingUsers);
       } catch (err) {
-        console.error("Error fetching following list:", err);
-        setError(err.message || "Failed to fetch following list");
+        console.error(err);
+        setError("Failed to fetch following list");
       } finally {
         setLoading(false);
       }
     };
 
-    FetchFollowingList();
+    fetchFollowingList();
   }, [id]);
 
+  const handleNavigateToProfile = (user) => {
+    const isCurrentUser = user._id === loggedinUser.user.userId;
+    const path =
+      user.userType === "userModel"
+        ? isCurrentUser
+          ? "/home/user-dashboard"
+          : `/home/user/${user._id}`
+        : isCurrentUser
+        ? "/home/gym-dashboard"
+        : `/home/gym/${user._id}`;
+
+    navigate(path);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="bg-red-900/20 text-red-400 border border-red-700 rounded-lg p-4">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (followingList.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6">
+        <svg
+          className="w-16 h-16 text-gray-500 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+          />
+        </svg>
+        <h1 className="text-xl text-gray-400 font-medium">
+          Not following anyone yet
+        </h1>
+        <p className="text-gray-500 mt-2 text-center max-w-md">
+          When you follow someone, they'll appear here.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ type: "spring", damping: 20 }}
-        className={`relative w-full max-w-md max-h-[90vh] mx-auto p-4 sm:p-6 rounded-xl shadow-xl overflow-auto 
-        bg-gray-900 border border-gray-700 text-white`}
-      >
-        <div className="flex justify-between items-center mb-4">
-          <h1 className={`text-xl sm:text-2xl font-bold text-blue-400`}>
-            Following
-          </h1>
-          <button
-            className={`p-1.5 rounded-full border transition-all
-              bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-700 hover:border-blue-400`}
-            onClick={() => navigate(-1)}
-            aria-label="Close following list"
+    <div className="bg-gray-900">
+      <div className="min-h-screen bg-gray-900 p-6 max-w-2xl mx-auto relative">
+        {/* Back Button */}
+        <button
+          className="absolute top-6 right-6 p-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full transition-all duration-200 hover:text-white hover:rotate-90"
+          onClick={() => navigate(-1)}
+          aria-label="Close"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-5 h-5"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                fillRule="evenodd"
-                d="M6.225 6.225a.75.75 0 011.06 0L12 10.94l4.715-4.715a.75.75 0 111.06 1.06L13.06 12l4.715 4.715a.75.75 0 11-1.06 1.06L12 13.06l-4.715 4.715a.75.75 0 11-1.06-1.06L10.94 12 6.225 7.285a.75.75 0 010-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+            <path
+              fillRule="evenodd"
+              d="M6.225 6.225a.75.75 0 011.06 0L12 10.94l4.715-4.715a.75.75 0 111.06 1.06L13.06 12l4.715 4.715a.75.75 0 11-1.06 1.06L12 13.06l-4.715 4.715a.75.75 0 11-1.06-1.06L10.94 12 6.225 7.285a.75.75 0 010-1.06z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Following</h1>
+          <p className="text-gray-400">
+            {followingList.length}{" "}
+            {followingList.length === 1 ? "person" : "people"}
+          </p>
         </div>
 
-        <div className="border-t-2 border-gray-700 pt-4">
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex justify-center items-center py-8"
-              >
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              </motion.div>
-            ) : error ? (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
-              >
-                <div className="inline-flex items-center justify-center bg-red-900/30 border border-red-800 rounded-lg p-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-red-400 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-red-400">{error}</span>
-                </div>
-              </motion.div>
-            ) : Array.isArray(data) ? (
-              data.length > 0 ? (
-                <motion.div
-                  key="following"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-3"
+        {/* List */}
+        <div className="space-y-3">
+          {followingList.map((user) => (
+            <div
+              key={user._id}
+              onClick={() => handleNavigateToProfile(user)}
+              className="flex items-center p-4 bg-gray-800 hover:bg-gray-700 rounded-xl transition-all duration-200 cursor-pointer group"
+            >
+              <img
+                src={user.profileImage || "/default-avatar.png"}
+                alt={user.fullName}
+                className="w-14 h-14 rounded-full object-cover border-2 border-gray-700 group-hover:border-blue-500 transition-colors duration-200"
+                onError={(e) => {
+                  e.target.src = "/default-avatar.png";
+                }}
+              />
+              <div className="ml-4">
+                <h2 className="text-lg font-semibold text-white">
+                  {user.fullName}
+                </h2>
+                {user.username && (
+                  <p className="text-sm text-gray-400">@{user.username}</p>
+                )}
+              </div>
+              <div className="ml-auto text-gray-400 group-hover:text-white">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5"
                 >
-                  {data.map((following) => (
-                    <motion.div
-                      key={following._id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className={`flex items-center justify-between p-3 rounded-lg shadow-md transition-all duration-300 
-                      bg-gray-800 border border-gray-700 hover:border-blue-400 hover:shadow-blue-900/20`}
-                    >
-                      <div className="flex items-center">
-                        <img
-                          src={following.profileImage}
-                          alt={following.fullName}
-                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 shadow-md transition-transform hover:scale-105 
-                          border-blue-500`}
-                          onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/100";
-                          }}
-                        />
-                        <div className="ml-3 sm:ml-4">
-                          <Link
-                            to={`/home/${
-                              following.userType == "userModel"
-                                ? following._id.toString() ==
-                                  loggedinUser.user.userId.toString()
-                                  ? "user-dashboard"
-                                  : "user" + `/${following._id}`
-                                : following._id.toString() ==
-                                  loggedinUser.user.userId.toString()
-                                ? "gym-dashboard"
-                                : "gym" + `/${following._id}`
-                            }`}
-                            className={`text-sm sm:text-base font-semibold transition-colors text-blue-400 hover:text-blue-300 line-clamp-1`}
-                          >
-                            {following.fullName}
-                          </Link>
-                          {following.username && (
-                            <p className={`text-xs sm:text-sm text-gray-400`}>
-                              @{following.username}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-center py-8"
-                >
-                  <div className="inline-flex flex-col items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-12 w-12 text-gray-500 mb-3"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                      />
-                    </svg>
-                    <div className={`text-gray-400`}>
-                      Not following anyone yet
-                    </div>
-                    <p className={`text-sm mt-1 text-gray-500 max-w-xs`}>
-                      When you follow someone, they'll appear here
-                    </p>
-                  </div>
-                </motion.div>
-              )
-            ) : (
-              <motion.div
-                key="data-error"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
-              >
-                <div className="inline-flex items-center justify-center bg-red-900/30 border border-red-800 rounded-lg p-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-red-400 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-red-400">
-                    {typeof data === "string" ? data : "An error occurred"}
-                  </span>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <path
+                    fillRule="evenodd"
+                    d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+          ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
