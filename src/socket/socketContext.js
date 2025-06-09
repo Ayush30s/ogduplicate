@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import { io } from "socket.io-client";
 
-export const socket = io("https://gymbackenddddd-1.onrender.com/", {
+export const socket = io("http://localhost:7000/", {
   withCredentials: true,
 });
 

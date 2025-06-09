@@ -15,12 +15,14 @@ import TextEditor from "./blogs/writeBlogs.jsx";
 import SavedBlogs from "./blogs/savedBlogs.jsx";
 import LikedBlogs from "./blogs/likedBlogs.jsx";
 import MyListing from "./listing/myListing.jsx";
+import Unauthorized from "./errors/unAuth.jsx";
 import RegisterPage from "./login/registerPage.jsx";
 import RegisterUser from "./login/registerUser.jsx";
 import UserProfile from "./profile/userProfile.jsx";
 import MemberList from "./Home/List/memberList.jsx";
 import RegisterOwner from "./login/registerOwner.jsx";
 import GymDashboard from "./profile/gymDashboard.jsx";
+import AuthAccessGuard from "./guards/authAccessGuard.jsx";
 import Transformation from "./Home/Exercise/transformation.jsx";
 import UserDashboard from "./profile/userDashboard.jsx";
 import CreateListingPage from "./listing/postListing.jsx";
@@ -34,6 +36,7 @@ import ListingPage from "./listing/listingPage.jsx";
 import EditListingPage from "./listing/editListing.jsx";
 import ErrorBoundary from "./common/errorBoundary.jsx";
 import EditPersonalDetails from "./profile/editProfile.jsx";
+import UserTypeAccess from "./errors/userType.jsx";
 
 const appRouter = createBrowserRouter([
   {
@@ -67,7 +70,14 @@ const appRouter = createBrowserRouter([
         children: [
           { path: "/home", element: <Home /> },
           { path: "/home/transformation", element: <Transformation /> },
-          { path: "/home/gym/:id", element: <GymPage /> },
+          {
+            path: "/home/gym/:id",
+            element: (
+              <AuthAccessGuard>
+                <GymPage />
+              </AuthAccessGuard>
+            ),
+          },
           { path: "/home/gym/:id/followersList", element: <FollowersList /> },
           { path: "/home/gym/:id/followingList", element: <FollowingList /> },
           { path: "/home/gym/:id/memberList", element: <MemberList /> },
@@ -113,6 +123,14 @@ const appRouter = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/unauthorized",
+    element: <Unauthorized />,
+  },
+  {
+    path: "/access-denied",
+    element: <UserTypeAccess />,
   },
 ]);
 

@@ -30,13 +30,10 @@ const allListingsThunk = (filters) => async (dispatch) => {
       Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== ""))
     ).toString();
 
-    const res = await fetch(
-      `https://gymbackenddddd-1.onrender.com/listing/all?${query}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`http://localhost:7000/listing/all?${query}`, {
+      method: "GET",
+      credentials: "include",
+    });
 
     const data = await res.json();
     if (!res.ok) {
@@ -52,15 +49,12 @@ const allListingsThunk = (filters) => async (dispatch) => {
 const addNewListingThunk = (data, navigate) => async (dispatch) => {
   dispatch(addListingsRequest());
   try {
-    const res = await fetch(
-      "https://gymbackenddddd-1.onrender.com/listing/new",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      }
-    );
+    const res = await fetch("http://localhost:7000/listing/new", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
 
     console.log(res);
 
@@ -83,13 +77,10 @@ const addNewListingThunk = (data, navigate) => async (dispatch) => {
 const fetchListingDataThunk = (listingId) => async (dispatch) => {
   dispatch(fetchListingDetailsRequest());
   try {
-    const res = await fetch(
-      `https://gymbackenddddd-1.onrender.com/listing/${listingId}`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const res = await fetch(`http://localhost:7000/listing/${listingId}`, {
+      method: "GET",
+      credentials: "include",
+    });
 
     if (!res.ok) {
       const error = await res.json();
@@ -110,7 +101,7 @@ const updateListingThunk =
     dispatch(updateListingsRequest());
     try {
       const res = await fetch(
-        `https://gymbackenddddd-1.onrender.com/listing/update/${listingId}`,
+        `http://localhost:7000/listing/update/${listingId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -136,7 +127,7 @@ const updateListingThunk =
 const handleLikeListingThunk = (listingId) => async (dispatch) => {
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/listing/like/${listingId}`,
+      `http://localhost:7000/listing/like/${listingId}`,
       {
         method: "Post",
         credentials: "include",
@@ -162,7 +153,7 @@ const handleReportListingThunk =
     console.log(message, reason, "6879807645x3--");
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/listing/report/${listingId}`,
+        `http://localhost:7000/listing/report/${listingId}`,
         {
           method: "Post",
           headers: { "Content-Type": "application/json" },
@@ -192,7 +183,7 @@ const handleDeleteThunk = (listingId) => async (dispatch) => {
 
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/listing/delete/${listingId}`,
+      `http://localhost:7000/listing/delete/${listingId}`,
       {
         method: "DELETE",
         credentials: "include",
@@ -222,13 +213,10 @@ const handleDeleteThunk = (listingId) => async (dispatch) => {
 const handleMyListingThunk = () => async (dispatch) => {
   dispatch(fetchMyListingRequest());
   try {
-    const response = await fetch(
-      "https://gymbackenddddd-1.onrender.com/listing/mylisting",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const response = await fetch("http://localhost:7000/listing/mylisting", {
+      method: "GET",
+      credentials: "include",
+    });
 
     const data = await response.json();
     if (!response.ok) {

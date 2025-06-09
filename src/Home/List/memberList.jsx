@@ -11,13 +11,10 @@ const MemberList = () => {
   useEffect(() => {
     const fetchGym = async () => {
       try {
-        const response = await fetch(
-          `https://gymbackenddddd-1.onrender.com/home/gym/${id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:7000/home/gym/${id}`, {
+          method: "GET",
+          credentials: "include",
+        });
         if (response.status === 401) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Something went wrong");

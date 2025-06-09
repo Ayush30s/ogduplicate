@@ -18,7 +18,7 @@ const profileDataThuk = (userType) => async (dispatch) => {
   dispatch(requestProfileData());
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/home/${
+      `http://localhost:7000/home/${
         userType === "userModel" ? "user/dashboard" : "gym/dashboard"
       }`,
       {
@@ -45,7 +45,7 @@ const updatePersonalProfileDataThunk = (userdata) => async (dispatch) => {
   try {
     dispatch(setPersonalProfileDataReq());
     const response = await fetch(
-      "https://gymbackenddddd-1.onrender.com/home/update-dashboard-personalDetails",
+      "http://localhost:7000/home/update-dashboard-personalDetails",
       {
         method: "POST",
         credentials: "include",
@@ -75,7 +75,7 @@ const createNewShiftThunk =
     try {
       dispatch(setNewShiftRequest());
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/home/gym/${userId}/new-shift`,
+        `http://localhost:7000/home/gym/${userId}/new-shift`,
         {
           method: "POST",
           headers: {
@@ -102,7 +102,7 @@ const createNewShiftThunk =
 const deleteShiftThunk = (shiftId) => async (dispatch) => {
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/home/gym/remove-shift/${shiftId}`,
+      `http://localhost:7000/home/gym/remove-shift/${shiftId}`,
       {
         method: "Delete",
         credentials: "include",
@@ -125,7 +125,7 @@ const deleteShiftThunk = (shiftId) => async (dispatch) => {
 const updateShiftThunk = (data) => async (dispatch) => {
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/home/gym/edit-shift/${data._id}`,
+      `http://localhost:7000/home/gym/edit-shift/${data._id}`,
       {
         method: "POST",
         credentials: "include",

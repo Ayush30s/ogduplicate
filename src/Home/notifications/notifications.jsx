@@ -32,10 +32,6 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
 
   useEffect(() => {
     dispatch(fetchAllRequestThunk(activeTab));
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchAllRequestThunk(activeTab));
   }, [activeTab, dispatch]);
 
   const handleTabChange = (tab) => {

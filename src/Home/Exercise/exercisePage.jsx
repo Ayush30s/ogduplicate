@@ -79,7 +79,7 @@ const ExercisePage = ({ exercise, onClose }) => {
   const handleStartExercise = async () => {
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/workout/exercise/${exercise?.exerciseName}`,
+        `http://localhost:7000/workout/exercise/${exercise?.exerciseName}`,
         {
           method: "POST",
           headers: {

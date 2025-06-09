@@ -1,5 +1,5 @@
 export const URL = {
-  BACKEND_ROUTE: "https://gymbackenddddd-1.onrender.com/",
+  BACKEND_ROUTE: "http://localhost:7000/",
   Routes: {
     ALLBLOGS: "/blog/all",
     GYMDATA: "/home/gym",

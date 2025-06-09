@@ -16,14 +16,12 @@ const SocketInitializer = () => {
 
   useEffect(() => {
     socket.on("join", (data) => {
-      console.log("join-----------------------------------", data);
       setTimeout(() => {
         dispatch(fetchAllRequestThunk("all"));
-      }, 100);
+      }, 1000);
     });
 
     socket.on("ownerAccepted", (data) => {
-      console.log("ownerAccepted-----------------------------------");
       setTimeout(() => {
         dispatch(fetchAllRequestThunk());
         dispatch(changeRequestStatusThunk(data));
@@ -44,7 +42,6 @@ const SocketInitializer = () => {
 
     const registerSocket = () => {
       socket.emit("register", { reqby: userId, reqbyType: userType });
-      console.log("Socket registered as user:", userId);
     };
 
     if (socket.connected) {

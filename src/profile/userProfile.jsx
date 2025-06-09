@@ -31,7 +31,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/home/user/${userId}`,
+        `http://localhost:7000/home/user/${userId}`,
         {
           method: "Get",
           credentials: "include",
@@ -80,7 +80,7 @@ const UserProfile = () => {
 
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/request${endpoint}`,
+        `http://localhost:7000/request${endpoint}`,
         {
           method: "POST",
           credentials: "include",

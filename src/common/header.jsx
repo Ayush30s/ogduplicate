@@ -70,17 +70,33 @@ const Header = ({ userData }) => {
         </span>
       </div>
 
-      {/* Mobile Menu Button */}
-      <button
-        className="md:hidden text-white focus:outline-none"
-        onClick={toggleMobileMenu}
-      >
-        {isMobileMenuOpen ? (
-          <FaTimes className="h-6 w-6" />
-        ) : (
-          <FaBars className="h-6 w-6" />
-        )}
-      </button>
+      {/* Mobile Menu Button and Notification Bell */}
+      <div className="flex items-center gap-4 md:hidden">
+        <div className="relative">
+          <div
+            className="cursor-pointer"
+            onClick={() => setShowNotificationStatus(!notificationStatus)}
+          >
+            <FaBell className="text-2xl text-white transition-colors duration-200" />
+            {reqCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+                {reqCount}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        <button
+          className="text-white focus:outline-none"
+          onClick={toggleMobileMenu}
+        >
+          {isMobileMenuOpen ? (
+            <FaTimes className="h-6 w-6" />
+          ) : (
+            <FaBars className="h-6 w-6" />
+          )}
+        </button>
+      </div>
 
       {/* Desktop Navigation */}
       <nav className="hidden md:block">
@@ -110,7 +126,7 @@ const Header = ({ userData }) => {
           <div>
             <div className="relative">
               <div
-                className=" cursor-pointer"
+                className="cursor-pointer"
                 onClick={() => setShowNotificationStatus(!notificationStatus)}
               >
                 <FaBell className="text-2xl text-white transition-colors duration-200" />
@@ -658,6 +674,33 @@ const Header = ({ userData }) => {
                   Logout
                 </li>
               </ul>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Notification Panel for Mobile */}
+      <AnimatePresence>
+        {notificationStatus && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-40"
+              onClick={() => setShowNotificationStatus(false)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-0 right-0 h-full w-full max-w-md bg-gray-800 border-l border-gray-700 shadow-xl z-50 overflow-y-auto"
+            >
+              <Notifications
+                setShowNotificationStatus={setShowNotificationStatus}
+                notificationStatus={notificationStatus}
+              />
             </motion.div>
           </>
         )}

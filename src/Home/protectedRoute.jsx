@@ -8,13 +8,10 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const res = await fetch(
-          "https://gymbackenddddd-1.onrender.com/register/verify-token",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+        const res = await fetch("http://localhost:7000/register/verify-token", {
+          method: "GET",
+          credentials: "include",
+        });
 
         if (res.ok) {
           setIsAuth(true);
@@ -39,7 +36,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuth ? children : <Navigate to="/" />;
+  return isAuth ? children : <Navigate to="/unauthorized" />;
 };
 
 export default ProtectedRoute;

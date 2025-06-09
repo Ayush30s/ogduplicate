@@ -54,13 +54,10 @@ const GymPage = () => {
     if (!gymData) {
       const fetchGym = async () => {
         try {
-          const response = await fetch(
-            `https://gymbackenddddd-1.onrender.com/home/gym/${id}`,
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
+          const response = await fetch(`http://localhost:7000/home/gym/${id}`, {
+            method: "GET",
+            credentials: "include",
+          });
           if (response.status === 401) {
             const errorData = await response.json();
             throw new Error(errorData.error || "Something went wrong");
@@ -99,7 +96,7 @@ const GymPage = () => {
   const PostRating = async (rating, gymId) => {
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/home/rating/${gymId}`,
+        `http://localhost:7000/home/rating/${gymId}`,
         {
           method: "POST",
           credentials: "include",
@@ -139,7 +136,7 @@ const GymPage = () => {
 
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/request${
+        `http://localhost:7000/request${
           followStatus === "Following"
             ? "/unfollow/user/" + id
             : followStatus === "Follow" && "/follow/user/" + id
@@ -195,7 +192,7 @@ const GymPage = () => {
 
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/home/${id}/${
+        `http://localhost:7000/home/${id}/${
           joinStatus ? "leavegym" : "joingym"
         }`,
         {
@@ -226,7 +223,7 @@ const GymPage = () => {
 
   const JoinShiftRequest = async (shiftId, index) => {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/home/gym/${id}/join-shift/${shiftId}`,
+      `http://localhost:7000/home/gym/${id}/join-shift/${shiftId}`,
       {
         method: "POST",
         credentials: "include",
@@ -422,6 +419,9 @@ const GymPage = () => {
             onClick={() => {
               if (!joinStatus) {
                 JoinAction();
+                alert(
+                  "Your request to join this gym is sent. See the status in the notification section"
+                );
               } else {
                 SendJoinActions();
               }
@@ -758,7 +758,13 @@ const GymPage = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => JoinShiftRequest(shift?._id, index)}
+                      onClick={() => {
+                        !joinStatus &&
+                          alert(
+                            "User must have joined the gym to join any shift"
+                          );
+                        JoinShiftRequest(shift?._id, index);
+                      }}
                       className={`text-sm px-4 py-1.5 rounded-lg ${
                         shiftJoinedIndex === index
                           ? "bg-gray-600 text-gray-300"

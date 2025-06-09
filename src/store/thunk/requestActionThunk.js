@@ -14,17 +14,14 @@ const requestActionThunk = (data) => async (dispatch) => {
   dispatch(requestActionPending());
 
   try {
-    const response = await fetch(
-      "https://gymbackenddddd-1.onrender.com/notify/handleRequest",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch("http://localhost:7000/notify/handleRequest", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -44,7 +41,7 @@ const requestActionThunk = (data) => async (dispatch) => {
 const fetchAllRequestThunk = (reqAction) => async (dispatch) => {
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/notify/allnotifications/${reqAction}`,
+      `http://localhost:7000/notify/allnotifications/${reqAction}`,
       {
         method: "Get",
         credentials: "include",
@@ -69,7 +66,7 @@ const changeRequestStatusThunk = (data) => async (dispatch) => {
   dispatch(updateStatusRequest());
   try {
     const response = await fetch(
-      "https://gymbackenddddd-1.onrender.com/notify/updatejoinstatus",
+      "http://localhost:7000/notify/updatejoinstatus",
       {
         method: "PUT",
         headers: {
@@ -94,7 +91,7 @@ const changeRequestStatusThunk = (data) => async (dispatch) => {
 const deleteNotificationThunk = (notification) => async (dispatch) => {
   try {
     const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/notify/deleteNotification`,
+      `http://localhost:7000/notify/deleteNotification`,
       {
         method: "DELETE",
         headers: {

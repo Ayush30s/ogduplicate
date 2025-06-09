@@ -47,16 +47,6 @@ const UserDashboard = () => {
     );
   }
 
-  if (data.user.userType !== "userModel" && data.user.userId) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-900 text-white">
-        <div className="text-red-500 font-semibold text-xl text-center px-6">
-          Access Denied: Only user accounts can access the User Dashboard.
-        </div>
-      </div>
-    );
-  }
-
   // Calculate workout streak (example logic)
   const workoutStreak = profileData.HeatMap?.reduce((streak, month) => {
     return streak + month.filter((day) => day.totalWorkoutTime > 0).length;
