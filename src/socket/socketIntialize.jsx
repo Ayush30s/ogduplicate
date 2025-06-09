@@ -25,7 +25,7 @@ const SocketInitializer = () => {
       setTimeout(() => {
         dispatch(fetchAllRequestThunk());
         dispatch(changeRequestStatusThunk(data));
-      }, 1000);
+      }, 2000);
     });
 
     socket.on("ownerRejected", (data) => {
@@ -33,7 +33,7 @@ const SocketInitializer = () => {
       setTimeout(() => {
         dispatch(fetchAllRequestThunk());
         dispatch(changeRequestStatusThunk(data));
-      }, 2000);
+      }, 3000);
     });
   }, [dispatch, socket]);
 
