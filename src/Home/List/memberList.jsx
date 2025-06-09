@@ -13,10 +13,13 @@ const MemberList = () => {
     const fetchGym = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:7000/home/gym/${id}`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://gymbackenddddd-1.onrender.com/home/gym/${id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (response.status === 401) {
           const errorData = await response.json();

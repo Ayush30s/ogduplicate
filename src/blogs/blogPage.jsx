@@ -24,10 +24,13 @@ const BlogPage = () => {
     const fetchBlogData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:7000/blog/${blogId}`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://gymbackenddddd-1.onrender.com/blog/${blogId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         const result = await response.json();
         setTitle(result.blog.title);
@@ -55,7 +58,7 @@ const BlogPage = () => {
     setIsLiking(true);
     try {
       const response = await fetch(
-        `http://localhost:7000/blog/like/${blogId}`,
+        `https://gymbackenddddd-1.onrender.com/blog/like/${blogId}`,
         {
           method: "POST",
           credentials: "include",
@@ -84,7 +87,7 @@ const BlogPage = () => {
     setIsSaving(true);
     try {
       const response = await fetch(
-        `http://localhost:7000/blog/save/${blogId}`,
+        `https://gymbackenddddd-1.onrender.com/blog/save/${blogId}`,
         {
           method: "POST",
           credentials: "include",
@@ -114,7 +117,7 @@ const BlogPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:7000/blog/comment/${blogId}`,
+        `https://gymbackenddddd-1.onrender.com/blog/comment/${blogId}`,
         {
           method: "POST",
           headers: {

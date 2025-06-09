@@ -15,7 +15,7 @@ const FollowersList = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:7000/request/user/followersList/${id}`,
+          `https://gymbackenddddd-1.onrender.com/request/user/followersList/${id}`,
           {
             method: "GET",
             credentials: "include",

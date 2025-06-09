@@ -16,7 +16,7 @@ const QRCodeGenerator = ({ gymId, sessionId }) => {
 
   const getAttendanceToken = async ({ gymId, sessionId, date }) => {
     const response = await fetch(
-      "http://localhost:7000/register/generate-qr-token",
+      "https://gymbackenddddd-1.onrender.com/register/generate-qr-token",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -48,11 +48,14 @@ const RegisterOwner = () => {
       monthlyCharge,
     };
 
-    const response = await fetch("http://localhost:7000/register/owner", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
+    const response = await fetch(
+      "https://gymbackenddddd-1.onrender.com/register/owner",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      }
+    );
 
     if (response.status === 409) {
       setErrorMessage("This email is already registered");
