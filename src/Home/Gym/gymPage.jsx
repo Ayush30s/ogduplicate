@@ -375,12 +375,7 @@ const GymPage = () => {
 
       {/* Hero Section */}
       <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-8">
-        <div
-          className="relative flex items-center justify-center p-8 mb-5 overflow-hidden"
-          style={{
-            height: "300px", // Adjust height as needed
-          }}
-        >
+        <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-8 mb-5 overflow-hidden h-[300px] md:h-[400px]">
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
             <img
@@ -393,31 +388,33 @@ const GymPage = () => {
           </div>
 
           {/* Content */}
-          <div className="relative z-1 text-center space-y-3 px-4">
+          <div className="relative z-10 text-center space-y-3 px-2 sm:px-4 md:px-8">
             <h1
-              className="text-[100px] font-bold text-white uppercase drop-shadow-lg"
+              className="text-4xl sm:text-6xl md:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words"
               style={{
                 textShadow: `
-                  2px 2px 0 white,
-                  -2px -2px 0 white,
-                  2px -2px 0 white,
-                  -2px 2px 0 white,
-                  0 2px 0 white,
-                  2px 0 0 white,
-                  0 -2px 0 white,
-                  -2px 0 0 white,
-                  2px 2px 5px white
-                `,
+          2px 2px 0 white,
+          -2px -2px 0 white,
+          2px -2px 0 white,
+          -2px 2px 0 white,
+          0 2px 0 white,
+          2px 0 0 white,
+          0 -2px 0 white,
+          -2px 0 0 white,
+          2px 2px 5px white
+        `,
               }}
             >
               {gym?.gymName}
             </h1>
-            <p className="text-gray-100 max-w-2xl mx-auto text-lg md:text-xl drop-shadow-md">
+            <p className="text-gray-100 max-w-2xl mx-auto text-base sm:text-lg md:text-xl drop-shadow-md">
               {gym?.description}
             </p>
           </div>
         </div>
-        <div className="my-6 flex flex-row justify-around items-center">
+
+        <div className="my-6 flex flex-col md:flex-row justify-center items-center gap-4">
+          {/* Join/Leave Gym Button */}
           <button
             onClick={() => {
               if (!joinStatus) {
@@ -429,7 +426,7 @@ const GymPage = () => {
                 SendJoinActions();
               }
             }}
-            className={`px-12 ml-1 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-colors ${
+            className={`px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all ${
               joinStatus
                 ? "bg-red-500 hover:bg-red-600 text-white"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -438,54 +435,52 @@ const GymPage = () => {
             {joinStatus ? "Leave Gym" : "Join Gym"}
           </button>
 
+          {/* QR Scanner Section */}
           {joinStatus && (
-            <div>
-              {QrScannerResponse == "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
-                <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center max-w-lg shadow-xl mt-2 mb-4 border-l-4 border-blue-500 relative ring-1 ring-blue-600/30">
+            <div className="flex flex-col items-center w-full md:w-auto">
+              {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
+                <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full max-w-md">
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-0.5 rounded-full shadow-md">
                     Daily Limit Reached
                   </div>
-
                   <button
                     className="bg-gray-700 text-gray-100 px-5 py-3 mt-3 rounded-lg text-base cursor-not-allowed w-full"
                     disabled
                   >
                     ✅ Check-in Completed
                   </button>
-
                   <p className="mt-4 text-gray-200 text-sm font-medium">
                     You've already checked in and out today. Come back tomorrow!
                   </p>
                 </div>
+              ) : QrScannerResponse === "Invalid or expired QR token." ? (
+                <div className="text-red-500 text-base md:text-lg font-medium text-center">
+                  {QrScannerResponse}{" "}
+                  <button
+                    onClick={() => setQrScannerResponse(null)}
+                    className="text-yellow-500 ml-2"
+                  >
+                    Try Again
+                  </button>
+                </div>
               ) : (
-                <div>
-                  {QrScannerResponse == "Invalid or expired QR token." ? (
-                    <div className="text-red-500 text-lg font-medium m-2">
-                      {QrScannerResponse}{" "}
-                      <button
-                        onClick={() => setQrScannerResponse(null)}
-                        className="text-yellow-500"
-                      >
-                        Try Again
-                      </button>
-                    </div>
-                  ) : (
-                    <QRScannerButton
-                      setQrScannerResponse={setQrScannerResponse}
-                      attendenceStatus={attendenceStatus}
-                      setAttendenceMarked={setAttendenceMarked}
-                      setAttendenceStatus={setAttendenceStatus}
-                    />
-                  )}{" "}
+                <div className="w-full flex justify-center">
+                  <QRScannerButton
+                    setQrScannerResponse={setQrScannerResponse}
+                    attendenceStatus={attendenceStatus}
+                    setAttendenceMarked={setAttendenceMarked}
+                    setAttendenceStatus={setAttendenceStatus}
+                  />
                 </div>
               )}
             </div>
           )}
 
+          {/* Follow Button */}
           {showFollowButton && (
             <button
               onClick={SendFollowActions}
-              className={`px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-colors ${
+              className={`px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-colors ${
                 followStatus === "Following"
                   ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
                   : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -495,6 +490,7 @@ const GymPage = () => {
             </button>
           )}
         </div>
+
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Members Card */}
@@ -688,14 +684,18 @@ const GymPage = () => {
                 <img
                   src={user.user.profileImage}
                   alt={user.user.fullName}
-                  className="w-10 h-10 rounded-full border-2 border-gray-500 object-cover"
+                  className="w-10 h-10 min-w-10 rounded-full border-2 border-gray-500 object-cover shrink-0"
                 />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-white">
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">
                     {user.user.fullName}
                   </p>
                 </div>
-                <span className="text-xs text-blue-400 font-medium">View</span>
+
+                <span className="text-xs text-blue-400 font-medium whitespace-nowrap">
+                  View
+                </span>
               </div>
             ))}
           </div>
