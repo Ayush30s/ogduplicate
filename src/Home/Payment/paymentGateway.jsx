@@ -10,24 +10,21 @@ function PaymentGateway({
 }) {
   const [mobile, setMobile] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const backend = "https://gymbackenddddd-1.onrender.com";
+  const backend = "http://localhost:7000";
 
   const makePayment = async () => {
     try {
-      const res = await fetch(
-        "https://gymbackenddddd-1.onrender.com/payment/makepayment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            userId,
-            gymId,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:7000/payment/makepayment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          userId,
+          gymId,
+        }),
+      });
 
       if (!res.ok) {
         throw new Error("Payment request failed");
@@ -121,23 +118,32 @@ function PaymentGateway({
   };
 
   return (
-    <div className="payment-gateway">
-      <div className="payment-header">
-        <h2>Complete Your Membership</h2>
-        <button onClick={onClose} className="close-btn" aria-label="Close">
+    <div className="bg-white rounded-2xl p-7 max-w-md mx-auto shadow-xl font-sans text-gray-900">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold">Complete Your Membership</h2>
+        <button
+          onClick={onClose}
+          className="text-gray-500 text-2xl leading-none hover:text-red-600 focus:outline-none"
+          aria-label="Close"
+        >
           &times;
         </button>
       </div>
 
-      <div className="payment-details">
-        <p className="amount-display">
-          <strong>Amount:</strong> <span>₹{monthlyCharge}</span>
+      <div className="mb-6">
+        <p className="text-lg mb-1">
+          <strong>Amount:</strong>{" "}
+          <span className="text-green-700 font-bold">₹{monthlyCharge}</span>
         </p>
-        <p className="description">Monthly membership fee for gym access</p>
+        <p className="text-sm text-gray-600">
+          Monthly membership fee for gym access
+        </p>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="mobile">Mobile Number</label>
+      <div className="mb-5">
+        <label htmlFor="mobile" className="block mb-1 font-medium">
+          Mobile Number
+        </label>
         <input
           type="tel"
           id="mobile"
@@ -148,123 +154,21 @@ function PaymentGateway({
           placeholder="Enter 10-digit mobile number"
           pattern="[0-9]{10}"
           required
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
         />
       </div>
 
-      <button className="p-2 font-medium text-green-600" onClick={makePayment}>
-        Make Dummy Payment
-      </button>
-
       <button
-        onClick={pay}
-        className="pay-button"
+        onClick={makePayment}
+        className={`w-full py-3 text-white text-base font-medium rounded-lg transition-colors ${
+          isProcessing || !mobile || mobile.length !== 10
+            ? "bg-gray-300 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        }`}
         disabled={isProcessing || !mobile || mobile.length !== 10}
       >
         {isProcessing ? "Processing..." : `Pay ₹${monthlyCharge}`}
       </button>
-
-      <style jsx>{`
-        .payment-gateway {
-          background: #ffffff;
-          border-radius: 16px;
-          padding: 28px 24px;
-          max-width: 420px;
-          margin: 0 auto;
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-          font-family: "Segoe UI", sans-serif;
-          color: #1e1e1e;
-        }
-
-        .payment-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-        }
-
-        .payment-header h2 {
-          font-size: 1.6rem;
-          font-weight: 600;
-        }
-
-        .close-btn {
-          background: transparent;
-          border: none;
-          font-size: 1.5rem;
-          cursor: pointer;
-          color: #888;
-          transition: color 0.3s ease;
-        }
-
-        .close-btn:hover {
-          color: #d32f2f;
-        }
-
-        .payment-details {
-          margin-bottom: 24px;
-        }
-
-        .amount-display {
-          font-size: 1.3rem;
-          margin-bottom: 4px;
-        }
-
-        .amount-display span {
-          font-weight: bold;
-          color: #2e7d32;
-        }
-
-        .description {
-          font-size: 0.95rem;
-          color: #666;
-        }
-
-        .form-group {
-          margin-bottom: 20px;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 6px;
-          font-weight: 500;
-        }
-
-        .form-group input {
-          width: 100%;
-          padding: 10px 14px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-          border-color: #1976d2;
-          outline: none;
-        }
-
-        .pay-button {
-          width: 100%;
-          padding: 12px;
-          background-color: #1976d2;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1.05rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-
-        .pay-button:hover:not(:disabled) {
-          background-color: #1565c0;
-        }
-
-        .pay-button:disabled {
-          background-color: #cfd8dc;
-          cursor: not-allowed;
-        }
-      `}</style>
     </div>
   );
 }
