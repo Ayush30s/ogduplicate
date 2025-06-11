@@ -3,71 +3,193 @@ import { useNavigate } from "react-router-dom";
 import { convertToBase64 } from "../../utils/FileToBase64";
 
 const RegisterOwner = () => {
-  const [fullName, setFullname] = useState("");
-  const [gender, setGender] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [contact, setContact] = useState("");
-  const [gymName, setGymName] = useState("");
-  const [description, setDescription] = useState("");
-  const [monthlyCharge, setMonthlyCharge] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [street, setStreet] = useState("");
+  // Form state
+  const [formData, setFormData] = useState({
+    fullName: "",
+    gender: "",
+    email: "",
+    password: "",
+    contact: "",
+    gymName: "",
+    description: "",
+    monthlyCharge: "",
+    city: "",
+    state: "",
+    street: "",
+  });
+
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR63wsnbmsG6UCb-NZBJUTEkUr3F_E6jhRWiA&s"
   );
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
+  // Validation rules
+  const validateField = (name, value) => {
+    let error = "";
+
+    switch (name) {
+      case "fullName":
+        if (!value.trim()) error = "Full name is required";
+        else if (value.length < 3) error = "Name must be at least 3 characters";
+        break;
+      case "email":
+        if (!value) error = "Email is required";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          error = "Invalid email format";
+        break;
+      case "password":
+        if (!value) error = "Password is required";
+        else if (value.length < 6)
+          error = "Password must be at least 6 characters";
+        break;
+      case "contact":
+        if (!value) error = "Contact number is required";
+        else if (!/^\d{10,15}$/.test(value))
+          error = "Invalid phone number (10-15 digits)";
+        break;
+      case "gymName":
+        if (!value.trim()) error = "Gym name is required";
+        break;
+      case "monthlyCharge":
+        if (!value) error = "Monthly charge is required";
+        else if (isNaN(value)) error = "Must be a valid number";
+        else if (Number(value) <= 0) error = "Must be greater than 0";
+        break;
+      case "state":
+      case "city":
+      case "street":
+        if (!value.trim()) error = "This field is required";
+        break;
+      case "description":
+        if (!value.trim()) error = "Description is required";
+        else if (value.length < 20)
+          error = "Description must be at least 20 characters";
+        break;
+      default:
+        break;
+    }
+
+    return error;
+  };
+
+  // Handle field changes
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+
+    // Update form data
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "number" ? Number(value) : value,
+    }));
+
+    // Validate field
+    if (name !== "profileImage") {
+      const error = validateField(name, value);
+      setErrors((prev) => ({
+        ...prev,
+        [name]: error,
+      }));
+    }
+  };
+
+  // Handle image upload
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate image
+    if (!file.type.match("image.*")) {
+      setErrors((prev) => ({
+        ...prev,
+        profileImage: "Please upload an image file",
+      }));
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors((prev) => ({
+        ...prev,
+        profileImage: "Image must be less than 2MB",
+      }));
+      return;
+    }
+
     setProfileImage(file);
     const base64 = await convertToBase64(file);
     setPreviewImage(base64);
+    setErrors((prev) => ({
+      ...prev,
+      profileImage: "",
+    }));
   };
 
+  // Validate entire form
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    // Validate all fields
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+        isValid = false;
+      }
+    });
+
+    // Validate profile image
+    if (!profileImage) {
+      newErrors.profileImage = "Gym logo is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  // Handle form submission
   const handleSubmitForm = async (e) => {
     e.preventDefault();
-    const Base64ImageString = await convertToBase64(profileImage);
 
-    const userData = {
-      fullName,
-      gender,
-      email,
-      password,
-      contact,
-      gymName,
-      city,
-      state,
-      street,
-      description,
-      profileImage: Base64ImageString,
-      monthlyCharge,
-    };
+    if (!validateForm()) return;
 
-    const response = await fetch(
-      "https://gymbackenddddd-1.onrender.com/register/owner",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
+    try {
+      const Base64ImageString = await convertToBase64(profileImage);
+
+      const userData = {
+        ...formData,
+        profileImage: Base64ImageString,
+      };
+
+      const response = await fetch(
+        "https://gymbackenddddd-1.onrender.com/register/owner",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        }
+      );
+
+      if (response.status === 409) {
+        setErrors({ email: "This email is already registered" });
+        setSuccessMessage("");
+      } else if (response.status === 201) {
+        setSuccessMessage("Your gym has been successfully registered!");
+        setTimeout(() => navigate("/"), 2000);
+      } else {
+        setErrors({ form: "Something went wrong. Please try again later." });
+        setSuccessMessage("");
       }
-    );
-
-    if (response.status === 409) {
-      setErrorMessage("This email is already registered");
-      setSuccessMessage("");
-    } else if (response.status === 201) {
-      setSuccessMessage("Your gym has been successfully registered!");
-      navigate("/");
-    } else {
-      setErrorMessage("Something went wrong. Please try again later.");
-      setSuccessMessage("");
+    } catch (error) {
+      setErrors({ form: "Network error. Please check your connection." });
     }
   };
+
+  // Helper to check if field has error
+  const hasError = (field) => errors[field] && errors[field].length > 0;
 
   return (
     <div className="min-h-screen bg-black text-white py-12 px-4 sm:px-6 lg:px-8">
@@ -118,140 +240,247 @@ const RegisterOwner = () => {
                 {successMessage}
               </div>
             )}
-            {errorMessage && (
+
+            {errors.form && (
               <div className="bg-red-600 p-3 rounded mb-4 text-center">
-                {errorMessage}
+                {errors.form}
               </div>
             )}
 
             <form onSubmit={handleSubmitForm} className="space-y-5">
               {/* Name and Gender */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={fullName}
-                  onChange={(e) => setFullname(e.target.value)}
-                  required
-                />
-                <select
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  required
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
+                <div>
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="Full Name"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("fullName")
+                        ? "border-red-500"
+                        : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.fullName}
+                    onChange={handleChange}
+                  />
+                  {hasError("fullName") && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.fullName}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <select
+                    name="gender"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("gender") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.gender}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                  {hasError("gender") && (
+                    <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
+                  )}
+                </div>
               </div>
 
               {/* Email and Password */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("email") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                  {hasError("email") && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
+                </div>
+
+                <div>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("password")
+                        ? "border-red-500"
+                        : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  {hasError("password") && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.password}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Contact and Gym Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="number"
-                  placeholder="Contact Number"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Gym Name"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={gymName}
-                  onChange={(e) => setGymName(e.target.value)}
-                  required
-                />
+                <div>
+                  <input
+                    type="tel"
+                    name="contact"
+                    placeholder="Contact Number"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("contact") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.contact}
+                    onChange={handleChange}
+                  />
+                  {hasError("contact") && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.contact}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="gymName"
+                    placeholder="Gym Name"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("gymName") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.gymName}
+                    onChange={handleChange}
+                  />
+                  {hasError("gymName") && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.gymName}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Monthly Charge */}
-              <div className="grid grid-cols-1 gap-4">
+              <div>
                 <input
-                  type="text"
+                  type="number"
+                  name="monthlyCharge"
                   placeholder="Monthly Membership Charge ($)"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={monthlyCharge}
-                  onChange={(e) => setMonthlyCharge(e.target.value)}
-                  required
+                  className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                    hasError("monthlyCharge")
+                      ? "border-red-500"
+                      : "border-gray-600"
+                  } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                  value={formData.monthlyCharge}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
                 />
+                {hasError("monthlyCharge") && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.monthlyCharge}
+                  </p>
+                )}
               </div>
 
               {/* Address Fields */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input
-                  type="text"
-                  placeholder="State"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="City"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Street"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  required
-                />
+                <div>
+                  <input
+                    type="text"
+                    name="state"
+                    placeholder="State"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("state") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.state}
+                    onChange={handleChange}
+                  />
+                  {hasError("state") && (
+                    <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+                  )}
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("city") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.city}
+                    onChange={handleChange}
+                  />
+                  {hasError("city") && (
+                    <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                  )}
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    name="street"
+                    placeholder="Street"
+                    className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                      hasError("street") ? "border-red-500" : "border-gray-600"
+                    } focus:outline-none focus:ring-2 focus:ring-red-500`}
+                    value={formData.street}
+                    onChange={handleChange}
+                  />
+                  {hasError("street") && (
+                    <p className="text-red-500 text-sm mt-1">{errors.street}</p>
+                  )}
+                </div>
               </div>
 
               {/* Gym Description */}
               <div>
                 <textarea
+                  name="description"
                   placeholder="Gym Description"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
+                    hasError("description")
+                      ? "border-red-500"
+                      : "border-gray-600"
+                  } focus:outline-none focus:ring-2 focus:ring-red-500`}
                   rows="3"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
+                  value={formData.description}
+                  onChange={handleChange}
                 ></textarea>
+                {hasError("description") && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.description}
+                  </p>
+                )}
               </div>
 
               {/* Gym Logo */}
               <div className="flex items-center space-x-4">
-                <label className="cursor-pointer w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg text-center border border-gray-600 hover:bg-gray-600 transition">
-                  Upload Gym Logo
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                    required
-                  />
-                </label>
+                <div className="flex-1">
+                  <label className="cursor-pointer w-full px-4 py-2 bg-gray-700 text-gray-300 rounded-lg text-center border border-gray-600 hover:bg-gray-600 transition">
+                    Upload Gym Logo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+                  </label>
+                  {errors.profileImage && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.profileImage}
+                    </p>
+                  )}
+                </div>
                 {previewImage && (
                   <img
                     src={previewImage}
@@ -265,6 +494,7 @@ const RegisterOwner = () => {
               <button
                 type="submit"
                 className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105"
+                disabled={Object.values(errors).some((error) => error)}
               >
                 Register Gym
               </button>

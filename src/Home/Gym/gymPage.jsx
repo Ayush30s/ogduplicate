@@ -1,6 +1,5 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
-import { debounce } from "lodash";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import {
@@ -19,6 +18,7 @@ import QRScannerButton from "./qrScannerButton";
 import { SocketContext } from "../../socket/socketContext";
 import { useSelector } from "react-redux";
 import { requestActionThunk } from "../../store/thunk/requestActionThunk";
+import PaymentGateway from "../Payment/paymentGateway";
 
 const GymPage = () => {
   const userData = useSelector((store) => store.login);
@@ -38,7 +38,7 @@ const GymPage = () => {
   const [loading, setLoading] = useState(!gymData);
   const [rateLater, setRateLater] = useState(false);
   const [followStatus, setFollowStatus] = useState("");
-  const [joinStatus, setJoinStatus] = useState("");
+  const [joinStatus, setJoinStatus] = useState(false);
   const [joinCount, setJoinCount] = useState(0);
   const [shiftJoinedIndex, setshiftJoinedIndex] = useState(-1);
   const [followersCount, setFollowersCount] = useState();
@@ -47,8 +47,14 @@ const GymPage = () => {
   const [rating, setRating] = useState(0);
   const [searchUser, setSearchUser] = useState("");
   const [filteredMembers, setFilteredMembers] = useState("");
+  const [joinRequestAccepted, setJoinRequestAccepted] = useState(false);
+  const [isPaymentDone, setIsPaymentDone] = useState(false);
   const [attendenceStatus, setAttendenceStatus] = useState(false);
   const [QrScannerResponse, setQrScannerResponse] = useState(null);
+  const [showPaymentGateway, setShowPaymentGateway] = useState(false);
+  const [joinRequestPending, setJoinRequestPending] = useState(false);
+
+  console.log(isPaymentDone);
 
   useEffect(() => {
     if (!gymData) {
@@ -71,16 +77,23 @@ const GymPage = () => {
             navigate("/home/gym-dashboard");
           }
 
-          setAttendenceStatus(data.attendenceStatus);
-          setJoinCount(data?.gymData?.joinedBy?.length);
+          setGymData(data);
+          setJoinStatus(data.isUserJoined);
+          setIsPaymentDone(data.isPaymentDone);
           setMembersList(data.gymData?.joinedBy);
-          setFilteredMembers(data.gymData?.joinedBy);
-          setshiftJoinedIndex(data.shiftJoinedIndex);
           setFollowingCount(data.followingCount);
           setFollowersCount(data.followersCount);
           setFollowStatus(data.followingGymOrNot);
-          setJoinStatus(data.isUserJoined);
-          setGymData(data);
+          setAttendenceStatus(data.attendenceStatus);
+          setFilteredMembers(data.gymData?.joinedBy);
+          setshiftJoinedIndex(data.shiftJoinedIndex);
+          setJoinCount(data?.gymData?.joinedBy?.length);
+          setJoinRequestAccepted(data.isJoinRequestAccepted);
+          setJoinRequestPending(data.isJoinRequestPending);
+          setIsPaymentDone(data.isPaymentDone);
+          if (data.isJoinRequestAccepted && !data.isPaymentDone) {
+            setShowPaymentGateway(true);
+          }
         } catch (err) {
           if (err.message === "Unauthorized access auth error!") {
             navigate(
@@ -92,9 +105,32 @@ const GymPage = () => {
           setLoading(false);
         }
       };
+
       fetchGym();
     }
-  }, [id, navigate, gymData, followStatus, joinStatus, attendenceStatus]);
+  }, [id, navigate, gymData]);
+
+  useEffect(() => {
+    const handleOwnerAccepted = () => {
+      setJoinRequestAccepted(true);
+      setJoinRequestPending(false);
+      setShowPaymentGateway(true);
+    };
+
+    const handleOwnerRejected = () => {
+      setJoinRequestAccepted(false);
+      setJoinRequestPending(false);
+      setShowPaymentGateway(false);
+    };
+
+    socket.on("ownerAccepted", handleOwnerAccepted);
+    socket.on("ownerRejected", handleOwnerRejected);
+
+    return () => {
+      socket.off("ownerAccepted", handleOwnerAccepted);
+      socket.off("ownerRejected", handleOwnerRejected);
+    };
+  }, [socket]);
 
   const PostRating = async (rating, gymId) => {
     try {
@@ -115,7 +151,6 @@ const GymPage = () => {
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Error posting rating:", error);
@@ -164,16 +199,6 @@ const GymPage = () => {
     }
   };
 
-  useEffect(() => {
-    socket.on("ownerAccepted", () => {
-      SendJoinActions();
-    });
-
-    socket.on("ownerRejected", () => {
-      return;
-    });
-  }, [socket]);
-
   const JoinAction = async () => {
     const data = {
       reqto: id,
@@ -186,9 +211,14 @@ const GymPage = () => {
 
     socket.emit("request received", data);
     dispatch(requestActionThunk(data));
+    setJoinRequestPending(true);
+    alert(
+      "Your request to join this gym has been sent. You'll be notified when the owner responds."
+    );
   };
 
   const SendJoinActions = async () => {
+    console.log(joinStatus);
     if (joinStatus === true) {
       setshiftJoinedIndex(-1);
     }
@@ -213,10 +243,16 @@ const GymPage = () => {
         console.log("✅ User joined gym successfully");
         setJoinCount((prev) => prev + 1);
         setJoinStatus(true);
+        setShowPaymentGateway(false);
       } else if (data.message === "USER_LEFT_GYM_SUCCESSFUL") {
         console.log("👋 User left gym successfully");
         setJoinCount((prev) => prev - 1);
         setJoinStatus(false);
+        // Reset all join-related states when user leaves
+        setJoinRequestPending(false);
+        setJoinRequestAccepted(false);
+        setIsPaymentDone(false);
+        setShowPaymentGateway(false);
       }
     } catch (error) {
       console.error("❌ Error in join/leave action:", error.message);
@@ -225,6 +261,11 @@ const GymPage = () => {
   };
 
   const JoinShiftRequest = async (shiftId, index) => {
+    if (!joinStatus && !(joinRequestAccepted && isPaymentDone)) {
+      alert("You need to be a member of this gym to join a shift");
+      return;
+    }
+
     const response = await fetch(
       `https://gymbackenddddd-1.onrender.com/home/gym/${id}/join-shift/${shiftId}`,
       {
@@ -234,7 +275,6 @@ const GymPage = () => {
     );
 
     const data = await response.json();
-    console.log(response.status);
     if (response.status === 200) {
       setshiftJoinedIndex(index);
       setMessage(data.msg);
@@ -262,6 +302,14 @@ const GymPage = () => {
     });
 
     setFilteredMembers(filteredMemberList);
+  };
+
+  const handlePaymentSuccess = () => {
+    SendJoinActions();
+    setIsPaymentDone(true);
+    setShowPaymentGateway(false);
+    setJoinRequestAccepted(true);
+    setMessage("Payment successful! You are now a member of this gym.");
   };
 
   if (loading)
@@ -310,8 +358,21 @@ const GymPage = () => {
           />
         </svg>
         <p className="text-lg">{message}</p>
+        <button
+          onClick={() => setMessage(null)}
+          className="mt-4 px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700"
+        >
+          Continue
+        </button>
       </div>
     );
+
+  console.log(
+    "joinRequestPending",
+    joinRequestPending,
+    joinRequestAccepted,
+    joinStatus
+  );
 
   if (!gymData) {
     return (
@@ -388,7 +449,7 @@ const GymPage = () => {
           </div>
 
           {/* Content */}
-          <div className="relative z-10 text-center space-y-3 px-2 sm:px-4 md:px-8">
+          <div className="relative z-0 text-center space-y-3 px-2 sm:px-4 md:px-8">
             <h1
               className="text-4xl sm:text-6xl md:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words"
               style={{
@@ -413,30 +474,46 @@ const GymPage = () => {
           </div>
         </div>
 
+        {/* Join/Payment Section */}
         <div className="my-6 flex flex-col md:flex-row justify-center items-center gap-4">
-          {/* Join/Leave Gym Button */}
-          <button
-            onClick={() => {
-              if (!joinStatus) {
-                JoinAction();
-                alert(
-                  "Your request to join this gym is sent. See the status in the notification section"
-                );
-              } else {
-                SendJoinActions();
-              }
-            }}
-            className={`px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all ${
-              joinStatus
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-          >
-            {joinStatus ? "Leave Gym" : "Join Gym"}
-          </button>
+          {/* Join/Leave Gym Button - Show different states based on join request and payment status */}
+          {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
+            <button
+              onClick={JoinAction}
+              className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Request to Join Gym
+            </button>
+          )}
 
-          {/* QR Scanner Section */}
+          {joinRequestPending && (
+            <div className="px-8 md:px-12 py-2.5 rounded-full font-medium bg-yellow-600 text-white">
+              Request Pending Approval
+            </div>
+          )}
+
+          {joinRequestAccepted && !isPaymentDone && (
+            <button
+              onClick={() => setShowPaymentGateway(true)}
+              className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-green-600 hover:bg-green-700 text-white"
+            >
+              Complete Payment
+            </button>
+          )}
+
+          {console.log(joinStatus)}
+
           {joinStatus && (
+            <button
+              onClick={SendJoinActions}
+              className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-red-500 hover:bg-red-600 text-white"
+            >
+              Leave Gym
+            </button>
+          )}
+
+          {/* QR Scanner Section - Only show if payment is done and user is joined */}
+          {joinStatus && joinRequestAccepted && isPaymentDone && (
             <div className="flex flex-col items-center w-full md:w-auto">
               {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
                 <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full max-w-md">
@@ -761,13 +838,7 @@ const GymPage = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => {
-                        !joinStatus &&
-                          alert(
-                            "User must have joined the gym to join any shift"
-                          );
-                        JoinShiftRequest(shift?._id, index);
-                      }}
+                      onClick={() => JoinShiftRequest(shift?._id, index)}
                       className={`text-sm px-4 py-1.5 rounded-lg ${
                         shiftJoinedIndex === index
                           ? "bg-gray-600 text-gray-300"
@@ -787,6 +858,31 @@ const GymPage = () => {
           </div>
         )}
       </div>
+
+      {/* Payment Gateway Modal */}
+      {showPaymentGateway && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Complete Payment</h3>
+              <button
+                onClick={() => setShowPaymentGateway(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <PaymentGateway
+              gymId={id}
+              userId={userId}
+              setIsPaymentDone={setIsPaymentDone}
+              onSuccess={handlePaymentSuccess}
+              onClose={() => setShowPaymentGateway(false)}
+              monthlyCharge={gym?.monthlyCharge}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

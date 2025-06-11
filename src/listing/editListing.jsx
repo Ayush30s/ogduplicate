@@ -12,7 +12,6 @@ const EditListingPage = () => {
   const { listingId } = useParams();
 
   const storeData = useSelector((store) => store.listing);
-  console.log(storeData);
   const loading = storeData?.loading;
   const myListing = storeData.myListing;
   let [listingDetails, setListingDetails] = useState({});

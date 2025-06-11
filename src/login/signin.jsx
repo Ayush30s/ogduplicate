@@ -6,76 +6,130 @@ import { onLogin } from "../store/thunk/auth-management";
 function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { error, loading } = useSelector((store) => store.login);
 
-  let data = useSelector((store) => store.login);
-  console.log(data);
-
-  const [email, setEmail] = useState("ayush@gmail.com");
-  const [error, setError] = useState(data?.error);
-  const [password, setPassword] = useState("1234");
+  const [formData, setFormData] = useState({
+    email: "ayush@gmail.com",
+    password: "1234",
+  });
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    if (error) {
+      setErrors({ server: error });
+    }
+  }, [error]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Email validation
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 4) {
+      newErrors.password = "Password must be at least 4 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
-    const body = { email: email, password: password };
     e.preventDefault();
-    dispatch(onLogin(body, navigate));
+    
+    if (!validateForm()) return;
+    
+    dispatch(onLogin(formData, navigate));
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 flex flex-col items-center justify-center">
-      {error && (
-        <div className="bg-red-500 p-[10px] rounded-md my-2 text-white w-full max-w-md">
-          {error}
+    <div className="min-h-screen w-full bg-gray-900 flex flex-col items-center justify-center p-4">
+      {errors.server && (
+        <div className="bg-red-600 p-3 rounded-md mb-4 text-white w-full max-w-md text-center">
+          {errors.server}
         </div>
       )}
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Sign In
+      
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-700">
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">
+          Welcome Back
         </h2>
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-300 mb-1"
             >
               Email address
             </label>
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full px-4 py-2.5 rounded-md bg-gray-700 border ${
+                errors.email ? "border-red-500" : "border-gray-600"
+              } text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
               placeholder="Enter your email"
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+            )}
           </div>
 
           <div className="relative">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-300 mb-1"
             >
               Password
             </label>
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full px-4 py-2.5 rounded-md bg-gray-700 border ${
+                errors.password ? "border-red-500" : "border-gray-600"
+              } text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10`}
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-8 p-1.5 focus:outline-none"
+              className="absolute right-3 top-9 p-1.5 focus:outline-none text-gray-400 hover:text-gray-300"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
                 <svg
-                  className="w-5 h-5 text-gray-500"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -89,7 +143,7 @@ function SignIn() {
                 </svg>
               ) : (
                 <svg
-                  className="w-5 h-5 text-gray-500"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -109,46 +163,35 @@ function SignIn() {
                 </svg>
               )}
             </button>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="remember-me"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a
-                href="#"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Forgot password?
-              </a>
-            </div>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2.5 px-4 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Sign in
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              </span>
+            ) : (
+              "Sign in"
+            )}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Do not have an account?{" "}
+          <p className="text-sm text-gray-400">
+            Don't have an account?{" "}
             <button
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-blue-400 hover:text-blue-300"
               onClick={() => navigate("/register")}
             >
               Sign up

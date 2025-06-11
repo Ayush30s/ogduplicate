@@ -53,6 +53,12 @@ const CreateListingPage = () => {
     value: category,
   }));
 
+  const isDateFromNow = (d1) => {
+    const inputDate = new Date(d1);
+    const currentDate = new Date(); // Gets current date & time
+    return inputDate >= currentDate;
+  };
+
   const isDateBefore = (d1, d2) => new Date(d1) < new Date(d2);
   const isValidDate = (d) => !isNaN(new Date(d).getTime());
 
@@ -95,58 +101,113 @@ const CreateListingPage = () => {
         [fieldName]: newValue,
       };
 
-      // Rental date logic
-      if (
-        fieldName === "availableFrom" &&
-        updatedRental.availableUntil &&
-        !isDateBefore(newValue, updatedRental.availableUntil)
-      ) {
-        setFieldError("rental.availableFrom", "Must be before Available Until");
-        return;
-      } else if (fieldName === "availableFrom") {
+      // Rental date validation logic
+      if (fieldName === "availableFrom") {
+        // Must be in the future
+        if (!isDateFromNow(newValue)) {
+          setFieldError(
+            "rental.availableFrom",
+            "Available from must be after purchase Date and today's date"
+          );
+          return;
+        }
+
+        // Must be after purchase date if purchase date exists
+        if (
+          formData.purchaseDate &&
+          !isDateBefore(formData.purchaseDate, newValue)
+        ) {
+          setFieldError(
+            "rental.availableFrom",
+            "Available from must be after purchase date"
+          );
+          return;
+        }
+
+        // Must be before availableUntil if availableUntil exists
+        if (
+          updatedRental.availableUntil &&
+          !isDateBefore(newValue, updatedRental.availableUntil)
+        ) {
+          setFieldError(
+            "rental.availableFrom",
+            "Must be before Available Until"
+          );
+          return;
+        }
+
         clearFieldError("rental.availableFrom");
       }
 
-      if (
-        fieldName === "availableUntil" &&
-        updatedRental.availableFrom &&
-        !isDateBefore(updatedRental.availableFrom, newValue)
-      ) {
-        setFieldError("rental.availableUntil", "Must be after Available From");
-        return;
-      } else if (fieldName === "availableUntil") {
+      if (fieldName === "availableUntil") {
+        // Must be after availableFrom if availableFrom exists
+        if (
+          updatedRental.availableFrom &&
+          !isDateBefore(updatedRental.availableFrom, newValue)
+        ) {
+          setFieldError(
+            "rental.availableUntil",
+            "Must be after Available From"
+          );
+          return;
+        }
+
         clearFieldError("rental.availableUntil");
       }
 
-      if (
-        formData.purchaseDate &&
-        isValidDate(formData.purchaseDate) &&
-        !isDateBefore(formData.purchaseDate, newValue)
-      ) {
-        setFieldError("purchaseDate", "Must be before rental availability.");
-        return;
-      } else {
-        clearFieldError("purchaseDate");
-      }
-
-      // Rental period logic
       if (fieldName === "minRentalPeriod" || fieldName === "maxRentalPeriod") {
-        const min = Number(
-          fieldName === "minRentalPeriod"
-            ? newValue
-            : updatedRental.minRentalPeriod
-        );
-        const max = Number(
-          fieldName === "maxRentalPeriod"
-            ? newValue
-            : updatedRental.maxRentalPeriod
+        // Calculate total available rental duration (in days)
+        const availableFromDate = new Date(updatedRental.availableFrom);
+        const availableUntilDate = new Date(updatedRental.availableUntil);
+        const totalAvailableDays = Math.ceil(
+          (availableUntilDate - availableFromDate) / (1000 * 60 * 60 * 24)
         );
 
-        if (min && max && min > max) {
-          setFieldError("rental.maxRentalPeriod", "Max must be ≥ Min");
-          return;
-        } else {
-          clearFieldError("rental.maxRentalPeriod");
+        // Clear previous errors first
+        clearFieldError("rental.minRentalPeriod");
+        clearFieldError("rental.maxRentalPeriod");
+
+        // Validate minRentalPeriod
+        if (fieldName === "minRentalPeriod") {
+          if (updatedRental.maxRentalPeriod <= updatedRental.minRentalPeriod) {
+            setFieldError(
+              "rental.maxRentalPeriod",
+              "Maximum rental period must be greater than or equal to the minimum rental period"
+            );
+          } else if (updatedRental.minRentalPeriod > totalAvailableDays) {
+            setFieldError(
+              "rental.minRentalPeriod",
+              "Minimum rental period cannot exceed total available duration"
+            );
+          } else if (updatedRental.minRentalPeriod <= 0) {
+            setFieldError(
+              "rental.minRentalPeriod",
+              "Minimum rental period must be at least 1 day"
+            );
+          }
+        }
+
+        // Validate maxRentalPeriod
+        if (fieldName === "maxRentalPeriod") {
+          if (updatedRental.maxRentalPeriod <= updatedRental.minRentalPeriod) {
+            setFieldError(
+              "rental.maxRentalPeriod",
+              "Maximum rental period must be greater than or equal to the minimum rental period"
+            );
+          } else if (updatedRental.maxRentalPeriod > totalAvailableDays) {
+            setFieldError(
+              "rental.maxRentalPeriod",
+              "Maximum rental period cannot exceed total available duration"
+            );
+          } else if (
+            updatedRental.minRentalPeriod &&
+            updatedRental.maxRentalPeriod < updatedRental.minRentalPeriod
+          ) {
+            setFieldError(
+              "rental.maxRentalPeriod",
+              "Maximum rental period must be greater than or equal to the minimum rental period"
+            );
+          }
         }
       }
 
@@ -197,14 +258,6 @@ const CreateListingPage = () => {
         if (
           formData.rental.availableFrom &&
           !isDateBefore(value, formData.rental.availableFrom)
-        ) {
-          setFieldError(name, "Must be before rental availability.");
-          return;
-        }
-
-        if (
-          formData.rental.availableUntil &&
-          !isDateBefore(value, formData.rental.availableUntil)
         ) {
           setFieldError(name, "Must be before rental availability.");
           return;
@@ -311,6 +364,20 @@ const CreateListingPage = () => {
           Number(formData.rental.maxRentalPeriod)
         ) {
           errors["rental.maxRentalPeriod"] = "Max must be ≥ Min";
+        }
+      }
+
+      // Additional validation for rental dates
+      if (formData.rental.availableFrom) {
+        if (!isDateFromNow(formData.rental.availableFrom)) {
+          errors["rental.availableFrom"] = "Must be after today's date";
+        }
+
+        if (
+          formData.purchaseDate &&
+          !isDateBefore(formData.purchaseDate, formData.rental.availableFrom)
+        ) {
+          errors["rental.availableFrom"] = "Must be after purchase date";
         }
       }
     }
