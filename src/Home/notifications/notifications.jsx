@@ -6,9 +6,9 @@ import { useContext, useEffect, useState } from "react";
 import {
   fetchAllRequestThunk,
   deleteNotificationThunk,
+  changeRequestStatusThunk,
 } from "../../store/thunk/requestActionThunk";
 import { SocketContext } from "../../socket/socketContext";
-import Loading from "../../common/loading";
 
 const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
   const dispatch = useDispatch();
@@ -70,7 +70,6 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
 
   const handleChangeRequestStatus = (notification, status) => {
     const { requestType, reqby, reqto, _id } = notification;
-    console.log(notification);
 
     if (status == "accepted") {
       socket.emit("request accepted", {
@@ -79,6 +78,13 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
         to: reqby,
         status: status,
       });
+
+      const data = {
+        requestId: _id,
+        status: "accepted",
+      };
+
+      dispatch(changeRequestStatusThunk(data));
     } else {
       socket.emit("request rejected", {
         requestId: _id,
@@ -86,6 +92,13 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
         to: reqby,
         status: status,
       });
+
+      const data = {
+        requestId: _id,
+        status: "rejected",
+      };
+
+      dispatch(changeRequestStatusThunk(data));
     }
 
     setTimeout(() => {

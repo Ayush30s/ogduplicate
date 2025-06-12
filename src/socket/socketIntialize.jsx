@@ -15,25 +15,23 @@ const SocketInitializer = () => {
   const userId = userdata?.user?.userId;
 
   useEffect(() => {
-    socket.on("join", (data) => {
+    socket.on("join", () => {
       setTimeout(() => {
         dispatch(fetchAllRequestThunk("all"));
       }, 1000);
     });
 
-    socket.on("ownerAccepted", (data) => {
+    socket.on("ownerAccepted", () => {
       setTimeout(() => {
         dispatch(fetchAllRequestThunk());
-        dispatch(changeRequestStatusThunk(data));
       }, 2000);
     });
 
-    socket.on("ownerRejected", (data) => {
+    socket.on("ownerRejected", () => {
       console.log("ownerRejected");
       setTimeout(() => {
         dispatch(fetchAllRequestThunk());
-        dispatch(changeRequestStatusThunk(data));
-      }, 3000);
+      }, 2000);
     });
   }, [dispatch, socket]);
 
