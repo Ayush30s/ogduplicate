@@ -30,6 +30,7 @@ const QRScannerButton = ({
       );
 
       const data = await response.json();
+      console.log(data);
       setQrScannerResponse(data.message);
       if (data.success) {
         setAttendenceMarked(true);
