@@ -70,20 +70,27 @@ const appRouter = createBrowserRouter([
         children: [
           { path: "/home", element: <Home /> },
           { path: "/home/transformation", element: <Transformation /> },
-          {
-            path: "/home/gym/:id",
-            element: (
-              <AuthAccessGuard>
-                <GymPage />
-              </AuthAccessGuard>
-            ),
-          },
+          { path: "/home/gym/:id", element: <GymPage /> },
           { path: "/home/gym/:id/followersList", element: <FollowersList /> },
           { path: "/home/gym/:id/followingList", element: <FollowingList /> },
           { path: "/home/gym/:id/memberList", element: <MemberList /> },
           { path: "/home/user/:userId", element: <UserProfile /> },
-          { path: "/home/gym-dashboard", element: <GymDashboard /> },
-          { path: "/home/user-dashboard", element: <UserDashboard /> },
+          {
+            path: "/home/gym-dashboard",
+            element: (
+              <AuthAccessGuard>
+                <GymDashboard />
+              </AuthAccessGuard>
+            ),
+          },
+          {
+            path: "/home/user-dashboard",
+            element: (
+              <AuthAccessGuard>
+                <UserDashboard />
+              </AuthAccessGuard>
+            ),
+          },
           { path: "/home/profile/edit", element: <EditPersonalDetails /> },
         ],
       },

@@ -34,8 +34,6 @@ const ProtectedRoute = ({ children }) => {
     verifyToken();
   }, [isAuth]);
 
-  console.log(isAuth);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-950">
