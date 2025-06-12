@@ -329,7 +329,6 @@ const UserDashboard = () => {
             </div>
           </div>
         </div>
-
         {profileData?.HeatMap ? (
           <HeatMapComponent profileData={profileData} />
         ) : (

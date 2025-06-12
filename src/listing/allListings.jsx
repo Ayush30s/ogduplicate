@@ -10,6 +10,7 @@ const AllListing = () => {
   const dispatch = useDispatch();
   const data = useSelector((store) => store.listing);
   const { loading, listings, error } = data;
+  console.log(data);
 
   const [filters, setFilters] = useState({
     type: "sale",
@@ -101,38 +102,6 @@ const AllListing = () => {
         <p className="mt-4 text-red-400 font-medium max-w-md text-center px-4">
           {error}
         </p>
-      </div>
-    );
-  }
-
-  if (!listings || listings.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-950 text-center px-4">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-semibold text-gray-200 mb-4">
-            Equipment Marketplace
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Below you'll find all equipment listings posted by our community of
-            fitness enthusiasts. Manage your own listings through your
-            dashboard.
-          </p>
-        </div>
-
-        <div className="bg-gray-900 shadow-lg rounded-2xl p-8 max-w-md w-full border border-gray-800">
-          <div className="flex justify-center mb-4">
-            <div className="bg-gray-800 p-4 rounded-full">
-              <Box className="text-gray-400 w-10 h-10" />
-            </div>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-200 mb-2">
-            No Equipment Listed
-          </h2>
-          <p className="text-gray-400">
-            There are currently no equipment listings available. Please check
-            back later or add new equipment.
-          </p>
-        </div>
       </div>
     );
   }
@@ -328,15 +297,45 @@ const AllListing = () => {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        {listings.map((item, index) => (
-          <ListingCard
-            key={index}
-            listing={item}
-            loggedInUserCreated={item.loggedInUserCreated}
-          />
-        ))}
-      </div>
+      {!listings || listings?.length === 0 ? (
+        <div className="flex flex-col items-center justify-center my-auto bg-gray-950 text-center px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-semibold text-gray-200 mb-4">
+              Equipment Marketplace
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Below you'll find all equipment listings posted by our community
+              of fitness enthusiasts. Manage your own listings through your
+              dashboard.
+            </p>
+          </div>
+
+          <div className="bg-gray-900 shadow-lg rounded-2xl p-8 max-w-md w-full border border-gray-800">
+            <div className="flex justify-center mb-4">
+              <div className="bg-gray-800 p-4 rounded-full">
+                <Box className="text-gray-400 w-10 h-10" />
+              </div>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-200 mb-2">
+              No Equipment Listed
+            </h2>
+            <p className="text-gray-400">
+              There are currently no equipment listings available. Please check
+              back later or add new equipment.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {listings.map((item, index) => (
+            <ListingCard
+              key={index}
+              listing={item}
+              loggedInUserCreated={item.loggedInUserCreated}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

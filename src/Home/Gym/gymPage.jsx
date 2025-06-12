@@ -480,98 +480,104 @@ const GymPage = () => {
         </div>
 
         {/* Join/Payment Section */}
-        <div className="my-6 flex flex-col md:flex-row justify-center items-center gap-4">
-          {/* Show "Request to Join Gym" only if no pending or accepted request */}
-          {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
-            <button
-              onClick={JoinAction}
-              className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Request to Join Gym
-            </button>
-          )}
+        <div className="my-6 w-full">
+          <div className="flex flex-col justify-center align-middle items-center gap-3 w-full px-4">
+            {/* Main action buttons (join/leave/pending/payment) */}
+            <div className="flex flex-col w-full max-w-md items-center gap-3">
+              {/* Show "Request to Join Gym" only if no pending or accepted request */}
+              {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
+                <button
+                  onClick={JoinAction}
+                  className="w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-all bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base"
+                >
+                  Request to Join Gym
+                </button>
+              )}
 
-          {/* Show pending state if request is pending */}
-          {joinRequestPending && !joinRequestAccepted && !joinStatus && (
-            <div className="px-8 md:px-12 py-2.5 rounded-full font-medium bg-yellow-600 text-white">
-              Request Pending Approval
-            </div>
-          )}
-
-          {/* Show payment button if request is accepted but payment not done */}
-          {joinRequestAccepted && !isPaymentDone && !joinStatus && (
-            <button
-              onClick={() => setShowPaymentGateway(true)}
-              className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-green-600 hover:bg-green-700 text-white"
-            >
-              Complete Payment
-            </button>
-          )}
-
-          {/* Show leave button if user is already a member */}
-          {joinStatus && (
-            <button
-              onClick={SendJoinActions}
-              className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-red-500 hover:bg-red-600 text-white"
-            >
-              Leave Gym
-            </button>
-          )}
-
-          {/* QR Scanner Section - Only show if payment is done and user is joined */}
-          {joinStatus && joinRequestAccepted && isPaymentDone && (
-            <div className="flex flex-col items-center w-full md:w-auto">
-              {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
-                <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full max-w-md">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-0.5 rounded-full shadow-md">
-                    Daily Limit Reached
-                  </div>
-                  <button
-                    className="bg-gray-700 text-gray-100 px-5 py-3 mt-3 rounded-lg text-base cursor-not-allowed w-full"
-                    disabled
-                  >
-                    ✅ Check-in Completed
-                  </button>
-                  <p className="mt-4 text-gray-200 text-sm font-medium">
-                    You've already checked in and out today. Come back tomorrow!
-                  </p>
-                </div>
-              ) : QrScannerResponse === "Invalid or expired QR token." ? (
-                <div className="text-red-500 text-base md:text-lg font-medium text-center">
-                  {QrScannerResponse}{" "}
-                  <button
-                    onClick={() => setQrScannerResponse(null)}
-                    className="text-yellow-500 ml-2"
-                  >
-                    Try Again
-                  </button>
-                </div>
-              ) : (
-                <div className="w-full flex justify-center">
-                  <QRScannerButton
-                    setQrScannerResponse={setQrScannerResponse}
-                    attendenceStatus={attendenceStatus}
-                    setAttendenceMarked={setAttendenceMarked}
-                    setAttendenceStatus={setAttendenceStatus}
-                  />
+              {/* Show pending state if request is pending */}
+              {joinRequestPending && !joinRequestAccepted && !joinStatus && (
+                <div className="w-full px-6 py-3 rounded-full font-medium bg-yellow-600 text-white text-sm sm:text-base text-center">
+                  Request Pending Approval
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Follow Button */}
-          {showFollowButton && (
-            <button
-              onClick={SendFollowActions}
-              className={`px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-colors ${
-                followStatus === "Following"
-                  ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
-            >
-              {followStatus}
-            </button>
-          )}
+              {/* Show payment button if request is accepted but payment not done */}
+              {joinRequestAccepted && !isPaymentDone && !joinStatus && (
+                <button
+                  onClick={() => setShowPaymentGateway(true)}
+                  className="w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-all bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base"
+                >
+                  Complete Payment
+                </button>
+              )}
+
+              {/* Show leave button if user is already a member */}
+              {joinStatus && (
+                <button
+                  onClick={SendJoinActions}
+                  className="w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-all bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base"
+                >
+                  Leave Gym
+                </button>
+              )}
+            </div>
+
+            {/* QR Scanner Section - Only show if payment is done and user is joined */}
+            {joinStatus && joinRequestAccepted && isPaymentDone && (
+              <div className="flex flex-col items-center w-full max-w-md mt-2">
+                {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
+                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
+                      Daily Limit Reached
+                    </div>
+                    <button
+                      className="bg-gray-700 text-gray-100 px-5 py-3 mt-3 rounded-lg text-sm sm:text-base cursor-not-allowed w-full"
+                      disabled
+                    >
+                      ✅ Check-in Completed
+                    </button>
+                    <p className="mt-4 text-gray-200 text-xs sm:text-sm font-medium">
+                      You've already checked in and out today. Come back
+                      tomorrow!
+                    </p>
+                  </div>
+                ) : QrScannerResponse === "Invalid or expired QR token." ? (
+                  <div className="text-red-500 text-sm sm:text-base font-medium text-center w-full">
+                    {QrScannerResponse}{" "}
+                    <button
+                      onClick={() => setQrScannerResponse(null)}
+                      className="text-yellow-500 ml-2 text-sm sm:text-base"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-full mx-auto">
+                    <QRScannerButton
+                      setQrScannerResponse={setQrScannerResponse}
+                      attendenceStatus={attendenceStatus}
+                      setAttendenceMarked={setAttendenceMarked}
+                      setAttendenceStatus={setAttendenceStatus}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Follow Button - positioned below on mobile */}
+            {showFollowButton && (
+              <button
+                onClick={SendFollowActions}
+                className={`w-full max-w-md px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-colors mt-2 ${
+                  followStatus === "Following"
+                    ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                } text-sm sm:text-base`}
+              >
+                {followStatus}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Stats Section */}

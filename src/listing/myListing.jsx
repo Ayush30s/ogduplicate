@@ -90,7 +90,8 @@ const MyListing = () => {
               No Listings Found
             </h2>
             <p className="text-gray-400 mb-6 max-w-md">
-              You haven't created any listings yet. Start by posting your first equipment listing!
+              You haven't created any listings yet. Start by posting your first
+              equipment listing!
             </p>
             <button
               onClick={() => navigate("/listing/new")}
@@ -106,9 +107,9 @@ const MyListing = () => {
             transition={{ duration: 0.5 }}
             className="grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
-            {myListing.map((listing) => (
+            {myListing.map((listing, index) => (
               <ListingCard
-                key={listing._id || listing.id}
+                key={index}
                 listing={listing}
                 loggedInUserCreated={true}
               />
