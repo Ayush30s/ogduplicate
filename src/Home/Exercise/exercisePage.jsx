@@ -91,8 +91,9 @@ const ExercisePage = ({ exercise, onClose }) => {
       );
 
       const data = await response.json();
+      console.log(data);
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 

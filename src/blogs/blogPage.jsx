@@ -303,7 +303,7 @@ const BlogPage = () => {
             ) : (
               commentList.map((comment) => (
                 <div
-                  key={comment._id}
+                  key={comment?._id}
                   className="bg-gray-700 p-4 rounded-lg hover:bg-gray-650 transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-2">
@@ -319,7 +319,7 @@ const BlogPage = () => {
                       </p>
                     </div>
                   </div>
-                  <p className="text-gray-300 pl-11">{comment.content}</p>
+                  <p className="text-gray-300 pl-11">{comment?.content}</p>
                 </div>
               ))
             )}
