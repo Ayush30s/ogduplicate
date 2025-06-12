@@ -47,7 +47,7 @@ const UserDashboard = () => {
 
   // Calculate workout streak (example logic)
   const workoutStreak = profileData.HeatMap?.reduce((streak, month) => {
-    return streak + month.filter((day) => day.totalWorkoutTime > 0).length;
+    return streak + month.filter((day) => day.totalWorkoutTime > 0)?.length;
   }, 0);
 
   return (
@@ -200,7 +200,7 @@ const UserDashboard = () => {
                   <p className="text-2xl font-bold text-white">
                     {profileData.HeatMap?.flat().filter(
                       (day) => day.totalWorkoutTime > 0
-                    ).length || 0}
+                    )?.length || 0}
                   </p>
                 </div>
               </div>
@@ -221,7 +221,7 @@ const UserDashboard = () => {
                         .reduce((sum, day) => sum + day.totalWorkoutTime, 0) /
                         (profileData.HeatMap?.flat().filter(
                           (day) => day.totalWorkoutTime > 0
-                        ).length || 1)
+                        )?.length || 1)
                     ) || 0}{" "}
                     mins
                   </p>
