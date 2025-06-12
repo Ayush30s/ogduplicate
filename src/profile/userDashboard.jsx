@@ -29,9 +29,10 @@ const UserDashboard = () => {
   );
 
   useEffect(() => {
-    if (data.user.userType === "userModel")
+    if (data?.user?.userType === "userModel") {
       dispatch(profileDataThuk(data.user.userType));
-  }, [dispatch, data.user.userType]);
+    }
+  }, [dispatch, data?.user?.userType]);
 
   if (profileData.loading) {
     return <Loading />;
@@ -45,10 +46,33 @@ const UserDashboard = () => {
     );
   }
 
-  // Calculate workout streak (example logic)
-  const workoutStreak = profileData.HeatMap?.reduce((streak, month) => {
-    return streak + month.filter((day) => day.totalWorkoutTime > 0)?.length;
-  }, 0);
+  // Safely calculate workout streak
+  const workoutStreak =
+    profileData?.HeatMap?.reduce((streak, month) => {
+      return (
+        streak +
+        (month?.filter((day) => day?.totalWorkoutTime > 0)?.length || 0)
+      );
+    }, 0) || 0;
+
+  // Safely calculate total workouts
+  const totalWorkouts =
+    profileData?.HeatMap?.flat()?.filter((day) => day?.totalWorkoutTime > 0)
+      ?.length || 0;
+
+  // Safely calculate average workout time
+  const validWorkouts =
+    profileData?.HeatMap?.flat()?.filter((day) => day?.totalWorkoutTime > 0) ||
+    [];
+  const avgWorkoutTime =
+    validWorkouts.length > 0
+      ? Math.round(
+          validWorkouts.reduce(
+            (sum, day) => sum + (day?.totalWorkoutTime || 0),
+            0
+          ) / validWorkouts.length
+        )
+      : 0;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6">
@@ -64,7 +88,7 @@ const UserDashboard = () => {
           <div className="absolute -bottom-12 left-6 z-1">
             <motion.div whileHover={{ scale: 1.05 }} className="relative group">
               <img
-                src={profileData.profileImage}
+                src={profileData?.profileImage || ""}
                 alt="Profile"
                 className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-4 border-gray-800 shadow-xl object-cover"
               />
@@ -78,18 +102,21 @@ const UserDashboard = () => {
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                {profileData.fullName}
+                {profileData?.fullName || "User"}
               </h1>
               <div className="flex items-center gap-3 mt-2">
                 <span className="flex items-center text-sm bg-blue-900/40 text-blue-300 px-3 py-1 rounded-full">
                   <FaUser className="mr-2" />
-                  {profileData.userType === "userModel"
+                  {profileData?.userType === "userModel"
                     ? "Athlete"
                     : "Gym Owner"}
                 </span>
                 <span className="flex items-center text-sm text-gray-400">
                   <FaCalendarAlt className="mr-2" />
-                  Joined {new Date(profileData.createdAt).toLocaleDateString()}
+                  Joined{" "}
+                  {profileData?.createdAt
+                    ? new Date(profileData.createdAt).toLocaleDateString()
+                    : "N/A"}
                 </span>
               </div>
             </div>
@@ -100,28 +127,28 @@ const UserDashboard = () => {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() =>
-                  navigate(`/home/gym/${data.user.userId}/followersList`)
+                  navigate(`/home/gym/${data?.user?.userId}/followersList`)
                 }
                 className="flex items-center bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-xl transition-all border border-gray-600"
               >
                 <HiUserGroup className="text-blue-400 mr-2" />
                 <span className="text-blue-300">Followers:</span>
                 <span className="ml-1 font-semibold text-white">
-                  {profileData.followersCount}
+                  {profileData?.followersCount || 0}
                 </span>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() =>
-                  navigate(`/home/gym/${data.user.userId}/followingList`)
+                  navigate(`/home/gym/${data?.user?.userId}/followingList`)
                 }
                 className="flex items-center bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-xl transition-all border border-gray-600"
               >
                 <HiOutlineUserAdd className="text-blue-400 mr-2" />
                 <span className="text-blue-300">Following:</span>
                 <span className="ml-1 font-semibold text-white">
-                  {profileData.followingCount}
+                  {profileData?.followingCount || 0}
                 </span>
               </motion.button>
             </div>
@@ -153,16 +180,16 @@ const UserDashboard = () => {
               </motion.button>
             </div>
             <p className="text-gray-300 mb-4 italic">
-              {profileData.bio || "No bio yet. Share your fitness journey!"}
+              {profileData?.bio || "No bio yet. Share your fitness journey!"}
             </p>
             <div className="space-y-3">
               <div className="flex items-center text-gray-300">
                 <FaEnvelope className="text-blue-400 mr-3" />
-                <span>{profileData.email}</span>
+                <span>{profileData?.email || "Not provided"}</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <FaPhone className="text-blue-400 mr-3" />
-                <span>{profileData.contactNumber || "Not provided"}</span>
+                <span>{profileData?.contactNumber || "Not provided"}</span>
               </div>
             </div>
           </motion.div>
@@ -183,7 +210,7 @@ const UserDashboard = () => {
                 <div>
                   <h3 className="text-sm text-gray-400">Current Streak</h3>
                   <p className="text-2xl font-bold text-white">
-                    {workoutStreak || 0} days
+                    {workoutStreak} days
                   </p>
                 </div>
               </div>
@@ -198,9 +225,7 @@ const UserDashboard = () => {
                 <div>
                   <h3 className="text-sm text-gray-400">Total Workouts</h3>
                   <p className="text-2xl font-bold text-white">
-                    {profileData.HeatMap?.flat().filter(
-                      (day) => day.totalWorkoutTime > 0
-                    )?.length || 0}
+                    {totalWorkouts}
                   </p>
                 </div>
               </div>
@@ -215,15 +240,7 @@ const UserDashboard = () => {
                 <div>
                   <h3 className="text-sm text-gray-400">Avg. Session</h3>
                   <p className="text-2xl font-bold text-white">
-                    {Math.round(
-                      profileData.HeatMap?.flat()
-                        .filter((day) => day.totalWorkoutTime > 0)
-                        .reduce((sum, day) => sum + day.totalWorkoutTime, 0) /
-                        (profileData.HeatMap?.flat().filter(
-                          (day) => day.totalWorkoutTime > 0
-                        )?.length || 1)
-                    ) || 0}{" "}
-                    mins
+                    {avgWorkoutTime} mins
                   </p>
                 </div>
               </div>
@@ -251,26 +268,26 @@ const UserDashboard = () => {
             transition={{ duration: 0.3 }}
             className="overflow-auto"
           >
-            {profileData.joinedGym?.length > 0 ? (
+            {profileData?.joinedGym?.length > 0 ? (
               <div className="space-y-3 mt-4">
                 {profileData.joinedGym.map((gym, index) => (
                   <Link
-                    to={`/home/gym/${gym._id}`}
+                    to={`/home/gym/${gym?._id}`}
                     key={index}
                     className="block bg-gray-700 hover:bg-gray-600 p-4 rounded-lg transition-all"
                   >
                     <div className="flex items-center gap-4">
                       <img
-                        src={gym.profileImage}
-                        alt={gym.gymName}
+                        src={gym?.profileImage || ""}
+                        alt={gym?.gymName || "Gym"}
                         className="w-12 h-12 rounded-full object-cover border-2 border-blue-500"
                       />
                       <div>
                         <h3 className="font-medium text-white">
-                          {gym.gymName}
+                          {gym?.gymName || "Unknown Gym"}
                         </h3>
                         <p className="text-sm text-gray-400">
-                          Owned by {gym.fullName}
+                          Owned by {gym?.fullName || "Unknown Owner"}
                         </p>
                       </div>
                       <FaChevronRight className="ml-auto text-gray-400" />
@@ -313,13 +330,19 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        <HeatMapComponent profileData={profileData} />
+        {profileData?.HeatMap ? (
+          <HeatMapComponent profileData={profileData} />
+        ) : (
+          <div className="text-center py-10 text-gray-400">
+            No workout data available
+          </div>
+        )}
       </div>
 
       {/* Analytics Charts */}
-      {profileData?.exerciseCount?.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <div className="bg-gray-800 p-5 rounded-xl border border-gray-700">
+      {profileData?.exerciseCount?.length > 0 &&
+        profileData?.exerciseFreq?.length > 0 && (
+          <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 mt-8">
             <AnalyticsDashboard
               darkMode={true}
               title={"Mostly targeted Muscle Graph"}
@@ -327,7 +350,11 @@ const UserDashboard = () => {
               data={profileData.exerciseCount}
             />
           </div>
-          <div className="bg-gray-800 p-5 rounded-xl border border-gray-700">
+        )}
+
+      {profileData?.muscleCount?.length > 0 &&
+        profileData?.muscleFreq?.length > 0 && (
+          <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 mt-6">
             <AnalyticsDashboard
               darkMode={true}
               title={"Mostly done exercise Graph"}
@@ -335,8 +362,7 @@ const UserDashboard = () => {
               data={profileData.muscleCount}
             />
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

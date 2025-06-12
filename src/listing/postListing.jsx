@@ -46,21 +46,36 @@ const CreateListingPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [customEquipment, setCustomEquipment] = useState("");
   const { loading } = useSelector((store) => store.listing);
-  console.log(formErrors, "formErrors");
 
   const categoryOptions = Object.keys(equipmentCategories).map((category) => ({
     label: category,
     value: category,
   }));
 
-  const isDateFromNow = (d1) => {
-    const inputDate = new Date(d1);
-    const currentDate = new Date(); // Gets current date & time
+  const isDateFromNow = (dateString) => {
+    if (!dateString) return false;
+    const inputDate = new Date(dateString);
+    const currentDate = new Date();
+    // Clear time part for comparison
+    currentDate.setHours(0, 0, 0, 0);
+    inputDate.setHours(0, 0, 0, 0);
     return inputDate >= currentDate;
   };
 
-  const isDateBefore = (d1, d2) => new Date(d1) < new Date(d2);
-  const isValidDate = (d) => !isNaN(new Date(d).getTime());
+  const isDateBefore = (d1, d2) => {
+    if (!d1 || !d2) return false;
+    const date1 = new Date(d1);
+    const date2 = new Date(d2);
+    date1.setHours(0, 0, 0, 0);
+    date2.setHours(0, 0, 0, 0);
+    return date1 < date2;
+  };
+
+  const isValidDate = (dateString) => {
+    if (!dateString) return false;
+    const date = new Date(dateString);
+    return !isNaN(date.getTime());
+  };
 
   const setFieldError = (field, message) => {
     setFormErrors((prev) => ({ ...prev, [field]: message }));
@@ -103,16 +118,19 @@ const CreateListingPage = () => {
 
       // Rental date validation logic
       if (fieldName === "availableFrom") {
-        // Must be in the future
+        if (!isValidDate(newValue)) {
+          setFieldError("rental.availableFrom", "Please enter a valid date");
+          return;
+        }
+
         if (!isDateFromNow(newValue)) {
           setFieldError(
             "rental.availableFrom",
-            "Available from must be after purchase Date and today's date"
+            "Available from must be today or in the future"
           );
           return;
         }
 
-        // Must be after purchase date if purchase date exists
         if (
           formData.purchaseDate &&
           !isDateBefore(formData.purchaseDate, newValue)
@@ -124,7 +142,6 @@ const CreateListingPage = () => {
           return;
         }
 
-        // Must be before availableUntil if availableUntil exists
         if (
           updatedRental.availableUntil &&
           !isDateBefore(newValue, updatedRental.availableUntil)
@@ -140,7 +157,11 @@ const CreateListingPage = () => {
       }
 
       if (fieldName === "availableUntil") {
-        // Must be after availableFrom if availableFrom exists
+        if (!isValidDate(newValue)) {
+          setFieldError("rental.availableUntil", "Please enter a valid date");
+          return;
+        }
+
         if (
           updatedRental.availableFrom &&
           !isDateBefore(updatedRental.availableFrom, newValue)
@@ -156,57 +177,63 @@ const CreateListingPage = () => {
       }
 
       if (fieldName === "minRentalPeriod" || fieldName === "maxRentalPeriod") {
-        // Calculate total available rental duration (in days)
-        const availableFromDate = new Date(updatedRental.availableFrom);
-        const availableUntilDate = new Date(updatedRental.availableUntil);
-        const totalAvailableDays = Math.ceil(
-          (availableUntilDate - availableFromDate) / (1000 * 60 * 60 * 24)
-        );
-
         // Clear previous errors first
         clearFieldError("rental.minRentalPeriod");
         clearFieldError("rental.maxRentalPeriod");
 
-        // Validate minRentalPeriod
-        if (fieldName === "minRentalPeriod") {
-          if (updatedRental.maxRentalPeriod <= updatedRental.minRentalPeriod) {
-            setFieldError(
-              "rental.maxRentalPeriod",
-              "Maximum rental period must be greater than or equal to the minimum rental period"
-            );
-          } else if (updatedRental.minRentalPeriod > totalAvailableDays) {
-            setFieldError(
-              "rental.minRentalPeriod",
-              "Minimum rental period cannot exceed total available duration"
-            );
-          } else if (updatedRental.minRentalPeriod <= 0) {
-            setFieldError(
-              "rental.minRentalPeriod",
-              "Minimum rental period must be at least 1 day"
-            );
-          }
-        }
+        // Only validate if both dates exist
+        if (updatedRental.availableFrom && updatedRental.availableUntil) {
+          // Calculate total available rental duration (in days)
+          const availableFromDate = new Date(updatedRental.availableFrom);
+          const availableUntilDate = new Date(updatedRental.availableUntil);
+          const totalAvailableDays = Math.ceil(
+            (availableUntilDate - availableFromDate) / (1000 * 60 * 60 * 24)
+          );
 
-        // Validate maxRentalPeriod
-        if (fieldName === "maxRentalPeriod") {
-          if (updatedRental.maxRentalPeriod <= updatedRental.minRentalPeriod) {
-            setFieldError(
-              "rental.maxRentalPeriod",
-              "Maximum rental period must be greater than or equal to the minimum rental period"
-            );
-          } else if (updatedRental.maxRentalPeriod > totalAvailableDays) {
-            setFieldError(
-              "rental.maxRentalPeriod",
-              "Maximum rental period cannot exceed total available duration"
-            );
-          } else if (
-            updatedRental.minRentalPeriod &&
-            updatedRental.maxRentalPeriod < updatedRental.minRentalPeriod
-          ) {
-            setFieldError(
-              "rental.maxRentalPeriod",
-              "Maximum rental period must be greater than or equal to the minimum rental period"
-            );
+          // Validate minRentalPeriod
+          if (fieldName === "minRentalPeriod") {
+            if (newValue <= 0) {
+              setFieldError(
+                "rental.minRentalPeriod",
+                "Minimum rental period must be at least 1 day"
+              );
+            } else if (newValue > totalAvailableDays) {
+              setFieldError(
+                "rental.minRentalPeriod",
+                "Minimum rental period cannot exceed total available duration"
+              );
+            } else if (
+              updatedRental.maxRentalPeriod &&
+              Number(newValue) > Number(updatedRental.maxRentalPeriod)
+            ) {
+              setFieldError(
+                "rental.minRentalPeriod",
+                "Minimum cannot be greater than maximum"
+              );
+            }
+          }
+
+          // Validate maxRentalPeriod
+          if (fieldName === "maxRentalPeriod") {
+            if (newValue <= 0) {
+              setFieldError(
+                "rental.maxRentalPeriod",
+                "Maximum rental period must be at least 1 day"
+              );
+            } else if (newValue > totalAvailableDays) {
+              setFieldError(
+                "rental.maxRentalPeriod",
+                "Maximum rental period cannot exceed total available duration"
+              );
+            } else if (
+              updatedRental.minRentalPeriod &&
+              Number(newValue) < Number(updatedRental.minRentalPeriod)
+            ) {
+              setFieldError(
+                "rental.maxRentalPeriod",
+                "Maximum must be greater than or equal to minimum"
+              );
+            }
           }
         }
       }
@@ -250,8 +277,18 @@ const CreateListingPage = () => {
     } else {
       // For purchaseDate field
       if (name === "purchaseDate") {
-        if (!isValidDate(value) || new Date(value) > new Date()) {
-          setFieldError(name, "Must be a valid date in the past.");
+        if (!isValidDate(value)) {
+          setFieldError(name, "Please enter a valid date.");
+          return;
+        }
+
+        const purchaseDate = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        purchaseDate.setHours(0, 0, 0, 0);
+
+        if (purchaseDate > today) {
+          setFieldError(name, "Purchase date cannot be in the future.");
           return;
         }
 
@@ -259,7 +296,7 @@ const CreateListingPage = () => {
           formData.rental.availableFrom &&
           !isDateBefore(value, formData.rental.availableFrom)
         ) {
-          setFieldError(name, "Must be before rental availability.");
+          setFieldError(name, "Must be before rental availability date.");
           return;
         }
 
@@ -318,8 +355,15 @@ const CreateListingPage = () => {
 
     if (!formData.purchaseDate || !isValidDate(formData.purchaseDate)) {
       errors.purchaseDate = "Valid purchase date is required.";
-    } else if (new Date(formData.purchaseDate) > new Date()) {
-      errors.purchaseDate = "Purchase date cannot be in the future.";
+    } else {
+      const purchaseDate = new Date(formData.purchaseDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      purchaseDate.setHours(0, 0, 0, 0);
+
+      if (purchaseDate > today) {
+        errors.purchaseDate = "Purchase date cannot be in the future.";
+      }
     }
 
     // Images validation
@@ -346,15 +390,28 @@ const CreateListingPage = () => {
         errors["rental.rentalPrice"] = "Rental price must be greater than 0.";
       }
 
-      if (formData.rental.availableFrom && formData.rental.availableUntil) {
-        if (
-          !isDateBefore(
-            formData.rental.availableFrom,
-            formData.rental.availableUntil
-          )
-        ) {
-          errors["rental.availableFrom"] = "Must be before Available Until";
-          errors["rental.availableUntil"] = "Must be after Available From";
+      // Validate rental dates if at least one is provided
+      if (formData.rental.availableFrom || formData.rental.availableUntil) {
+        if (!formData.rental.availableFrom) {
+          errors["rental.availableFrom"] =
+            "Available From is required when setting rental dates";
+        }
+
+        if (!formData.rental.availableUntil) {
+          errors["rental.availableUntil"] =
+            "Available Until is required when setting rental dates";
+        }
+
+        if (formData.rental.availableFrom && formData.rental.availableUntil) {
+          if (
+            !isDateBefore(
+              formData.rental.availableFrom,
+              formData.rental.availableUntil
+            )
+          ) {
+            errors["rental.availableFrom"] = "Must be before Available Until";
+            errors["rental.availableUntil"] = "Must be after Available From";
+          }
         }
       }
 
@@ -370,7 +427,7 @@ const CreateListingPage = () => {
       // Additional validation for rental dates
       if (formData.rental.availableFrom) {
         if (!isDateFromNow(formData.rental.availableFrom)) {
-          errors["rental.availableFrom"] = "Must be after today's date";
+          errors["rental.availableFrom"] = "Must be today or in the future";
         }
 
         if (
@@ -498,7 +555,10 @@ const CreateListingPage = () => {
       >
         <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-lg p-6 md:p-8">
           {Object.keys(formErrors).length > 0 && (
-            <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg">
+            <div
+              ref={errorDivRef}
+              className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg"
+            >
               <h3 className="font-medium text-red-300 mb-2">
                 Please fix the following errors:
               </h3>
