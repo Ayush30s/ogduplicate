@@ -372,6 +372,21 @@ const GymPage = () => {
       </div>
     );
 
+  const handleNavigateToProfile = (user) => {
+    console.log(user);
+    const isCurrentUser = user._id === userData.user.userId;
+    const path =
+      user.userType === "userModel"
+        ? isCurrentUser
+          ? "/home/user-dashboard"
+          : `/home/user/${user._id}`
+        : isCurrentUser
+        ? "/home/gym-dashboard"
+        : `/home/gym/${user._id}`;
+
+    navigate(path);
+  };
+
   console.log(
     "joinRequestPending",
     joinRequestPending,
@@ -481,9 +496,9 @@ const GymPage = () => {
 
         {/* Join/Payment Section */}
         <div className="my-6 w-full">
-          <div className="flex flex-col justify-center align-middle items-center gap-3 w-full px-4">
-            {/* Main action buttons (join/leave/pending/payment) */}
-            <div className="flex flex-col w-full max-w-md items-center gap-3">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-4 w-full px-4">
+            {/* Main action buttons container - takes full width on mobile, auto on desktop */}
+            <div className="w-full lg:w-auto lg:flex-1 max-w-md">
               {/* Show "Request to Join Gym" only if no pending or accepted request */}
               {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
                 <button
@@ -524,7 +539,7 @@ const GymPage = () => {
 
             {/* QR Scanner Section - Only show if payment is done and user is joined */}
             {joinStatus && joinRequestAccepted && isPaymentDone && (
-              <div className="flex flex-col items-center w-full max-w-md mt-2">
+              <div className="w-full lg:w-auto lg:flex-1 max-w-md">
                 {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
                   <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full">
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
@@ -552,7 +567,7 @@ const GymPage = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="w-full mx-auto">
+                  <div className="w-full">
                     <QRScannerButton
                       setQrScannerResponse={setQrScannerResponse}
                       attendenceStatus={attendenceStatus}
@@ -564,18 +579,20 @@ const GymPage = () => {
               </div>
             )}
 
-            {/* Follow Button - positioned below on mobile */}
+            {/* Follow Button - takes full width on mobile, auto on desktop */}
             {showFollowButton && (
-              <button
-                onClick={SendFollowActions}
-                className={`w-full max-w-md px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-colors mt-2 ${
-                  followStatus === "Following"
-                    ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
-                } text-sm sm:text-base`}
-              >
-                {followStatus}
-              </button>
+              <div className="w-full lg:w-auto lg:flex-1 max-w-md">
+                <button
+                  onClick={SendFollowActions}
+                  className={`w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-colors ${
+                    followStatus === "Following"
+                      ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  } text-sm sm:text-base`}
+                >
+                  {followStatus}
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -768,7 +785,7 @@ const GymPage = () => {
               <div
                 key={index}
                 className="flex items-center gap-4 bg-gray-700 p-3 rounded-lg border border-gray-600 hover:border-blue-500 transition-colors cursor-pointer"
-                onClick={() => navigate(`/home/user/${user.user._id}`)}
+                onClick={() => handleNavigateToProfile(user.user)}
               >
                 <img
                   src={user.user.profileImage}
