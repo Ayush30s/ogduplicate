@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 const GymCard = ({ data }) => {
   const gymData = data || {};
   console.log(gymData);
+  console.log(gymData);
   return (
     <motion.div
       className="bg-gray-800 text-gray-100 w-full max-w-[300px] rounded-xl border border-gray-700 overflow-hidden shadow-lg hover:shadow-xl transition-all"

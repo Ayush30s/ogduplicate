@@ -10,21 +10,24 @@ function PaymentGateway({
 }) {
   const [mobile, setMobile] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const backend = "http://localhost:7000";
+  const backend = "https://gymbackenddddd-1.onrender.com";
 
   const makePayment = async () => {
     try {
-      const res = await fetch("http://localhost:7000/payment/makepayment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          userId,
-          gymId,
-        }),
-      });
+      const res = await fetch(
+        "https://gymbackenddddd-1.onrender.com/payment/makepayment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            userId,
+            gymId,
+          }),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Payment request failed");

@@ -38,7 +38,6 @@ const GymPage = () => {
   const [loading, setLoading] = useState(!gymData);
   const [rateLater, setRateLater] = useState(false);
   const [followStatus, setFollowStatus] = useState("");
-  const [joinStatus, setJoinStatus] = useState(false);
   const [joinCount, setJoinCount] = useState(0);
   const [shiftJoinedIndex, setshiftJoinedIndex] = useState(-1);
   const [followersCount, setFollowersCount] = useState();
@@ -47,14 +46,13 @@ const GymPage = () => {
   const [rating, setRating] = useState(0);
   const [searchUser, setSearchUser] = useState("");
   const [filteredMembers, setFilteredMembers] = useState("");
-  const [joinRequestAccepted, setJoinRequestAccepted] = useState(false);
   const [isPaymentDone, setIsPaymentDone] = useState(false);
   const [attendenceStatus, setAttendenceStatus] = useState(false);
   const [QrScannerResponse, setQrScannerResponse] = useState(null);
   const [showPaymentGateway, setShowPaymentGateway] = useState(false);
   const [joinRequestPending, setJoinRequestPending] = useState(false);
-
-  console.log(isPaymentDone);
+  const [joinRequestAccepted, setJoinRequestAccepted] = useState(false);
+  const [joinStatus, setJoinStatus] = useState(false);
 
   useEffect(() => {
     if (!gymData) {
@@ -67,6 +65,7 @@ const GymPage = () => {
               credentials: "include",
             }
           );
+
           if (response.status === 401) {
             const errorData = await response.json();
             throw new Error(errorData.error || "Something went wrong");
@@ -88,9 +87,10 @@ const GymPage = () => {
           setFilteredMembers(data.gymData?.joinedBy);
           setshiftJoinedIndex(data.shiftJoinedIndex);
           setJoinCount(data?.gymData?.joinedBy?.length);
-          setJoinRequestAccepted(data.isJoinRequestAccepted);
-          setJoinRequestPending(data.isJoinRequestPending);
-          setIsPaymentDone(data.isPaymentDone);
+          setJoinRequestAccepted(data.isJoinRequestAccepted || false);
+          setJoinRequestPending(data.isJoinRequestPending || false);
+          setIsPaymentDone(data.isPaymentDone || false);
+
           if (data.isJoinRequestAccepted && !data.isPaymentDone) {
             setShowPaymentGateway(true);
           }
@@ -209,12 +209,17 @@ const GymPage = () => {
       status: "pending",
     };
 
-    socket.emit("request received", data);
-    dispatch(requestActionThunk(data));
-    setJoinRequestPending(true);
-    alert(
-      "Your request to join this gym has been sent. You'll be notified when the owner responds."
-    );
+    try {
+      socket.emit("request received", data);
+      dispatch(requestActionThunk(data));
+      setJoinRequestPending(true);
+      alert(
+        "Your request to join this gym has been sent. You'll be notified when the owner responds."
+      );
+    } catch (error) {
+      console.error("Error sending join request:", error);
+      setError("Failed to send join request. Please try again.");
+    }
   };
 
   const SendJoinActions = async () => {
@@ -476,7 +481,7 @@ const GymPage = () => {
 
         {/* Join/Payment Section */}
         <div className="my-6 flex flex-col md:flex-row justify-center items-center gap-4">
-          {/* Join/Leave Gym Button - Show different states based on join request and payment status */}
+          {/* Show "Request to Join Gym" only if no pending or accepted request */}
           {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
             <button
               onClick={JoinAction}
@@ -486,13 +491,15 @@ const GymPage = () => {
             </button>
           )}
 
-          {joinRequestPending && (
+          {/* Show pending state if request is pending */}
+          {joinRequestPending && !joinRequestAccepted && !joinStatus && (
             <div className="px-8 md:px-12 py-2.5 rounded-full font-medium bg-yellow-600 text-white">
               Request Pending Approval
             </div>
           )}
 
-          {joinRequestAccepted && !isPaymentDone && (
+          {/* Show payment button if request is accepted but payment not done */}
+          {joinRequestAccepted && !isPaymentDone && !joinStatus && (
             <button
               onClick={() => setShowPaymentGateway(true)}
               className="px-8 md:px-12 py-2.5 rounded-full font-medium shadow-sm shadow-white hover:scale-105 transition-all bg-green-600 hover:bg-green-700 text-white"
@@ -501,8 +508,7 @@ const GymPage = () => {
             </button>
           )}
 
-          {console.log(joinStatus)}
-
+          {/* Show leave button if user is already a member */}
           {joinStatus && (
             <button
               onClick={SendJoinActions}

@@ -8,6 +8,7 @@ import {
   deleteNotificationThunk,
 } from "../../store/thunk/requestActionThunk";
 import { SocketContext } from "../../socket/socketContext";
+import Loading from "../../common/loading";
 
 const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
   const dispatch = useDispatch();
