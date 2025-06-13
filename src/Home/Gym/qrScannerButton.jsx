@@ -31,10 +31,13 @@ const QRScannerButton = ({
 
       const data = await response.json();
       setQrScannerResponse(data.message);
+
       if (data.success) {
         setAttendenceMarked(true);
         setAttendenceStatus(!attendenceStatus);
-        setTimeout(() => setAttendenceMarked(false), 5000);
+        setTimeout(() => {
+          setAttendenceMarked(false);
+        }, 5000);
       }
     } catch (error) {
       console.error("Error marking attendance:", error);
@@ -44,30 +47,22 @@ const QRScannerButton = ({
   const startScanner = async () => {
     setScanning(true);
     try {
-      const devices = await Html5Qrcode.getCameras();
-      if (devices && devices.length) {
-        const cameraId = devices[0].id;
+      scannerRef.current = new Html5Qrcode("qr-reader");
 
-        scannerRef.current = new Html5Qrcode("qr-reader");
-
-        await scannerRef.current.start(
-          { deviceId: { exact: cameraId } },
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          (decodedText) => {
-            console.log("Scanned QR Code:", decodedText);
-            stopScanner();
-            markAttendance(decodedText);
-          },
-          (errorMessage) => {
-            console.warn("QR scan error", errorMessage);
-          }
-        );
-      } else {
-        alert("No cameras found on this device.");
-        setScanning(false);
-      }
+      await scannerRef.current.start(
+        { facingMode: "environment" }, // ✅ Use back camera
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          console.log("Scanned QR Code:", decodedText);
+          stopScanner();
+          markAttendance(decodedText);
+        },
+        (errorMessage) => {
+          console.warn("QR scan error:", errorMessage);
+        }
+      );
     } catch (err) {
-      console.error("Scanner start error:", err);
+      console.error("Failed to start QR scanner:", err);
       alert("Camera access failed. Please allow camera permission.");
       setScanning(false);
     }
