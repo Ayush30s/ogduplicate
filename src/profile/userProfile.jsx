@@ -298,7 +298,7 @@ const UserProfile = () => {
         {allData?.exerciseArray && (
           <div className="px-6 pb-6">
             {/* Workout Heatmap */}
-            <div className="mt-8 p-5 bg-gray-800 rounded-xl border border-gray-700">
+            <div className="mt-8">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                 <div>
                   <h2 className="text-lg font-semibold text-blue-400">
