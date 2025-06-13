@@ -15,7 +15,7 @@ const QRScannerButton = ({
   const markAttendance = async (token) => {
     try {
       const response = await fetch(
-        https://gymbackenddddd-1.onrender.com/home/gym/mark-attendance?status=${attendenceStatus},
+        `https://gymbackenddddd-1.onrender.com/home/gym/mark-attendance?status=${attendenceStatus}`,
         {
           method: "POST",
           credentials: "include",
