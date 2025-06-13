@@ -15,7 +15,7 @@ const QRScannerButton = ({
   const markAttendance = async (token) => {
     try {
       const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/home/gym/mark-attendance?status=${attendenceStatus}`,
+        https://gymbackenddddd-1.onrender.com/home/gym/mark-attendance?status=${attendenceStatus},
         {
           method: "POST",
           credentials: "include",
@@ -30,8 +30,8 @@ const QRScannerButton = ({
       );
 
       const data = await response.json();
+      console.log(data);
       setQrScannerResponse(data.message);
-
       if (data.success) {
         setAttendenceMarked(true);
         setAttendenceStatus(!attendenceStatus);
@@ -44,28 +44,25 @@ const QRScannerButton = ({
     }
   };
 
-  const startScanner = async () => {
+  const startScanner = () => {
     setScanning(true);
-    try {
+
+    setTimeout(() => {
+      const qrCodeSuccessCallback = (decodedText) => {
+        console.log("Scanned QR Code:", decodedText);
+        stopScanner();
+        markAttendance(decodedText); // Pass token as-is
+      };
+
+      const config = { fps: 10, qrbox: 300 };
       scannerRef.current = new Html5Qrcode("qr-reader");
 
-      await scannerRef.current.start(
-        { facingMode: "environment" }, // ✅ Use back camera
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          console.log("Scanned QR Code:", decodedText);
-          stopScanner();
-          markAttendance(decodedText);
-        },
-        (errorMessage) => {
-          console.warn("QR scan error:", errorMessage);
-        }
-      );
-    } catch (err) {
-      console.error("Failed to start QR scanner:", err);
-      alert("Camera access failed. Please allow camera permission.");
-      setScanning(false);
-    }
+      scannerRef.current
+        .start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+        .catch((err) => {
+          console.error("Failed to start QR scanner:", err);
+        });
+    }, 100);
   };
 
   const stopScanner = () => {
