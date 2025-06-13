@@ -83,7 +83,6 @@ const QRScannerButton = ({
         onClick={startScanner}
         className="w-full max-w-md mx-auto px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-2xl shadow-lg hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
       >
-        <span className="text-xl">🚀</span>
         <span>
           {!attendenceStatus
             ? "Scan QR to Mark Attendance In"

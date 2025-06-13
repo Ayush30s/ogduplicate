@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const MemberList = () => {
   const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
 
+  const loggedinUser = useSelector((store) => store.login);
   const [membersList, setMembersList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,9 +44,23 @@ const MemberList = () => {
     fetchGym();
   }, [id, navigate]);
 
-  const handleNavigateToProfile = (userId) => {
-    navigate(`/home/user/${userId}`);
+  const handleNavigateToProfile = (user) => {
+    const isCurrentUser = user._id === loggedinUser.user.userId;
+    const path =
+      user.userType === "userModel"
+        ? isCurrentUser
+          ? "/home/user-dashboard"
+          : `/home/user/${user._id}`
+        : isCurrentUser
+        ? "/home/gym-dashboard"
+        : `/home/gym/${user._id}`;
+
+    navigate(path);
   };
+
+  // const handleNavigateToProfile = (userId) => {
+  //   navigate(`/home/user/${userId}`);
+  // };
 
   if (loading) {
     return (
@@ -117,7 +133,7 @@ const MemberList = () => {
             const userData = member?.user;
             return (
               <div
-                onClick={() => handleNavigateToProfile(userData?._id)}
+                onClick={() => handleNavigateToProfile(userData)}
                 key={index}
                 className="flex items-center p-4 bg-gray-800 hover:bg-gray-700 rounded-xl transition-all duration-200 cursor-pointer group"
               >

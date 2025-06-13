@@ -19,6 +19,7 @@ import { SocketContext } from "../../socket/socketContext";
 import { useSelector } from "react-redux";
 import { requestActionThunk } from "../../store/thunk/requestActionThunk";
 import PaymentGateway from "../Payment/paymentGateway";
+import ShiftsSection from "./shiftSection";
 
 const GymPage = () => {
   const userData = useSelector((store) => store.login);
@@ -223,7 +224,6 @@ const GymPage = () => {
   };
 
   const SendJoinActions = async () => {
-    console.log(joinStatus);
     if (joinStatus === true) {
       setshiftJoinedIndex(-1);
     }
@@ -253,7 +253,6 @@ const GymPage = () => {
         console.log("👋 User left gym successfully");
         setJoinCount((prev) => prev - 1);
         setJoinStatus(false);
-        // Reset all join-related states when user leaves
         setJoinRequestPending(false);
         setJoinRequestAccepted(false);
         setIsPaymentDone(false);
@@ -262,29 +261,6 @@ const GymPage = () => {
     } catch (error) {
       console.error("❌ Error in join/leave action:", error.message);
       setError(error.message);
-    }
-  };
-
-  const JoinShiftRequest = async (shiftId, index) => {
-    if (!joinStatus && !(joinRequestAccepted && isPaymentDone)) {
-      alert("You need to be a member of this gym to join a shift");
-      return;
-    }
-
-    const response = await fetch(
-      `https://gymbackenddddd-1.onrender.com/home/gym/${id}/join-shift/${shiftId}`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    const data = await response.json();
-    if (response.status === 200) {
-      setshiftJoinedIndex(index);
-      setMessage(data.msg);
-    } else {
-      setError(data.msg);
     }
   };
 
@@ -315,6 +291,20 @@ const GymPage = () => {
     setShowPaymentGateway(false);
     setJoinRequestAccepted(true);
     setMessage("Payment successful! You are now a member of this gym.");
+  };
+
+  const handleNavigateToProfile = (user) => {
+    const isCurrentUser = user._id === userData.user.userId;
+    const path =
+      user.userType === "userModel"
+        ? isCurrentUser
+          ? "/home/user-dashboard"
+          : `/home/user/${user._id}`
+        : isCurrentUser
+        ? "/home/gym-dashboard"
+        : `/home/gym/${user._id}`;
+
+    navigate(path);
   };
 
   if (loading)
@@ -371,28 +361,6 @@ const GymPage = () => {
         </button>
       </div>
     );
-
-  const handleNavigateToProfile = (user) => {
-    console.log(user);
-    const isCurrentUser = user._id === userData.user.userId;
-    const path =
-      user.userType === "userModel"
-        ? isCurrentUser
-          ? "/home/user-dashboard"
-          : `/home/user/${user._id}`
-        : isCurrentUser
-        ? "/home/gym-dashboard"
-        : `/home/gym/${user._id}`;
-
-    navigate(path);
-  };
-
-  console.log(
-    "joinRequestPending",
-    joinRequestPending,
-    joinRequestAccepted,
-    joinStatus
-  );
 
   if (!gymData) {
     return (
@@ -457,7 +425,6 @@ const GymPage = () => {
       {/* Hero Section */}
       <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-8">
         <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-8 mb-5 overflow-hidden h-[300px] md:h-[400px]">
-          {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
             <img
               src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
@@ -468,7 +435,6 @@ const GymPage = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
 
-          {/* Content */}
           <div className="relative z-0 text-center space-y-3 px-2 sm:px-4 md:px-8">
             <h1
               className="text-4xl sm:text-6xl md:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words"
@@ -497,9 +463,7 @@ const GymPage = () => {
         {/* Join/Payment Section */}
         <div className="my-6 w-full">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-4 w-full px-4">
-            {/* Main action buttons container - takes full width on mobile, auto on desktop */}
             <div className="w-full lg:w-auto lg:flex-1 max-w-md">
-              {/* Show "Request to Join Gym" only if no pending or accepted request */}
               {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
                 <button
                   onClick={JoinAction}
@@ -509,14 +473,12 @@ const GymPage = () => {
                 </button>
               )}
 
-              {/* Show pending state if request is pending */}
               {joinRequestPending && !joinRequestAccepted && !joinStatus && (
                 <div className="w-full px-6 py-3 rounded-full font-medium bg-yellow-600 text-white text-sm sm:text-base text-center">
                   Request Pending Approval
                 </div>
               )}
 
-              {/* Show payment button if request is accepted but payment not done */}
               {joinRequestAccepted && !isPaymentDone && !joinStatus && (
                 <button
                   onClick={() => setShowPaymentGateway(true)}
@@ -526,7 +488,6 @@ const GymPage = () => {
                 </button>
               )}
 
-              {/* Show leave button if user is already a member */}
               {joinStatus && (
                 <button
                   onClick={SendJoinActions}
@@ -537,7 +498,6 @@ const GymPage = () => {
               )}
             </div>
 
-            {/* QR Scanner Section - Only show if payment is done and user is joined */}
             {joinStatus && joinRequestAccepted && isPaymentDone && (
               <div className="w-full lg:w-auto lg:flex-1 max-w-md">
                 {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
@@ -579,7 +539,6 @@ const GymPage = () => {
               </div>
             )}
 
-            {/* Follow Button - takes full width on mobile, auto on desktop */}
             {showFollowButton && (
               <div className="w-full lg:w-auto lg:flex-1 max-w-md">
                 <button
@@ -599,7 +558,6 @@ const GymPage = () => {
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* Members Card */}
           <div
             onClick={() => navigate(`/home/gym/${id}/memberList`)}
             className="cursor-pointer bg-gray-800 p-2 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
@@ -809,84 +767,18 @@ const GymPage = () => {
       )}
 
       {/* Shifts Section */}
-      <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-        <h3 className="text-2xl font-semibold text-blue-400 mb-6">
-          {gymData?.allShifts?.length > 0
-            ? "Active Shifts"
-            : "No Active Shifts"}
-        </h3>
-
-        {gymData?.allShifts?.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {gymData.allShifts.map((shift, index) => (
-              <div
-                key={index}
-                className={`p-5 rounded-lg border transition-colors ${
-                  shiftJoinedIndex === index
-                    ? "border-blue-500 bg-gray-700"
-                    : "border-gray-600 bg-gray-700 hover:border-blue-500"
-                }`}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-white text-lg font-medium">
-                    {shift.sex} Shift
-                  </span>
-                  <span className="text-sm text-gray-400">
-                    Limit: {shift.limit}
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-sm text-gray-400 my-3">
-                  <span>{shift.startTime}</span>
-                  <span className="text-gray-500">to</span>
-                  <span>{shift.endTime}</span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm text-gray-300 pt-3 border-t border-gray-600">
-                  <span>
-                    Joined:{" "}
-                    <span className="text-white font-semibold">
-                      {shift?.joinedBy?.length || 0}
-                    </span>
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                      shift.status === "Active"
-                        ? "bg-green-900/20 text-green-400"
-                        : "bg-red-900/20 text-red-400"
-                    }`}
-                  >
-                    {shift.status || "Inactive"}
-                  </span>
-                </div>
-
-                <div className="pt-4 flex justify-end">
-                  {gymData.userType === "OWNER" ? (
-                    <button className="text-sm text-blue-400 hover:text-white">
-                      View Details
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => JoinShiftRequest(shift?._id, index)}
-                      className={`text-sm px-4 py-1.5 rounded-lg ${
-                        shiftJoinedIndex === index
-                          ? "bg-gray-600 text-gray-300"
-                          : "bg-blue-600 hover:bg-blue-700 text-white"
-                      }`}
-                    >
-                      {shiftJoinedIndex === index ? "Joined" : "Join Shift"}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-10 text-gray-500">
-            Currently no shifts available
-          </div>
-        )}
-      </div>
+      <ShiftsSection
+        shifts={gymData?.allShifts || []}
+        gymId={id}
+        userType={userModelType}
+        shiftJoinedIndex={shiftJoinedIndex}
+        setshiftJoinedIndex={setshiftJoinedIndex}
+        joinStatus={joinStatus}
+        joinRequestAccepted={joinRequestAccepted}
+        isPaymentDone={isPaymentDone}
+        setError={setError}
+        setMessage={setMessage}
+      />
 
       {/* Payment Gateway Modal */}
       {showPaymentGateway && (
