@@ -5,6 +5,7 @@ const QRCodeGenerator = ({ gymId, sessionId }) => {
   const canvasRef = useRef(null);
   const [token, setToken] = useState(null);
 
+  // Get today's date in YYYY-MM-DD format
   const now = new Date();
   const currDate =
     now.getFullYear() +
