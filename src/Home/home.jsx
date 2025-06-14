@@ -49,7 +49,7 @@ const Home = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://localhost:7000/home${location.search}`,
+          `https://gymbackenddddd-1.onrender.com/home${location.search}`,
           {
             method: "GET",
             credentials: "include",

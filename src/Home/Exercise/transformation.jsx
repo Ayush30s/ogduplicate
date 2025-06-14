@@ -21,7 +21,7 @@ const WorkoutPlanForm = () => {
     const fetchTransformationData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:7000/workout/user-physic-data",
+          "https://gymbackenddddd-1.onrender.com/workout/user-physic-data",
           {
             method: "GET",
             credentials: "include",
@@ -52,7 +52,7 @@ const WorkoutPlanForm = () => {
     e.preventDefault();
     try {
       const response = await fetch(
-        "http://localhost:7000/workout/ai-assistance",
+        "https://gymbackenddddd-1.onrender.com/workout/ai-assistance",
         {
           method: "POST",
           credentials: "include",

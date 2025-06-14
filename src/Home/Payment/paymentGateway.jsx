@@ -10,7 +10,7 @@ function PaymentGateway({
 }) {
   const [mobile, setMobile] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const backend = "http://localhost:7000";
+  const backend = "https://gymbackenddddd-1.onrender.com";
 
   const makePayment = async () => {
     setIsProcessing(true);

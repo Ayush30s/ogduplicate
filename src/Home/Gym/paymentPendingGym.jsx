@@ -13,10 +13,13 @@ const PendingPaymentGyms = () => {
   useEffect(() => {
     const fetchRequestedGyms = async () => {
       try {
-        const res = await fetch(`http://localhost:7000/home/gym/requested`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `https://gymbackenddddd-1.onrender.com/home/gym/requested`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         if (!res.ok) {
           throw new Error("Network response was not ok");
         }

@@ -16,10 +16,13 @@ const allBlogsThunk = (navigate) => async (dispatch) => {
   dispatch(BlogsListDataRequested());
 
   try {
-    const response = await fetch("http://localhost:7000/blog/allblogs", {
-      method: "GET",
-      credentials: "include",
-    });
+    const response = await fetch(
+      "https://gymbackenddddd-1.onrender.com/blog/allblogs",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     // Handle 401 Unauthorized
     if (response.status === 401) {
@@ -44,10 +47,13 @@ const allBlogsThunk = (navigate) => async (dispatch) => {
 const userBlogDataThunk = () => async (dispatch) => {
   dispatch(BlogDataRequested());
   try {
-    const response = await fetch("http://localhost:7000/blog/allblogsData", {
-      method: "GET",
-      credentials: "include",
-    });
+    const response = await fetch(
+      "https://gymbackenddddd-1.onrender.com/blog/allblogsData",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
       throw new Error("FAILED_TO_FETCH_LIKED_BLOGS");
@@ -65,7 +71,7 @@ const userBlogDataThunk = () => async (dispatch) => {
 // const myBlogsThunk = async (dispatch) => {
 //   dispatch(BlogDataRequested());
 //   try {
-//     const response = await fetch("http://localhost:7000/blog/myBlogs", {
+//     const response = await fetch("https://gymbackenddddd-1.onrender.com/blog/myBlogs", {
 //       method: "GET",
 //       credentials: "include",
 //     });
@@ -87,12 +93,15 @@ const postBlogThunk = (payload, navigate) => async (dispatch) => {
   dispatch(BlogPostRequest());
   console.log("payload", payload);
   try {
-    const response = await fetch("http://localhost:7000/blog/new", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    });
+    const response = await fetch(
+      "https://gymbackenddddd-1.onrender.com/blog/new",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      }
+    );
 
     if (!response.ok) {
       throw new Error(response.error);
@@ -110,10 +119,13 @@ const postBlogThunk = (payload, navigate) => async (dispatch) => {
 
 const deleteBlogThunk = (blogId) => async (dispatch) => {
   try {
-    const response = await fetch(`http://localhost:7000/blog/${blogId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `https://gymbackenddddd-1.onrender.com/blog/${blogId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
 
     const result = await response.json();
     console.log(result, "result");

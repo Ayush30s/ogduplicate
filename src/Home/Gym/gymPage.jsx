@@ -59,10 +59,13 @@ const GymPage = () => {
     if (!gymData) {
       const fetchGym = async () => {
         try {
-          const response = await fetch(`http://localhost:7000/home/gym/${id}`, {
-            method: "GET",
-            credentials: "include",
-          });
+          const response = await fetch(
+            `https://gymbackenddddd-1.onrender.com/home/gym/${id}`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
 
           if (response.status === 401) {
             const errorData = await response.json();
@@ -133,7 +136,7 @@ const GymPage = () => {
   const PostRating = async (rating, gymId) => {
     try {
       const response = await fetch(
-        `http://localhost:7000/home/rating/${gymId}`,
+        `https://gymbackenddddd-1.onrender.com/home/rating/${gymId}`,
         {
           method: "POST",
           credentials: "include",
@@ -172,7 +175,7 @@ const GymPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:7000/request${
+        `https://gymbackenddddd-1.onrender.com/request${
           followStatus === "Following"
             ? "/unfollow/user/" + id
             : followStatus === "Follow" && "/follow/user/" + id
@@ -227,7 +230,7 @@ const GymPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:7000/home/${id}/${
+        `https://gymbackenddddd-1.onrender.com/home/${id}/${
           joinStatus ? "leavegym" : "joingym"
         }`,
         {

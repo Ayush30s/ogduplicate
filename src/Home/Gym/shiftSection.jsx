@@ -24,7 +24,7 @@ const ShiftsSection = ({
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:7000/home/gym/${gymId}/join-shift/${shiftId}`,
+        `https://gymbackenddddd-1.onrender.com/home/gym/${gymId}/join-shift/${shiftId}`,
         {
           method: "POST",
           credentials: "include",

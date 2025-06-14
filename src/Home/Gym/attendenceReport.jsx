@@ -54,7 +54,7 @@ const AttendanceReport = ({ joinedBy }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:7000/home/attendence-report?username=${selectedUserId}`,
+        `https://gymbackenddddd-1.onrender.com/home/attendence-report?username=${selectedUserId}`,
         {
           method: "GET",
           credentials: "include",

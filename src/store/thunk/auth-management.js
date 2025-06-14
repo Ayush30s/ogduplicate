@@ -14,12 +14,15 @@ const onLogin = (loginData, navigate) => async (dispatch) => {
       password: loginData.password || "",
     };
 
-    const response = await fetch(`http://localhost:7000/register/signin`, {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      body: JSON.stringify(body),
-      credentials: "include",
-    });
+    const response = await fetch(
+      `https://gymbackenddddd-1.onrender.com/register/signin`,
+      {
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(body),
+        credentials: "include",
+      }
+    );
 
     const data = await response.json(); // Properly handle response JSON
     console.log(data);
@@ -36,10 +39,13 @@ const onLogin = (loginData, navigate) => async (dispatch) => {
 
 const onLogoutThunk = (navigate) => async (dispatch) => {
   try {
-    const response = await fetch("http://localhost:7000/register/signout", {
-      method: "POST",
-      credentials: "include",
-    });
+    const response = await fetch(
+      "https://gymbackenddddd-1.onrender.com/register/signout",
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
 
     const data = await response.json();
     if (!response.ok) {
