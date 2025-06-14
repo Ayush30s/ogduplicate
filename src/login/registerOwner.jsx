@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { convertToBase64 } from "../../utils/FileToBase64";
+import { useNavigate } from "react-router-dom";
 
 const RegisterOwner = () => {
   // Form state
@@ -24,6 +24,7 @@ const RegisterOwner = () => {
   );
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   // Validation rules
@@ -68,6 +69,9 @@ const RegisterOwner = () => {
         else if (value.length < 20)
           error = "Description must be at least 20 characters";
         break;
+      case "gender":
+        if (!value) error = "Please select a gender";
+        break;
       default:
         break;
     }
@@ -77,7 +81,7 @@ const RegisterOwner = () => {
 
   // Handle field changes
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type } = e.target;
 
     // Update form data
     setFormData((prev) => ({
@@ -86,13 +90,11 @@ const RegisterOwner = () => {
     }));
 
     // Validate field
-    if (name !== "profileImage") {
-      const error = validateField(name, value);
-      setErrors((prev) => ({
-        ...prev,
-        [name]: error,
-      }));
-    }
+    const error = validateField(name, value);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
   };
 
   // Handle image upload
@@ -117,13 +119,20 @@ const RegisterOwner = () => {
       return;
     }
 
-    setProfileImage(file);
-    const base64 = await convertToBase64(file);
-    setPreviewImage(base64);
-    setErrors((prev) => ({
-      ...prev,
-      profileImage: "",
-    }));
+    try {
+      setProfileImage(file);
+      const base64 = await convertToBase64(file);
+      setPreviewImage(base64);
+      setErrors((prev) => ({
+        ...prev,
+        profileImage: "",
+      }));
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        profileImage: "Failed to process image",
+      }));
+    }
   };
 
   // Validate entire form
@@ -153,8 +162,12 @@ const RegisterOwner = () => {
   // Handle form submission
   const handleSubmitForm = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const Base64ImageString = await convertToBase64(profileImage);
@@ -173,18 +186,36 @@ const RegisterOwner = () => {
         }
       );
 
-      if (response.status === 409) {
-        setErrors({ email: "This email is already registered" });
-        setSuccessMessage("");
-      } else if (response.status === 201) {
-        setSuccessMessage("Your gym has been successfully registered!");
-        setTimeout(() => navigate("/"), 2000);
+      const contentType = response.headers.get("content-type");
+
+      let responseData;
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
       } else {
-        setErrors({ form: "Something went wrong. Please try again later." });
-        setSuccessMessage("");
+        const text = await response.text();
+        responseData = { message: text };
       }
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setErrors({ email: "This email is already registered" });
+        } else {
+          setErrors({
+            form:
+              responseData.message || "Something went wrong. Please try again.",
+          });
+        }
+        setSuccessMessage("");
+        setIsSubmitting(false);
+        return;
+      }
+
+      setSuccessMessage("Your gym has been successfully registered!");
+      setTimeout(() => navigate("/"), 2000);
     } catch (error) {
+      console.error("Registration error:", error);
       setErrors({ form: "Network error. Please check your connection." });
+      setIsSubmitting(false);
     }
   };
 
@@ -255,6 +286,7 @@ const RegisterOwner = () => {
                     type="text"
                     name="fullName"
                     placeholder="Full Name"
+                    autoComplete="name"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("fullName")
                         ? "border-red-500"
@@ -273,6 +305,7 @@ const RegisterOwner = () => {
                 <div>
                   <select
                     name="gender"
+                    autoComplete="sex"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("gender") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -297,6 +330,7 @@ const RegisterOwner = () => {
                     type="email"
                     name="email"
                     placeholder="Email"
+                    autoComplete="email"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("email") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -313,6 +347,7 @@ const RegisterOwner = () => {
                     type="password"
                     name="password"
                     placeholder="Password"
+                    autoComplete="new-password"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("password")
                         ? "border-red-500"
@@ -336,6 +371,7 @@ const RegisterOwner = () => {
                     type="tel"
                     name="contact"
                     placeholder="Contact Number"
+                    autoComplete="tel"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("contact") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -354,6 +390,7 @@ const RegisterOwner = () => {
                     type="text"
                     name="gymName"
                     placeholder="Gym Name"
+                    autoComplete="organization"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("gymName") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -398,6 +435,7 @@ const RegisterOwner = () => {
                     type="text"
                     name="state"
                     placeholder="State"
+                    autoComplete="address-level1"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("state") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -414,6 +452,7 @@ const RegisterOwner = () => {
                     type="text"
                     name="city"
                     placeholder="City"
+                    autoComplete="address-level2"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("city") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -430,6 +469,7 @@ const RegisterOwner = () => {
                     type="text"
                     name="street"
                     placeholder="Street"
+                    autoComplete="address-line1"
                     className={`w-full px-4 py-2 rounded-lg bg-gray-700 text-white border ${
                       hasError("street") ? "border-red-500" : "border-gray-600"
                     } focus:outline-none focus:ring-2 focus:ring-red-500`}
@@ -493,10 +533,16 @@ const RegisterOwner = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-105"
-                disabled={Object.values(errors).some((error) => error)}
+                className={`w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition ${
+                  isSubmitting
+                    ? "opacity-75 cursor-not-allowed"
+                    : "hover:scale-105"
+                }`}
+                disabled={
+                  isSubmitting || Object.values(errors).some((error) => error)
+                }
               >
-                Register Gym
+                {isSubmitting ? "Registering..." : "Register Gym"}
               </button>
             </form>
           </div>
