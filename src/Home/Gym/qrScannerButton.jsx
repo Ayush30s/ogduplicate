@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { useSelector } from "react-redux";
 
@@ -10,7 +10,6 @@ const QRScannerButton = ({
 }) => {
   const loggedIn = useSelector((state) => state.login);
   const [scanning, setScanning] = useState(false);
-  const [error, setError] = useState(null);
   const scannerRef = useRef(null);
 
   const markAttendance = async (token) => {
@@ -31,6 +30,7 @@ const QRScannerButton = ({
       );
 
       const data = await response.json();
+      console.log(data);
       setQrScannerResponse(data.message);
       if (data.success) {
         setAttendenceMarked(true);
@@ -41,54 +41,28 @@ const QRScannerButton = ({
       }
     } catch (error) {
       console.error("Error marking attendance:", error);
-      setError("Failed to mark attendance. Please try again.");
     }
   };
 
-  const startScanner = async () => {
-    try {
-      setScanning(true);
-      setError(null);
+  const startScanner = () => {
+    setScanning(true);
 
-      // Check if camera is supported
-      if (!(await Html5Qrcode.getCameras()).length) {
-        throw new Error("No camera found or permission denied");
-      }
-
+    setTimeout(() => {
       const qrCodeSuccessCallback = (decodedText) => {
         console.log("Scanned QR Code:", decodedText);
         stopScanner();
-        markAttendance(decodedText);
+        markAttendance(decodedText); // Pass token as-is
       };
 
-      // Adjust config for mobile devices
-      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-      const config = {
-        fps: 10,
-        qrbox: isMobile ? 200 : 300,
-        supportedScanTypes: isMobile
-          ? [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-          : undefined,
-      };
-
+      const config = { fps: 10, qrbox: 300 };
       scannerRef.current = new Html5Qrcode("qr-reader");
 
-      await scannerRef.current.start(
-        {
-          facingMode: isMobile ? "environment" : "user",
-        },
-        config,
-        qrCodeSuccessCallback
-      );
-    } catch (err) {
-      console.error("Failed to start QR scanner:", err);
-      setError(
-        err.message.includes("permission")
-          ? "Camera permission denied. Please enable camera access in your browser settings."
-          : "Failed to start scanner. Please try again."
-      );
-      setScanning(false);
-    }
+      scannerRef.current
+        .start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+        .catch((err) => {
+          console.error("Failed to start QR scanner:", err);
+        });
+    }, 100);
   };
 
   const stopScanner = () => {
@@ -99,21 +73,9 @@ const QRScannerButton = ({
           scannerRef.current.clear();
           setScanning(false);
         })
-        .catch((err) => {
-          console.error("Failed to stop scanner:", err);
-          setError("Failed to stop scanner. Please refresh the page.");
-        });
+        .catch((err) => console.error("Failed to stop scanner:", err));
     }
   };
-
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (scannerRef.current && scanning) {
-        stopScanner();
-      }
-    };
-  }, []);
 
   return (
     <div className="w-full">
@@ -127,8 +89,6 @@ const QRScannerButton = ({
             : "Scan QR to Mark Attendance Out"}
         </span>
       </button>
-
-      {error && <p className="mt-2 text-red-500 text-center">{error}</p>}
 
       {scanning && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">

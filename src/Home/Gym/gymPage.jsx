@@ -500,7 +500,8 @@ const GymPage = () => {
 
             {joinStatus && joinRequestAccepted && isPaymentDone && (
               <div className="w-full lg:w-auto lg:flex-1 max-w-md">
-                {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ? (
+                {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ||
+                attendenceStatus == -1 ? (
                   <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full">
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
                       Daily Limit Reached
