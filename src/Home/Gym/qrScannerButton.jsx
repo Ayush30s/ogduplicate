@@ -30,8 +30,9 @@ const QRScannerButton = ({
       );
 
       const data = await response.json();
-      console.log(data);
+      console.log("Attendance Response:", data);
       setQrScannerResponse(data.message);
+
       if (data.success) {
         setAttendenceMarked(true);
         setAttendenceStatus(!attendenceStatus);
@@ -44,23 +45,48 @@ const QRScannerButton = ({
     }
   };
 
+  const getResponsiveQrBox = () => {
+    const minEdge = Math.min(window.innerWidth, window.innerHeight);
+    return Math.floor(minEdge * 0.8); // 80% of smaller screen dimension
+  };
+
   const startScanner = () => {
     setScanning(true);
 
     setTimeout(() => {
       const qrCodeSuccessCallback = (decodedText) => {
-        console.log("Scanned QR Code:", decodedText);
+        console.log("✅ Scanned QR Code:", decodedText);
         stopScanner();
-        markAttendance(decodedText); // Pass token as-is
+        markAttendance(decodedText);
       };
 
-      const config = { fps: 10, qrbox: 300 };
-      scannerRef.current = new Html5Qrcode("qr-reader");
+      const config = {
+        fps: 10,
+        qrbox: getResponsiveQrBox(),
+      };
 
-      scannerRef.current
-        .start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+      const html5QrCode = new Html5Qrcode("qr-reader");
+      scannerRef.current = html5QrCode;
+
+      Html5Qrcode.getCameras()
+        .then((devices) => {
+          if (devices && devices.length) {
+            console.log("Available Cameras:", devices);
+            html5QrCode
+              .start(
+                { facingMode: "environment" },
+                config,
+                qrCodeSuccessCallback
+              )
+              .catch((err) => {
+                console.error("Failed to start scanner:", err);
+              });
+          } else {
+            console.warn("❌ No camera devices found.");
+          }
+        })
         .catch((err) => {
-          console.error("Failed to start QR scanner:", err);
+          console.error("Error getting cameras:", err);
         });
     }, 100);
   };
@@ -112,8 +138,12 @@ const QRScannerButton = ({
             </button>
 
             <div className="aspect-square w-full rounded-md overflow-hidden bg-black">
-              <div id="qr-reader" className="w-full h-full" />
+              <div
+                id="qr-reader"
+                className="w-full h-full max-w-full max-h-full"
+              />
             </div>
+
             <p className="mt-4 text-gray-300 text-center text-sm font-medium">
               Align the QR code inside the frame
             </p>
