@@ -188,7 +188,7 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                 return (
                   shouldRender && (
                     <motion.li
-                      key={notification._id}
+                      key={notification?._id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className={`p-4 hover:bg-gray-750 transition-colors ${
@@ -220,13 +220,13 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                                             "gymModel"
                                               ? "gym"
                                               : "user"
-                                          }/${notification.reqby._id}`
+                                          }/${notification.reqby?._id}`
                                         : `/home/${
                                             notification.reqtoType ===
                                             "gymModel"
                                               ? "gym"
                                               : "user"
-                                          }/${notification.reqto._id}`
+                                          }/${notification.reqto?._id}`
                                     }
                                   >
                                     <span
