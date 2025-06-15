@@ -9,6 +9,7 @@ const AttendanceReport = ({ joinedBy }) => {
   const [hoveredDate, setHoveredDate] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+  const [selectedDay, setSelectedDay] = useState(null); // New state for mobile day selection
 
   const months = [
     "January",
@@ -67,39 +68,63 @@ const AttendanceReport = ({ joinedBy }) => {
     }
   };
 
-  const handleDateHover = useCallback((date) => {
-    setHoveredDate(date);
+  const handleDateHover = useCallback((day) => {
+    if (day.value !== -1) {
+      setHoveredDate(day);
+    }
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    setHoveredDate(null);
+  const handleMobileDayPress = useCallback((day) => {
+    if (day.value !== -1) {
+      setSelectedDay(day);
+    }
+  }, []);
+
+  const handleCloseMobileTooltip = useCallback(() => {
+    setSelectedDay(null);
   }, []);
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-      {hoveredDate && (
-        <div className="lg:hidden fixed top-4 left-4 right-4 z-50 p-3 bg-gray-900 text-white text-xs rounded shadow-lg border border-gray-700">
-          <div className="font-medium mb-1 text-blue-400">
-            Date: {hoveredDate.date}
+      {/* Mobile Tooltip */}
+      {selectedDay && (
+        <div className="lg:hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-gray-900 text-white p-4 rounded-lg border border-gray-700 max-w-xs w-full">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-blue-400 font-medium">
+                {selectedDay.eachDayAttendenceObj?.date}
+              </h3>
+              <button
+                onClick={handleCloseMobileTooltip}
+                className="text-gray-400 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+
+            {selectedDay.value === 1 ? (
+              <>
+                <div className="mb-2">
+                  <span className="text-blue-300">Check In:</span>{" "}
+                  {selectedDay.eachDayAttendenceObj?.checkInTime
+                    ? new Date(
+                        selectedDay.eachDayAttendenceObj.checkInTime
+                      ).toLocaleTimeString()
+                    : "Not marked"}
+                </div>
+                <div className="mb-2">
+                  <span className="text-blue-300">Check Out:</span>{" "}
+                  {selectedDay.eachDayAttendenceObj?.checkOutTime
+                    ? new Date(
+                        selectedDay.eachDayAttendenceObj.checkOutTime
+                      ).toLocaleTimeString()
+                    : "Not marked"}
+                </div>
+              </>
+            ) : (
+              <div className="text-red-300">Absent</div>
+            )}
           </div>
-          {hoveredDate.value === 1 ? (
-            <>
-              <div className="mb-1">
-                <span className="text-blue-300">Check In Time:</span>{" "}
-                {hoveredDate.checkInTime
-                  ? new Date(hoveredDate.checkInTime).toLocaleTimeString()
-                  : "Not marked"}
-              </div>
-              <div className="mb-1">
-                <span className="text-blue-300">Check Out Time:</span>{" "}
-                {hoveredDate.checkOutTime
-                  ? new Date(hoveredDate.checkOutTime).toLocaleTimeString()
-                  : "Not marked"}
-              </div>
-            </>
-          ) : (
-            <div className="text-red-300">Absent</div>
-          )}
         </div>
       )}
 
@@ -201,18 +226,12 @@ const AttendanceReport = ({ joinedBy }) => {
                                   <div
                                     key={dayIndex}
                                     className="relative flex-1"
-                                    onMouseEnter={() =>
-                                      day.value !== -1 && handleDateHover(day)
-                                    }
-                                    onMouseLeave={handleMouseLeave}
-                                    onTouchStart={() =>
-                                      day.value !== -1 && handleDateHover(day)
-                                    }
+                                    onClick={() => handleMobileDayPress(day)}
                                   >
                                     <div
-                                      className={`w-full h-full ${intensity} rounded-sm hover:scale-110 transition-transform ${
+                                      className={`w-full h-full ${intensity} rounded-sm ${
                                         day.value !== -1
-                                          ? "cursor-pointer"
+                                          ? "active:scale-110 transition-transform cursor-pointer"
                                           : "cursor-default"
                                       }`}
                                     ></div>
@@ -294,6 +313,8 @@ const AttendanceReport = ({ joinedBy }) => {
                               className={`relative flex-1 ${
                                 day.value !== -1 ? "group" : ""
                               }`}
+                              onMouseEnter={() => handleDateHover(day)}
+                              onMouseLeave={() => setHoveredDate(null)}
                             >
                               <div
                                 className={`w-full h-full ${intensity} rounded-sm hover:scale-110 transition-transform ${
@@ -302,8 +323,8 @@ const AttendanceReport = ({ joinedBy }) => {
                                     : "cursor-default"
                                 }`}
                               ></div>
-                              {day.value === 1 && (
-                                <div className="absolute invisible group-hover:visible z-[999] w-64 p-3 bg-gray-900 text-white text-xs rounded shadow-lg bottom-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 border border-gray-700">
+                              {hoveredDate === day && day.value === 1 && (
+                                <div className="absolute z-[999] w-64 p-3 bg-gray-900 text-white text-xs rounded shadow-lg bottom-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 border border-gray-700">
                                   <div className="font-medium mb-1 text-blue-400">
                                     Date: {day.eachDayAttendenceObj?.date}
                                   </div>
@@ -327,16 +348,14 @@ const AttendanceReport = ({ joinedBy }) => {
                                         ).toLocaleTimeString()
                                       : "Not marked"}
                                   </div>
-                                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-l-transparent border-r-transparent border-b-gray-900"></div>
                                 </div>
                               )}
-                              {day.value === 0 && (
-                                <div className="absolute invisible group-hover:visible z-[999] w-32 p-3 bg-gray-900 text-white text-xs rounded shadow-lg bottom-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 border border-gray-700">
+                              {hoveredDate === day && day.value === 0 && (
+                                <div className="absolute z-[999] w-32 p-3 bg-gray-900 text-white text-xs rounded shadow-lg bottom-[calc(100%+8px)] left-1/2 transform -translate-x-1/2 border border-gray-700">
                                   <span className="font-medium mb-1 text-blue-400">
                                     Date: {day.eachDayAttendenceObj?.date}
                                   </span>
                                   <span className="text-red-300"> Absent</span>
-                                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-0 border-b-4 border-l-transparent border-r-transparent border-b-gray-900"></div>
                                 </div>
                               )}
                             </div>
