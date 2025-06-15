@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useCallback } from "react";
+import { debounce } from "lodash";
 
 const BlogPage = () => {
   const [blogData, setBlogData] = useState();
@@ -53,98 +55,109 @@ const BlogPage = () => {
     fetchBlogData();
   }, [blogId, commentCount]);
 
-  const handleLike = async () => {
-    if (isLiking) return;
-    setIsLiking(true);
-    try {
-      const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/blog/like/${blogId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
+  const handleLike = useCallback(
+    debounce(async () => {
+      if (isLiking) return;
+      setIsLiking(true);
+      try {
+        const response = await fetch(
+          `https://gymbackenddddd-1.onrender.com/blog/like/${blogId}`,
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
 
-      if (response.ok) {
-        setIsLiked(!isLiked);
-        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-        // Add a small visual feedback
-        if (!isLiked) {
-          const likeBtn = document.getElementById("likeButton");
-          likeBtn.classList.add("animate-ping");
-          setTimeout(() => likeBtn.classList.remove("animate-ping"), 500);
+        if (response.ok) {
+          setIsLiked(!isLiked);
+          setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+          // Add a small visual feedback
+          if (!isLiked) {
+            const likeBtn = document.getElementById("likeButton");
+            likeBtn.classList.add("animate-ping");
+            setTimeout(() => likeBtn.classList.remove("animate-ping"), 500);
+          }
         }
+      } catch (error) {
+        console.error("Error liking the blog:", error);
+      } finally {
+        setIsLiking(false);
       }
-    } catch (error) {
-      console.error("Error liking the blog:", error);
-    } finally {
-      setIsLiking(false);
-    }
-  };
+    }, 500),
+    [isLiked, likeCount, isLiking, blogId]
+  );
 
-  const handleSave = async () => {
-    if (isSaving) return;
-    setIsSaving(true);
-    try {
-      const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/blog/save/${blogId}`,
-        {
-          method: "POST",
-          credentials: "include",
+  // Debounced save handler
+  const handleSave = useCallback(
+    debounce(async () => {
+      if (isSaving) return;
+      setIsSaving(true);
+      try {
+        const response = await fetch(
+          `https://gymbackenddddd-1.onrender.com/blog/save/${blogId}`,
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          setIsSaved(!isSaved);
+          setSaveCount(isSaved ? saveCount - 1 : saveCount + 1);
+          // Add a small visual feedback
+          if (!isSaved) {
+            const saveBtn = document.getElementById("saveButton");
+            saveBtn.classList.add("animate-bounce");
+            setTimeout(() => saveBtn.classList.remove("animate-bounce"), 1000);
+          }
         }
-      );
-      if (response.ok) {
-        setIsSaved(!isSaved);
-        setSaveCount(isSaved ? saveCount - 1 : saveCount + 1);
-        // Add a small visual feedback
-        if (!isSaved) {
-          const saveBtn = document.getElementById("saveButton");
-          saveBtn.classList.add("animate-bounce");
-          setTimeout(() => saveBtn.classList.remove("animate-bounce"), 1000);
-        }
+      } catch (error) {
+        console.error("Error saving the blog:", error);
+      } finally {
+        setIsSaving(false);
       }
-    } catch (error) {
-      console.error("Error saving the blog:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    }, 500),
+    [isSaved, saveCount, isSaving, blogId]
+  );
 
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    if (isCommenting || !comment.trim()) return;
-    setIsCommenting(true);
+  // Debounced comment handler
+  const handleCommentSubmit = useCallback(
+    debounce(async (e) => {
+      e.preventDefault();
+      if (isCommenting || !comment.trim()) return;
+      setIsCommenting(true);
 
-    try {
-      const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/blog/comment/${blogId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ content: comment }),
-          credentials: "include",
+      try {
+        const response = await fetch(
+          `https://gymbackenddddd-1.onrender.com/blog/comment/${blogId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ content: comment }),
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const newComment = await response.json();
+          setCommentList([...commentList, newComment.comment]);
+          setCommentCount(commentCount + 1);
+          setComment("");
+          // Scroll to the new comment
+          setTimeout(() => {
+            const commentsSection = document.getElementById("commentsSection");
+            commentsSection.scrollTop = commentsSection.scrollHeight;
+          }, 100);
         }
-      );
-
-      if (response.ok) {
-        const newComment = await response.json();
-        setCommentList([...commentList, newComment.comment]);
-        setCommentCount(commentCount + 1);
-        setComment("");
-        // Scroll to the new comment
-        setTimeout(() => {
-          const commentsSection = document.getElementById("commentsSection");
-          commentsSection.scrollTop = commentsSection.scrollHeight;
-        }, 100);
+      } catch (error) {
+        console.error("Error submitting comment:", error);
+      } finally {
+        setIsCommenting(false);
       }
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-    } finally {
-      setIsCommenting(false);
-    }
-  };
+    }, 500),
+    [comment, isCommenting, commentList, commentCount, blogId]
+  );
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

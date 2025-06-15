@@ -16,6 +16,7 @@ const WorkoutPlanForm = () => {
 
   const [exercises, setExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [showTokenMessage, setShowTokenMessage] = useState(false);
 
   useEffect(() => {
     const fetchTransformationData = async () => {
@@ -36,7 +37,7 @@ const WorkoutPlanForm = () => {
           }));
         }
       } catch (err) {
-        // console.log(err);
+        console.log(err);
       }
     };
 
@@ -65,7 +66,14 @@ const WorkoutPlanForm = () => {
 
       const data = await response.json();
       if (response.ok) {
-        setExercises(data.exercises);
+        if (data.message === "Token balance exhausted") {
+          // Show funny message and use hardcoded data
+          setShowTokenMessage(true);
+          setExercises(getHardcodedExercises());
+        } else {
+          setExercises(data.exercises);
+          setShowTokenMessage(false);
+        }
       } else {
         alert("Submission failed. Please try again.");
       }
@@ -73,6 +81,51 @@ const WorkoutPlanForm = () => {
       console.error(err);
       alert("An error occurred. Please try again.");
     }
+  };
+
+  // Hardcoded exercise data for demonstration
+  const getHardcodedExercises = () => {
+    return [
+      {
+        exercise: "Push-ups",
+        focusPart: "Chest & Arms",
+        sets: "3",
+        reps: "12-15",
+        difficulty: "Beginner",
+        caloriesBurned: "100",
+        equipment: "Bodyweight",
+        restTime: "30-60 seconds",
+        description:
+          "Classic bodyweight exercise for upper body strength. Keep your core tight and back straight.",
+        exerciseVideoURL: "https://www.youtube.com/watch?v=IODxDxX7oi4",
+      },
+      {
+        exercise: "Squats",
+        focusPart: "Legs & Glutes",
+        sets: "4",
+        reps: "10-12",
+        difficulty: "Beginner",
+        caloriesBurned: "120",
+        equipment: "Bodyweight",
+        restTime: "45-60 seconds",
+        description:
+          "Fundamental lower body exercise. Keep your chest up and knees behind toes.",
+        exerciseVideoURL: "https://www.youtube.com/watch?v=aclHkVaku9U",
+      },
+      {
+        exercise: "Plank",
+        focusPart: "Core",
+        sets: "3",
+        reps: "30-60 sec",
+        difficulty: "Beginner",
+        caloriesBurned: "80",
+        equipment: "Bodyweight",
+        restTime: "30 seconds",
+        description:
+          "Excellent core exercise. Maintain straight line from head to heels.",
+        exerciseVideoURL: "https://www.youtube.com/watch?v=pSHjTRCQxIw",
+      },
+    ];
   };
 
   return (
@@ -175,6 +228,20 @@ const WorkoutPlanForm = () => {
           </button>
         </form>
       </div>
+
+      {showTokenMessage && (
+        <div className="w-full max-w-3xl mt-6 p-4 bg-blue-900 border border-blue-700 rounded-lg text-center">
+          <p className="text-blue-200 font-bold">⚠️ Demo Mode Activated ⚠️</p>
+          <p className="text-blue-100">
+            Our AI service limit has been reached for this demo period. You're
+            seeing sample exercises identical to what our AI would generate.
+          </p>
+          <p className="text-blue-100 mt-2">
+            In a production environment, this would be your personalized
+            AI-generated workout plan.
+          </p>
+        </div>
+      )}
 
       {selectedExercise && (
         <ExercisePage

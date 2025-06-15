@@ -4,7 +4,6 @@ const ExercisePage = ({ exercise, onClose }) => {
   const [customTime, setCustomTime] = useState(
     convertToSeconds(exercise.timeLimit)
   );
-
   const [newExerciseObj, setNewExerciseObj] = useState(exercise);
   const [timeLeft, setTimeLeft] = useState(customTime);
   const [isRunning, setIsRunning] = useState(false);
@@ -58,7 +57,6 @@ const ExercisePage = ({ exercise, onClose }) => {
   };
 
   const handleReset = () => {
-    setShowDialog(true);
     setTimeLeft(customTime);
     setCustomTime(300);
     setIsRunning(false);
@@ -98,9 +96,9 @@ const ExercisePage = ({ exercise, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-gray-900 flex flex-col h-screen w-full overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-gray-900 flex flex-col h-screen w-full overflow-y-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 py-2 px-5 flex justify-between items-center border-b border-indigo-700 shrink-0">
+      <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 py-2 px-5 flex justify-between items-center border-b border-indigo-700 shrink-0 sticky top-0 z-10">
         <div>
           <h1 className="text-2xl font-bold text-white">{exercise.exercise}</h1>
           <p className="text-indigo-200">
@@ -131,10 +129,10 @@ const ExercisePage = ({ exercise, onClose }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+      <div className="flex-1 p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Exercise Details */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 h-fit">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
             <h2 className="text-xl font-bold text-white mb-4">
               Exercise Details
             </h2>
@@ -185,7 +183,7 @@ const ExercisePage = ({ exercise, onClose }) => {
                 </div>
               </div>
 
-              <div className="flex gap-4 mb-6 w-full justify-center">
+              <div className="flex gap-4 mb-6 w-full justify-center flex-wrap">
                 <button
                   onClick={() => setIsRunning(!isRunning)}
                   className={`px-6 py-3 rounded-lg font-bold text-white min-w-[120px] ${
@@ -256,8 +254,8 @@ const ExercisePage = ({ exercise, onClose }) => {
 
       {/* Confirmation Modal */}
       {showDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">
               Do you want to save this exercise in your profile?
             </h3>
