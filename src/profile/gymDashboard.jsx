@@ -38,9 +38,9 @@ const GymDashboard = () => {
   const gymId = data?.user?.userId;
 
   useEffect(() => {
-    if (data.user.userType === "gymModel")
+    if (data?.user?.userType === "gymModel")
       dispatch(profileDataThuk(data.user.userType));
-  }, [dispatch, data.user.userType]);
+  }, [dispatch, data?.user?.userType]);
 
   const [showShiftForm, setShowShiftForm] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);

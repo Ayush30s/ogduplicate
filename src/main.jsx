@@ -22,7 +22,6 @@ const UserProfile = lazy(() => import("./profile/userProfile.jsx"));
 const MemberList = lazy(() => import("./Home/List/memberList.jsx"));
 const RegisterOwner = lazy(() => import("./login/registerOwner.jsx"));
 const GymDashboard = lazy(() => import("./profile/gymDashboard.jsx"));
-const AuthAccessGuard = lazy(() => import("./guards/authAccessGuard.jsx"));
 const Transformation = lazy(() => import("./Home/Exercise/transformation.jsx"));
 const UserDashboard = lazy(() => import("./profile/userDashboard.jsx"));
 const CreateListingPage = lazy(() => import("./listing/postListing.jsx"));
@@ -38,6 +37,7 @@ const ErrorBoundary = lazy(() => import("./common/errorBoundary.jsx"));
 const EditPersonalDetails = lazy(() => import("./profile/editProfile.jsx"));
 const UserTypeAccess = lazy(() => import("./errors/userType.jsx"));
 import Loading from "./common/loading.jsx";
+import AuthAccessGuard from "./guards/authAccessGuard.jsx";
 
 // Not lazy loaded
 import GymPage from "./Home/Gym/gymPage.jsx";

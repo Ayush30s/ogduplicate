@@ -56,60 +56,60 @@ const GymPage = () => {
   const [joinStatus, setJoinStatus] = useState(false);
 
   useEffect(() => {
-    if (!gymData) {
-      const fetchGym = async () => {
-        try {
-          const response = await fetch(
-            `https://gymbackenddddd-1.onrender.com/home/gym/${id}`,
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-
-          if (response.status === 401) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Something went wrong");
+    const fetchGym = async () => {
+      try {
+        const response = await fetch(
+          `https://gymbackenddddd-1.onrender.com/home/gym/${id}`,
+          {
+            method: "GET",
+            credentials: "include",
           }
+        );
 
-          const data = await response.json();
-          if (data?.message === "REDIRECT_TO_GYM_DASHBOARD") {
-            navigate("/home/gym-dashboard");
-          }
-
-          setGymData(data);
-          setJoinStatus(data.isUserJoined);
-          setIsPaymentDone(data.isPaymentDone);
-          setMembersList(data.gymData?.joinedBy);
-          setFollowingCount(data.followingCount);
-          setFollowersCount(data.followersCount);
-          setFollowStatus(data.followingGymOrNot);
-          setAttendenceStatus(data.attendenceStatus);
-          setFilteredMembers(data.gymData?.joinedBy);
-          setshiftJoinedIndex(data.shiftJoinedIndex);
-          setJoinCount(data?.gymData?.joinedBy?.length);
-          setJoinRequestAccepted(data.isJoinRequestAccepted || false);
-          setJoinRequestPending(data.isJoinRequestPending || false);
-          setIsPaymentDone(data.isPaymentDone || false);
-
-          if (data.isJoinRequestAccepted && !data.isPaymentDone) {
-            setShowPaymentGateway(true);
-          }
-        } catch (err) {
-          if (err.message === "Unauthorized access auth error!") {
-            navigate(
-              "/home?error=Please sign in to continue and access all features of the application."
-            );
-          }
-          setError(err.message);
-        } finally {
-          setLoading(false);
+        if (response.status === 401) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Something went wrong");
         }
-      };
 
-      fetchGym();
-    }
-  }, [id, navigate, gymData]);
+        const data = await response.json();
+        if (data?.message === "REDIRECT_TO_GYM_DASHBOARD") {
+          navigate("/home/gym-dashboard");
+        }
+
+        console.log(data);
+
+        setGymData(data);
+        setJoinStatus(data.isUserJoined);
+        setIsPaymentDone(data.isPaymentDone);
+        setMembersList(data.gymData?.joinedBy);
+        setFollowingCount(data.followingCount);
+        setFollowersCount(data.followersCount);
+        setFollowStatus(data.followingGymOrNot);
+        setAttendenceStatus(data.attendenceStatus);
+        setFilteredMembers(data.gymData?.joinedBy);
+        setshiftJoinedIndex(data.shiftJoinedIndex);
+        setJoinCount(data?.gymData?.joinedBy?.length);
+        setJoinRequestAccepted(data.isJoinRequestAccepted || false);
+        setJoinRequestPending(data.isJoinRequestPending || false);
+        setIsPaymentDone(data.isPaymentDone || false);
+
+        if (data.isJoinRequestAccepted && !data.isPaymentDone) {
+          setShowPaymentGateway(true);
+        }
+      } catch (err) {
+        if (err.message === "Unauthorized access auth error!") {
+          navigate(
+            "/home?error=Please sign in to continue and access all features of the application."
+          );
+        }
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGym();
+  }, [id, navigate]);
 
   useEffect(() => {
     const handleOwnerAccepted = () => {
@@ -434,6 +434,11 @@ const GymPage = () => {
             />
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
+
+          <span className="absolute right-5 top-5 animate-pulse font-bold text-green-600 bg-green-100 px-4 py-2 rounded-full shadow-md">
+            <span className=" text-2xl">{gymData?.daysLeft + "      "}</span>
+            Days Left in this month to complete
+          </span>
 
           <div className="relative z-0 text-center space-y-3 px-2 sm:px-4 md:px-8">
             <h1
