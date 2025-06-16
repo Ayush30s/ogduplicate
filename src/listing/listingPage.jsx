@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import WhatsAppButton from "../common/whatsappButton";
+import { debounce } from "lodash";
+import { useCallback } from "react";
 import {
   FiArrowLeft,
   FiMapPin,
   FiCalendar,
-  FiUser,
   FiHeart,
   FiInfo,
   FiDollarSign,
@@ -20,7 +21,6 @@ import {
   handleReportListingThunk,
 } from "../store/thunk/listing-management";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 
 const ListingPage = () => {
   const id = useParams();
@@ -34,10 +34,8 @@ const ListingPage = () => {
   }, [dispatch, listingId]);
 
   const storeData = useSelector((store) => store.listingActive);
-  console.log(storeData);
   const { error, loading } = storeData;
   const listingData = storeData?.listingData;
-  // const IsLoggedInUser = storeData?.isLoggedInUser;
 
   const isRent = listingData?.type === "rent" || listingData?.type === "both";
   const isSale = listingData?.type === "sale" || listingData?.type === "both";
@@ -54,18 +52,24 @@ const ListingPage = () => {
     );
   };
 
-  const toggleFavorite = async () => {
-    dispatch(handleLikeListingThunk(listingId));
-  };
+  const toggleFavorite = useCallback(
+    debounce(() => {
+      dispatch(handleLikeListingThunk(listingId));
+    }, 500),
+    [dispatch, listingId]
+  );
 
-  const handleReport = () => {
-    dispatch(
-      handleReportListingThunk(listingId, {
-        reason: "Fraud",
-        message: "please check the model",
-      })
-    );
-  };
+  const handleReport = useCallback(
+    debounce(() => {
+      dispatch(
+        handleReportListingThunk(listingId, {
+          reason: "Fraud",
+          message: "please check the model",
+        })
+      );
+    }, 500),
+    [dispatch, listingId]
+  );
 
   const formatDate = (dateString) => {
     if (!dateString) return "Not specified";
