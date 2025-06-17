@@ -120,7 +120,9 @@ const appRouter = createBrowserRouter([
             path: "/home/transformation",
             element: (
               <Suspense fallback={<Loading />}>
-                <Transformation />
+                <AuthAccessGuard>
+                  <Transformation />
+                </AuthAccessGuard>
               </Suspense>
             ),
           },

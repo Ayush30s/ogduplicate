@@ -6,9 +6,9 @@ const AuthAccessGuard = ({ children }) => {
   const userType = loggedInUser?.user?.userType;
   const childComponentName = children?.type?.name;
 
-  // Debugging output (optional)
-  console.log("User type:", userType);
-  console.log("Target component:", childComponentName);
+  if (childComponentName === "WorkoutPlanForm" && userType !== "userModel") {
+    return <Navigate to="/access-denied" />;
+  }
 
   // BLOCK if mismatched component access
   if (
