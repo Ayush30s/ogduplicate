@@ -13,7 +13,6 @@ import { SocketContext } from "../socket/socketContext";
 const Header = ({ userData }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const socket = useContext(SocketContext);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -109,11 +108,13 @@ const Header = ({ userData }) => {
               About
             </li>
           </Link>
-          <Link to="/home/transformation">
-            <li className="text-gray-300 hover:text-indigo-400 transition-colors cursor-pointer">
-              Train with AI
-            </li>
-          </Link>
+          {userData?.userType === "userModel" && (
+            <Link to="/home/transformation">
+              <li className="text-gray-300 hover:text-indigo-400 transition-colors cursor-pointer">
+                Train with AI
+              </li>
+            </Link>
+          )}
           <Link to="/blog">
             <li className="text-gray-300 hover:text-indigo-400 transition-colors cursor-pointer">
               Blogs
@@ -480,11 +481,13 @@ const Header = ({ userData }) => {
                     About
                   </li>
                 </Link>
-                <Link to="/home/transformation" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
-                    Train with AI
-                  </li>
-                </Link>
+                {userData?.userType === "userModel" && (
+                  <Link to="/home/transformation" onClick={toggleMobileMenu}>
+                    <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                      Train with AI
+                    </li>
+                  </Link>
+                )}
                 <Link to="/blog" onClick={toggleMobileMenu}>
                   <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
                     Blogs

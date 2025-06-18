@@ -3,6 +3,15 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import "./index.css";
 
+// Not lazy loaded
+import GymPage from "./Home/Gym/gymPage.jsx";
+import Loading from "./common/loading.jsx";
+import UserTypeAccessGuard from "./guards/userTypeAccessGuard.jsx";
+import GymDashboard from "./profile/gymDashboard.jsx";
+import UserDashboard from "./profile/userDashboard.jsx";
+import ProtectedRoute from "../src/Home/protectedRoute.jsx";
+import WorkoutPlanForm from "./Home/Exercise/transformation.jsx";
+
 const App = lazy(() => import("./App.jsx"));
 const Home = lazy(() => import("./Home/home.jsx"));
 const Blogs = lazy(() => import("./blogs/blog.jsx"));
@@ -21,26 +30,17 @@ const RegisterUser = lazy(() => import("./login/registerUser.jsx"));
 const UserProfile = lazy(() => import("./profile/userProfile.jsx"));
 const MemberList = lazy(() => import("./Home/List/memberList.jsx"));
 const RegisterOwner = lazy(() => import("./login/registerOwner.jsx"));
-const GymDashboard = lazy(() => import("./profile/gymDashboard.jsx"));
-const Transformation = lazy(() => import("./Home/Exercise/transformation.jsx"));
-const UserDashboard = lazy(() => import("./profile/userDashboard.jsx"));
 const CreateListingPage = lazy(() => import("./listing/postListing.jsx"));
 const FollowersList = lazy(() => import("../src/Home/List/followersList.jsx"));
 const FollowingList = lazy(() => import("../src/Home/List/followingList.jsx"));
 const AboutPage = lazy(() => import("./Home/about.jsx"));
 const Listing = lazy(() => import("./listing/listing.jsx"));
 const AllListing = lazy(() => import("./listing/allListings.jsx"));
-const ProtectedRoute = lazy(() => import("./Home/protectedRoute.jsx"));
 const ListingPage = lazy(() => import("./listing/listingPage.jsx"));
 const EditListingPage = lazy(() => import("./listing/editListing.jsx"));
 const ErrorBoundary = lazy(() => import("./common/errorBoundary.jsx"));
 const EditPersonalDetails = lazy(() => import("./profile/editProfile.jsx"));
 const UserTypeAccess = lazy(() => import("./errors/userType.jsx"));
-import Loading from "./common/loading.jsx";
-import AuthAccessGuard from "./guards/authAccessGuard.jsx";
-
-// Not lazy loaded
-import GymPage from "./Home/Gym/gymPage.jsx";
 
 const appRouter = createBrowserRouter([
   {
@@ -120,9 +120,9 @@ const appRouter = createBrowserRouter([
             path: "/home/transformation",
             element: (
               <Suspense fallback={<Loading />}>
-                <AuthAccessGuard>
-                  <Transformation />
-                </AuthAccessGuard>
+                <UserTypeAccessGuard>
+                  <WorkoutPlanForm />
+                </UserTypeAccessGuard>
               </Suspense>
             ),
           },
@@ -163,9 +163,9 @@ const appRouter = createBrowserRouter([
             path: "/home/gym-dashboard",
             element: (
               <Suspense fallback={<Loading />}>
-                <AuthAccessGuard>
+                <UserTypeAccessGuard>
                   <GymDashboard />
-                </AuthAccessGuard>
+                </UserTypeAccessGuard>
               </Suspense>
             ),
           },
@@ -173,9 +173,9 @@ const appRouter = createBrowserRouter([
             path: "/home/user-dashboard",
             element: (
               <Suspense fallback={<Loading />}>
-                <AuthAccessGuard>
+                <UserTypeAccessGuard>
                   <UserDashboard />
-                </AuthAccessGuard>
+                </UserTypeAccessGuard>
               </Suspense>
             ),
           },

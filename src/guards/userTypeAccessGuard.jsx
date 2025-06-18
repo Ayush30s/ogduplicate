@@ -1,12 +1,18 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-const AuthAccessGuard = ({ children }) => {
+const UserTypeAccessGuard = ({ children }) => {
   const loggedInUser = useSelector((store) => store.login);
   const userType = loggedInUser?.user?.userType;
   const childComponentName = children?.type?.name;
 
-  if (childComponentName === "WorkoutPlanForm" && userType !== "userModel") {
+  console.log(
+    childComponentName,
+    userType,
+    "childComponentNamechildComponentName"
+  );
+
+  if (childComponentName === "WorkoutPlanForm" && userType === "gymModel") {
     return <Navigate to="/access-denied" />;
   }
 
@@ -17,9 +23,7 @@ const AuthAccessGuard = ({ children }) => {
   ) {
     return <Navigate to="/access-denied" />;
   }
-
-  // ALLOW if access is valid
   return children;
 };
 
-export default AuthAccessGuard;
+export default UserTypeAccessGuard;
