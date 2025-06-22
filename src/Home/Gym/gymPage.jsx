@@ -34,6 +34,7 @@ const GymPage = () => {
 
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+  const [daysLeft, setDaysleft] = useState(null);
   const [attendenceMarked, setAttendenceMarked] = useState(false);
   const [gymData, setGymData] = useState(location.state?.gymData || null);
   const [loading, setLoading] = useState(!gymData);
@@ -72,6 +73,7 @@ const GymPage = () => {
         }
 
         const data = await response.json();
+        console.log(data);
         if (data?.message === "REDIRECT_TO_GYM_DASHBOARD") {
           navigate("/home/gym-dashboard");
         }
@@ -79,6 +81,7 @@ const GymPage = () => {
         console.log(data);
 
         setGymData(data);
+        setDaysleft(data.daysLeft);
         setJoinStatus(data.isUserJoined);
         setIsPaymentDone(data.isPaymentDone);
         setMembersList(data.gymData?.joinedBy);
@@ -225,6 +228,7 @@ const GymPage = () => {
 
   const SendJoinActions = async () => {
     if (joinStatus === true) {
+      setDaysleft(null);
       setshiftJoinedIndex(-1);
     }
 
@@ -435,10 +439,13 @@ const GymPage = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
 
-          <span className="absolute right-5 top-5 animate-pulse font-bold text-green-600 bg-green-100 px-4 py-2 rounded-full shadow-md">
-            <span className=" text-2xl">{gymData?.daysLeft + "      "}</span>
-            Days Left in this month to complete
-          </span>
+          {daysLeft && (
+            <span className="absolute right-5 top-5 animate-pulse font-bold text-green-600 bg-green-100 px-4 py-2 rounded-full shadow-md">
+              <span className=" text-2xl">{daysLeft + "      "}</span>
+              Days Left in this month to complete, To have access of the gym
+              make sure you pay next month membership fee before month-end
+            </span>
+          )}
 
           <div className="relative z-0 text-center space-y-3 px-2 sm:px-4 md:px-8">
             <h1
