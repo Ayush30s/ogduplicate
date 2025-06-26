@@ -1,4 +1,10 @@
-import { FaDumbbell, FaBars, FaTimes, FaBell } from "react-icons/fa";
+import {
+  FaDumbbell,
+  FaBars,
+  FaTimes,
+  FaBell,
+  FaChevronDown,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { onLogoutThunk } from "../store/thunk/auth-management";
@@ -18,6 +24,8 @@ const Header = ({ userData }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [notificationStatus, setShowNotificationStatus] = useState(false);
+  const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
+  const [listingDropdownOpen, setListingDropdownOpen] = useState(false);
 
   const allData = useSelector((store) => store.request);
   const allNotifications = allData?.requsetArray;
@@ -115,11 +123,122 @@ const Header = ({ userData }) => {
               </li>
             </Link>
           )}
-          <Link to="/blog">
-            <li className="text-gray-300 hover:text-indigo-400 transition-colors cursor-pointer">
+
+          {/* Blog Dropdown */}
+          <div className="relative group">
+            <button
+              className="flex items-center gap-1 text-gray-300 hover:text-indigo-400 transition-colors"
+              onMouseEnter={() => setBlogDropdownOpen(true)}
+              onMouseLeave={() => setBlogDropdownOpen(false)}
+            >
               Blogs
-            </li>
-          </Link>
+              <FaChevronDown
+                className={`text-xs transition-transform ${
+                  blogDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {blogDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-50 border border-gray-700"
+                  onMouseEnter={() => setBlogDropdownOpen(true)}
+                  onMouseLeave={() => setBlogDropdownOpen(false)}
+                >
+                  <div className="py-1">
+                    <Link
+                      to="/blog"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      All Blogs
+                    </Link>
+                    <Link
+                      to="/blog/new"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      New Blog
+                    </Link>
+                    <Link
+                      to="/blog/myBlogs"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      My Blogs
+                    </Link>
+                    <Link
+                      to="/blog/savedblogs"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      Saved Blogs
+                    </Link>
+                    <Link
+                      to="/blog/likedblogs"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      Liked Blogs
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Listing Dropdown */}
+          <div className="relative group">
+            <button
+              className="flex items-center gap-1 text-gray-300 hover:text-indigo-400 transition-colors"
+              onMouseEnter={() => setListingDropdownOpen(true)}
+              onMouseLeave={() => setListingDropdownOpen(false)}
+            >
+              Listings
+              <FaChevronDown
+                className={`text-xs transition-transform ${
+                  listingDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {listingDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-50 border border-gray-700"
+                  onMouseEnter={() => setListingDropdownOpen(true)}
+                  onMouseLeave={() => setListingDropdownOpen(false)}
+                >
+                  <div className="py-1">
+                    <Link
+                      to="/listing"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      Find Listings
+                    </Link>
+                    {userData?.userType === "userModel" && (
+                      <Link
+                        to="/listing/new"
+                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                      >
+                        Post Equipment
+                      </Link>
+                    )}
+                    <Link
+                      to="/listing/mylisting"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      My Listings
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Notification Bell */}
           <div>
@@ -251,162 +370,6 @@ const Header = ({ userData }) => {
                         </li>
                       </Link>
 
-                      <Link to="/listing/new" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
-                          </svg>
-                          Post Equipment
-                        </li>
-                      </Link>
-
-                      <Link to="/listing" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                          </svg>
-                          Find Listings
-                        </li>
-                      </Link>
-
-                      <Link to="/listing/mylisting" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                            />
-                          </svg>
-                          My Listings
-                        </li>
-                      </Link>
-
-                      <Link to="/home/gym/requestedGym">
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                            />
-                          </svg>
-                          Requested Gym
-                        </li>
-                      </Link>
-
-                      <Link to="/blog/new" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                          New Blog
-                        </li>
-                      </Link>
-                      <Link to="/blog/myBlogs" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                            />
-                          </svg>
-                          My Blogs
-                        </li>
-                      </Link>
-                      <Link to="/blog/savedblogs" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                            />
-                          </svg>
-                          Saved Blogs
-                        </li>
-                      </Link>
-                      <Link to="/blog/likedblogs" onClick={toggleDropdown}>
-                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                            />
-                          </svg>
-                          Liked Blogs
-                        </li>
-                      </Link>
                       <li
                         className="px-4 py-3 hover:bg-red-600 cursor-pointer text-gray-200 transition-colors flex items-center gap-2 border-t border-gray-700"
                         onClick={() => {
@@ -488,11 +451,86 @@ const Header = ({ userData }) => {
                     </li>
                   </Link>
                 )}
-                <Link to="/blog" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
-                    Blogs
-                  </li>
-                </Link>
+
+                {/* Blog Section */}
+                <div className="border-t border-gray-700">
+                  <button
+                    className="w-full px-4 py-3 text-left flex justify-between items-center text-gray-200 hover:bg-gray-700"
+                    onClick={() => setBlogDropdownOpen(!blogDropdownOpen)}
+                  >
+                    <span>Blogs</span>
+                    <FaChevronDown
+                      className={`text-xs transition-transform ${
+                        blogDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {blogDropdownOpen && (
+                    <div className="pl-6">
+                      <Link to="/blog" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          All Blogs
+                        </li>
+                      </Link>
+                      <Link to="/blog/new" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          New Blog
+                        </li>
+                      </Link>
+                      <Link to="/blog/myBlogs" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          My Blogs
+                        </li>
+                      </Link>
+                      <Link to="/blog/savedblogs" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          Saved Blogs
+                        </li>
+                      </Link>
+                      <Link to="/blog/likedblogs" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          Liked Blogs
+                        </li>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Listing Section */}
+                <div className="border-t border-gray-700">
+                  <button
+                    className="w-full px-4 py-3 text-left flex justify-between items-center text-gray-200 hover:bg-gray-700"
+                    onClick={() => setListingDropdownOpen(!listingDropdownOpen)}
+                  >
+                    <span>Listings</span>
+                    <FaChevronDown
+                      className={`text-xs transition-transform ${
+                        listingDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {listingDropdownOpen && (
+                    <div className="pl-6">
+                      <Link to="/listing" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          Find Listings
+                        </li>
+                      </Link>
+                      {userData?.userType === "userModel" && (
+                        <Link to="/listing/new" onClick={toggleMobileMenu}>
+                          <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                            Post Equipment
+                          </li>
+                        </Link>
+                      )}
+                      <Link to="/listing/mylisting" onClick={toggleMobileMenu}>
+                        <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
+                          My Listings
+                        </li>
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
                 {/* User Profile Section */}
                 <div className="px-4 py-3 border-t border-gray-700">
@@ -534,143 +572,7 @@ const Header = ({ userData }) => {
                     Profile
                   </li>
                 </Link>
-                {userData?.userType === "userModel" && (
-                  <Link to="/listing/new" onClick={toggleMobileMenu}>
-                    <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        />
-                      </svg>
-                      Post Equipment
-                    </li>
-                  </Link>
-                )}
-                <Link to="/listing" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                    Find Listings
-                  </li>
-                </Link>
 
-                <Link to="/listing/mylisting" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                      />
-                    </svg>
-                    My Listings
-                  </li>
-                </Link>
-
-                <Link to="/blog/new" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    New Blog
-                  </li>
-                </Link>
-                <Link to="/blog/myBlogs" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                      />
-                    </svg>
-                    My Blogs
-                  </li>
-                </Link>
-                <Link to="/blog/savedblogs" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                      />
-                    </svg>
-                    Saved Blogs
-                  </li>
-                </Link>
-                <Link to="/blog/likedblogs" onClick={toggleMobileMenu}>
-                  <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
-                    Liked Blogs
-                  </li>
-                </Link>
                 <li
                   className="px-4 py-3 hover:bg-red-600 cursor-pointer text-gray-200 transition-colors flex items-center gap-2 border-t border-gray-700"
                   onClick={() => {

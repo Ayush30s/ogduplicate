@@ -28,132 +28,139 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageIndex] = useState(0);
   const isRent = type === "rent" || type === "both";
   const isSale = type === "sale" || type === "both";
 
-  const handleClick = () => {
-    navigate(`/listing/${_id}`);
-  };
-
-  const handleDelete = () => {
-    dispatch(handleDeleteThunk(_id));
-  };
+  const handleClick = () => navigate(`/listing/${_id}`);
+  const handleDelete = () => dispatch(handleDeleteThunk(_id));
 
   const getPriceDisplay = () => {
     if (type === "both") {
       return (
-        <>
-          <span className="text-indigo-400 font-bold text-base">₹{price}</span>
+        <div className="flex flex-col items-end">
+          <span className="text-indigo-400 font-bold">₹{price}</span>
           {rental?.rentalPrice && (
             <span className="text-indigo-300 text-xs">
               ₹{rental.rentalPrice}/day
             </span>
           )}
-        </>
+        </div>
       );
     }
     return (
-      <span className="text-indigo-400 font-bold text-base">
+      <span className="text-indigo-400 font-bold">
         {isRent ? `₹${rental?.rentalPrice || price}/day` : `₹${price}`}
       </span>
     );
   };
 
-  return (
-    <div className="w-full max-w-sm bg-gray-900 overflow-hidden shadow-lg border border-gray-700 rounded-lg transition duration-300">
-      {/* Image */}
-      <div className="relative">
-        {
-          <img
-            src={images?.length > 0 ? images[currentImageIndex] : listingavatar}
-            alt={title}
-            className="w-full h-48 object-cover"
-          />
-        }
+  const getConditionColor = () => {
+    switch (condition) {
+      case "New":
+        return "text-green-400";
+      case "Good":
+        return "text-blue-400";
+      default:
+        return "text-orange-400";
+    }
+  };
 
+  return (
+    <div className="w-full max-w-sm bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 hover:border-indigo-500 transition-all duration-300 hover:shadow-indigo-500/20">
+      {/* Image Section */}
+      <div className="relative aspect-square">
+        <img
+          src={images?.length > 0 ? images[currentImageIndex] : listingavatar}
+          alt={title}
+          className="w-full h-[300px] object-cover"
+        />
+
+        {/* Admin Controls */}
         {loggedInUserCreated && (
-          <div className="space-x-2 absolute top-2 left-2">
+          <div className="absolute top-2 left-2 flex gap-2">
             <button
-              title="Edit Listing"
-              className="p-2 bg-gray-800/90 hover:bg-red-500/90 text-red-400 hover:text-white absolute z-10 rounded-full transition-all duration-200 shadow-lg"
-              onClick={() => navigate(`/listing/edit/${_id}`)}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/listing/edit/${_id}`);
+              }}
+              className="p-2 bg-gray-800/90 hover:bg-indigo-600 text-white rounded-full transition-all shadow-lg"
+              aria-label="Edit listing"
             >
               <FiEdit className="w-4 h-4" />
             </button>
             <button
-              className="p-2 bg-gray-800/90 hover:bg-red-500/90 text-red-400 hover:text-white absolute left-8 z-10 rounded-full transition-all duration-200 shadow-lg"
-              onClick={handleDelete}
-              aria-label="Delete blog"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              className="p-2 bg-gray-800/90 hover:bg-red-600 text-white rounded-full transition-all shadow-lg"
+              aria-label="Delete listing"
             >
-              <FaTrashAlt className="text-sm" />
+              <FaTrashAlt className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Listed on date */}
-        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-3 py-1 rounded shadow">
-          Listed on: {new Date(createdAt).toLocaleDateString()}
+        {/* Status Badge */}
+        <div className="absolute top-2 right-2">
+          <span
+            className={`text-xs px-2 py-1 rounded-full ${
+              status === "active"
+                ? "bg-green-900/80 text-green-100"
+                : status === "sold"
+                ? "bg-purple-900/80 text-purple-100"
+                : "bg-gray-700/80 text-gray-300"
+            }`}
+          >
+            {status}
+          </span>
         </div>
-
-        {/* Gradient overlay for readability */}
-        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
       </div>
 
-      {/* Card Content */}
-      <div className="p-2 space-y-2 cursor-pointer" onClick={handleClick}>
-        <div className="flex gap-2">
-          <span className="bg-indigo-600 text-white text-xs font-semibold px-2 py-1 rounded">
-            {type === "both" ? "Rent/Sale" : isRent ? "For Rent" : "For Sale"}
-          </span>
-          {negotiable && (
-            <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">
-              Negotiable
-            </span>
-          )}
-          {type == "sale" && warrantyIncluded && (
-            <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">
-              Warranty - {warrantyTime}
-            </span>
-          )}
-          {gurrantyIncluded && (
-            <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">
-              Gurranty - {gurrantyTime}
-            </span>
-          )}
-        </div>
-
-        <div className="flex justify-between items-center">
-          <h2 className="text-white text-lg font-semibold line-clamp-2">
-            {title}
-          </h2>
+      {/* Content Section */}
+      <div className="p-4 space-y-3 cursor-pointer" onClick={handleClick}>
+        {/* Title and Price */}
+        <div className="flex justify-between items-start">
+          <h3 className="text-white font-medium line-clamp-2">{title}</h3>
           <div className="text-right">{getPriceDisplay()}</div>
         </div>
 
-        {brand && (
-          <div>
-            <span className="text-gray-400">Brand: </span>
-            <span className="text-gray-200 font-medium">{brand}</span>
-          </div>
-        )}
+        {/* Meta Information */}
+        <div className="flex flex-wrap gap-2">
+          <span className="bg-indigo-600/20 text-indigo-300 text-xs px-2 py-1 rounded">
+            {type === "both" ? "Rent/Sale" : isRent ? "Rent" : "Sale"}
+          </span>
 
-        <div className="flex items-center text-sm gap-2">
-          <span className="text-gray-400">Condition:</span>
+          {negotiable && (
+            <span className="bg-green-600/20 text-green-300 text-xs px-2 py-1 rounded">
+              Negotiable
+            </span>
+          )}
+
           <span
-            className={`${
-              condition === "New"
-                ? "text-green-400"
-                : condition === "Good"
-                ? "text-blue-400"
-                : "text-orange-400"
-            } font-medium`}
+            className={`${getConditionColor()} bg-opacity-20 text-xs px-2 py-1 rounded`}
           >
             {condition}
           </span>
+
+          {(warrantyIncluded || gurrantyIncluded) && (
+            <span className="bg-blue-600/20 text-blue-300 text-xs px-2 py-1 rounded">
+              {warrantyIncluded
+                ? `Warranty ${warrantyTime}`
+                : `Guaranty ${gurrantyTime}`}
+            </span>
+          )}
         </div>
 
-        {/* Location and status */}
-        <div className="flex justify-between text-sm text-gray-400 items-center">
+        {/* Brand and Location */}
+        <div className="flex justify-between items-center text-sm text-gray-400">
+          {brand && (
+            <span className="truncate">
+              <span className="text-gray-300 font-medium">{brand}</span>
+            </span>
+          )}
+
           <div className="flex items-center gap-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -175,21 +182,10 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <span>
-              {location?.city || "City"}, {location?.state || "State"}
+            <span className="truncate max-w-[120px]">
+              {location?.city || "City"}
             </span>
           </div>
-          <span
-            className={`capitalize px-2 py-0.5 rounded text-xs ${
-              status === "active"
-                ? "bg-green-900/30 text-green-400"
-                : status === "sold"
-                ? "bg-purple-900/30 text-purple-400"
-                : "bg-gray-700 text-gray-400"
-            }`}
-          >
-            {status}
-          </span>
         </div>
       </div>
     </div>
