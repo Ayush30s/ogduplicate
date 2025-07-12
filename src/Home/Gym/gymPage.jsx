@@ -438,13 +438,13 @@ const GymPage = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
 
-          {daysLeft && (
+          {/* {daysLeft && (
             <span className="absolute right-5 top-5 animate-pulse font-bold text-green-600 bg-green-100 px-4 py-2 rounded-full shadow-md">
               <span className=" text-2xl">{daysLeft + "      "}</span>
               Days Left in this month to complete, To have access of the gym
               make sure you pay next month membership fee before month-end
             </span>
-          )}
+          )} */}
 
           <div className="relative z-0 text-center space-y-3 px-2 sm:px-4 md:px-8">
             <h1
@@ -779,18 +779,20 @@ const GymPage = () => {
       )}
 
       {/* Shifts Section */}
-      <ShiftsSection
-        shifts={gymData?.allShifts || []}
-        gymId={id}
-        userType={userModelType}
-        shiftJoinedIndex={shiftJoinedIndex}
-        setshiftJoinedIndex={setshiftJoinedIndex}
-        joinStatus={joinStatus}
-        joinRequestAccepted={joinRequestAccepted}
-        isPaymentDone={isPaymentDone}
-        setError={setError}
-        setMessage={setMessage}
-      />
+      {gymData?.allShifts?.length > 0 && (
+        <ShiftsSection
+          shifts={gymData?.allShifts || []}
+          gymId={id}
+          userType={userModelType}
+          shiftJoinedIndex={shiftJoinedIndex}
+          setshiftJoinedIndex={setshiftJoinedIndex}
+          joinStatus={joinStatus}
+          joinRequestAccepted={joinRequestAccepted}
+          isPaymentDone={isPaymentDone}
+          setError={setError}
+          setMessage={setMessage}
+        />
+      )}
 
       {/* Payment Gateway Modal */}
       {showPaymentGateway && (
