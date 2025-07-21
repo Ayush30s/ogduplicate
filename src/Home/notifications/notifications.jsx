@@ -71,15 +71,19 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
   const handleChangeRequestStatus = (notification, status) => {
     const { requestType, reqby, reqto, _id } = notification;
 
-    if (status == "accepted") {
+    if (status == "accept") {
       socket.emit("request accepted", {
         requestId: _id,
         from: reqto,
         to: reqby,
         status: status,
+        requestType: requestType,
       });
 
       const data = {
+        requestType: requestType,
+        reqby: reqby,
+        reqto: reqto,
         requestId: _id,
         status: "accepted",
       };
@@ -91,6 +95,7 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
         from: reqto,
         to: reqby,
         status: status,
+        requestType: requestType,
       });
 
       const data = {
@@ -210,46 +215,96 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start gap-2">
                             <div>
-                              <h3 className="font-bold text-white text-lg mb-1">
-                                {notification.requestType === "join" ? (
-                                  <Link
-                                    to={
-                                      activeTab === "received"
-                                        ? `/home/${
-                                            notification.reqbyType ===
-                                            "gymModel"
-                                              ? "gym"
-                                              : "user"
-                                          }/${notification.reqby?._id}`
-                                        : `/home/${
-                                            notification.reqtoType ===
-                                            "gymModel"
-                                              ? "gym"
-                                              : "user"
-                                          }/${notification.reqto?._id}`
-                                    }
-                                  >
-                                    <span
-                                      className={
+                              {notification.reqby ==
+                              loggedInUser.user.userId ? (
+                                <h3 className="font-bold text-white text-lg mb-1">
+                                  {
+                                    <Link
+                                      to={
                                         activeTab === "received"
-                                          ? "text-indigo-300"
-                                          : "text-purple-300"
+                                          ? `/home/${
+                                              notification.reqbyType ===
+                                              "gymModel"
+                                                ? "gym"
+                                                : "user"
+                                            }/${notification.reqby?._id}`
+                                          : `/home/${
+                                              notification.reqtoType ===
+                                              "gymModel"
+                                                ? "gym"
+                                                : "user"
+                                            }/${notification.reqto?._id}`
                                       }
                                     >
-                                      {activeTab === "received"
-                                        ? notification.reqby?.fullName
-                                        : notification.reqto?.fullName}
-                                    </span>{" "}
-                                    <span className="text-sm font-light">
-                                      {activeTab === "received"
-                                        ? "wants to join your gym"
-                                        : "You sent a join request"}
-                                    </span>
-                                  </Link>
-                                ) : (
-                                  "New Equipment Request"
-                                )}
-                              </h3>
+                                      <span className="text-sm font-light">
+                                        <h1>
+                                          You sent
+                                          <span className="font-bold mx-2 text-green-500">
+                                            {notification.requestType}
+                                          </span>
+                                          request to
+                                        </h1>
+                                      </span>
+                                      <span
+                                        className={
+                                          activeTab === "received"
+                                            ? "text-indigo-300"
+                                            : "text-purple-300"
+                                        }
+                                      >
+                                        {activeTab === "received"
+                                          ? notification.reqby?.fullName
+                                          : notification.reqto?.fullName}
+                                      </span>{" "}
+                                    </Link>
+                                  }
+                                </h3>
+                              ) : (
+                                <h3 className="font-bold text-white text-lg mb-1">
+                                  {
+                                    <Link
+                                      to={
+                                        activeTab === "received"
+                                          ? `/home/${
+                                              notification.reqbyType ===
+                                              "gymModel"
+                                                ? "gym"
+                                                : "user"
+                                            }/${notification.reqby?._id}`
+                                          : `/home/${
+                                              notification.reqtoType ===
+                                              "gymModel"
+                                                ? "gym"
+                                                : "user"
+                                            }/${notification.reqto?._id}`
+                                      }
+                                    >
+                                      <span
+                                        className={
+                                          activeTab === "received"
+                                            ? "text-indigo-300"
+                                            : "text-purple-300"
+                                        }
+                                      >
+                                        {activeTab === "received"
+                                          ? notification.reqby?.fullName
+                                          : notification.reqto?.fullName}
+                                      </span>{" "}
+                                      <span className="text-sm font-light">
+                                        {activeTab === "received" && (
+                                          <h1>
+                                            wants to
+                                            <span className="font-bold mx-2 text-green-500">
+                                              {notification.requestType}
+                                            </span>
+                                            you
+                                          </h1>
+                                        )}
+                                      </span>
+                                    </Link>
+                                  }
+                                </h3>
+                              )}
                             </div>
                             <span className="text-xs text-gray-400 whitespace-nowrap mt-1">
                               {new Date(
@@ -282,7 +337,7 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                                       onClick={() =>
                                         handleChangeRequestStatus(
                                           notification,
-                                          "accepted"
+                                          "accept"
                                         )
                                       }
                                     >
@@ -293,7 +348,7 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                                       onClick={() =>
                                         handleChangeRequestStatus(
                                           notification,
-                                          "rejected"
+                                          "reject"
                                         )
                                       }
                                     >

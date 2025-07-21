@@ -54,6 +54,8 @@ const GymPage = () => {
   const [showPaymentGateway, setShowPaymentGateway] = useState(false);
   const [joinRequestPending, setJoinRequestPending] = useState(false);
   const [joinRequestAccepted, setJoinRequestAccepted] = useState(false);
+  const [followRequestPending, setFollowRequestPending] = useState(false);
+  const [followRequestAccepted, setFollowRequestAccepted] = useState(false);
   const [joinStatus, setJoinStatus] = useState(false);
 
   useEffect(() => {
@@ -73,11 +75,11 @@ const GymPage = () => {
         }
 
         const data = await response.json();
+        console.log(data);
+
         if (data?.message === "REDIRECT_TO_GYM_DASHBOARD") {
           navigate("/home/gym-dashboard");
         }
-
-        console.log(data);
 
         setGymData(data);
         setDaysleft(data.daysLeft);
@@ -91,8 +93,10 @@ const GymPage = () => {
         setFilteredMembers(data.gymData?.joinedBy);
         setshiftJoinedIndex(data.shiftJoinedIndex);
         setJoinCount(data?.gymData?.joinedBy?.length);
-        setJoinRequestAccepted(data.isJoinRequestAccepted || false);
-        setJoinRequestPending(data.isJoinRequestPending || false);
+        setJoinRequestAccepted(data.isJoinRequestAccepted);
+        setJoinRequestPending(data.isJoinRequestPending);
+        setFollowRequestAccepted(data.isFollowRequestAccepted);
+        setFollowRequestPending(data.isFollowRequestPending);
         setIsPaymentDone(data.isPaymentDone || false);
 
         if (data.isJoinRequestAccepted && !data.isPaymentDone) {
@@ -126,12 +130,19 @@ const GymPage = () => {
       setShowPaymentGateway(false);
     };
 
-    socket.on("ownerAccepted", handleOwnerAccepted);
-    socket.on("ownerRejected", handleOwnerRejected);
+    socket.on("accepted", (data) => {
+      if (data.requestType == "follow") SendFollowActions();
+      else handleOwnerAccepted();
+    });
+
+    socket.on("rejected", (data) => {
+      if (data.requestType == "follow") SendFollowActions();
+      else handleOwnerRejected();
+    });
 
     return () => {
-      socket.off("ownerAccepted", handleOwnerAccepted);
-      socket.off("ownerRejected", handleOwnerRejected);
+      socket.off("accepted", handleOwnerAccepted);
+      socket.off("rejected", handleOwnerRejected);
     };
   }, [socket]);
 
@@ -165,7 +176,31 @@ const GymPage = () => {
     setRating(selectedRating);
   };
 
+  const FollowAction = async () => {
+    const followDetails = {
+      reqto: id,
+      reqby: userId,
+      reqbyType: userModelType,
+      reqtoType: "gymModel",
+      requestType: "follow",
+      status: "pending",
+    };
+
+    try {
+      socket.emit("request", followDetails);
+      dispatch(requestActionThunk(followDetails));
+      setFollowRequestPending(true);
+      alert(
+        "Your request to follow this gym has been sent. You'll be notified when the owner responds."
+      );
+    } catch (error) {
+      console.error("Error sending join request:", error);
+      setError("Failed to send follow request. Please try again.");
+    }
+  };
+
   const SendFollowActions = async () => {
+    // this logic will run after the second person acceptes the request of first person
     if (followStatus === "Following") {
       setFollowersCount(followersCount - 1);
     } else {
@@ -180,7 +215,7 @@ const GymPage = () => {
         `https://gymbackenddddd-1.onrender.com/request${
           followStatus === "Following"
             ? "/unfollow/user/" + id
-            : followStatus === "Follow" && "/follow/user/" + id
+            : "/follow/user/" + id
         }`,
         {
           method: "POST",
@@ -188,9 +223,8 @@ const GymPage = () => {
         }
       );
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         setFollowStatus(followStatus);
         throw new Error(data.message || "Failed to update follow status");
       }
@@ -213,7 +247,7 @@ const GymPage = () => {
     };
 
     try {
-      socket.emit("request received", data);
+      socket.emit("request", data);
       dispatch(requestActionThunk(data));
       setJoinRequestPending(true);
       alert(
@@ -554,14 +588,17 @@ const GymPage = () => {
             {showFollowButton && (
               <div className="w-full lg:w-auto lg:flex-1 max-w-md">
                 <button
-                  onClick={SendFollowActions}
+                  onClick={() => {
+                    if (followStatus == "Follow") FollowAction();
+                    else SendFollowActions();
+                  }}
                   className={`w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-colors ${
                     followStatus === "Following"
                       ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
                       : "bg-blue-600 hover:bg-blue-700 text-white"
                   } text-sm sm:text-base`}
                 >
-                  {followStatus}
+                  {followRequestPending ? "Requested" : followStatus}
                 </button>
               </div>
             )}

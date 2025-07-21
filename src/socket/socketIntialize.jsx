@@ -21,16 +21,23 @@ const SocketInitializer = () => {
       }, 1000);
     });
 
-    socket.on("ownerAccepted", () => {
+    socket.on("follow", () => {
+      console.log("follow")
       setTimeout(() => {
-        dispatch(fetchAllRequestThunk());
+        dispatch(fetchAllRequestThunk("all"));
+      }, 1000);
+    });
+
+    socket.on("accepted", () => {
+      setTimeout(() => {
+        dispatch(fetchAllRequestThunk("all"));
       }, 2000);
     });
 
-    socket.on("ownerRejected", () => {
-      console.log("ownerRejected");
+    socket.on("rejected", () => {
+      console.log("rejected");
       setTimeout(() => {
-        dispatch(fetchAllRequestThunk());
+        dispatch(fetchAllRequestThunk("all"));
       }, 2000);
     });
   }, [dispatch, socket]);
