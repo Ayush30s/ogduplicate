@@ -13,11 +13,12 @@ import { SocketContext } from "../../socket/socketContext";
 const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
+
   const allData = useSelector((store) => store.request);
   const loggedInUser = useSelector((store) => store.login);
+
   const allNotifications = allData.requsetArray;
   const loading = allData.loading;
-  const error = allData.error;
 
   const [activeTab, setActiveTab] = useState("received");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -108,11 +109,12 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
 
     setTimeout(() => {
       dispatch(fetchAllRequestThunk());
-    }, 6000);
+    }, 2000);
   };
 
   const handleDelete = (notification) => {
     dispatch(deleteNotificationThunk(notification));
+    dispatch(fetchAllRequestThunk());
   };
 
   if (loading) {

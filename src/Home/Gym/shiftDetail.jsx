@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Users, Clock, ChevronDown, ChevronUp, Edit } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Users,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { useDispatch } from "react-redux";
 import {
   deleteShiftThunk,
@@ -18,6 +25,7 @@ const ShiftPage = ({ data }) => {
     status: data?.status || "Active",
   });
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   if (!data) {
@@ -28,16 +36,18 @@ const ShiftPage = ({ data }) => {
     );
   }
 
-  const handleDeleteShift = async () => {
-    dispatch(deleteShiftThunk(data._id));
+  const handleDeleteShift = () => {
+    try {
+      dispatch(deleteShiftThunk(data._id));
+      navigate("/home/gym-dashboard");
+    } catch (err) {
+      setError("Failed to delete shift.");
+    }
   };
 
   const toggleMembers = () => setShowMembers((prev) => !prev);
-
   const handleEditClick = () => setIsEditing(true);
-
   const handleCancelEdit = () => setIsEditing(false);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -46,10 +56,10 @@ const ShiftPage = ({ data }) => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      await dispatch(updateShiftThunk({ ...formData, _id: data._id }));
+      dispatch(updateShiftThunk({ ...formData, _id: data._id }));
       setIsEditing(false);
     } catch (err) {
       setError("Failed to update shift.");
@@ -57,29 +67,43 @@ const ShiftPage = ({ data }) => {
   };
 
   if (error) {
-    return <div className="m-20 text-red-400">{error}</div>;
+    return (
+      <div className="m-20 text-red-400 flex flex-col items-center">
+        <div className="bg-gray-800 p-4 rounded-lg border border-red-400/30">
+          {error}
+          <button
+            onClick={() => setError(null)}
+            className="mt-2 text-sm text-indigo-400 hover:text-indigo-300"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-gray-900 text-white p-6 rounded-2xl shadow border border-gray-800 max-w-4xl mx-auto space-y-6">
+    <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg border border-gray-800 max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-indigo-400 mb-4">
+        <h2 className="text-2xl font-semibold text-indigo-400 mb-4 flex items-center gap-2">
+          <Clock className="text-indigo-400" size={20} />
           Shift Details
         </h2>
         {!isEditing && (
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={handleEditClick}
-              className="flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-indigo-300 px-3 py-1 rounded-lg transition text-sm"
+              className="flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 px-3 py-2 rounded-lg transition text-sm border border-indigo-500/30"
             >
-              <Edit size={12} />
+              <Edit size={14} />
               Edit
             </button>
 
             <button
               onClick={handleDeleteShift}
-              className="flex items-center gap-1 bg-gray-700 hover:bg-red-600 text-red-400 px-3 py-1 rounded-lg transition text-sm"
+              className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-2 rounded-lg transition text-sm border border-red-500/30"
             >
+              <Trash2 size={14} />
               Delete
             </button>
           </div>
@@ -96,6 +120,7 @@ const ShiftPage = ({ data }) => {
                 type="number"
                 value={formData.limit}
                 onChange={handleInputChange}
+                min="1"
               />
               <InputField
                 label="Start Time"
@@ -122,7 +147,7 @@ const ShiftPage = ({ data }) => {
                   name="status"
                   value={formData.status}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-600 bg-gray-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-600 bg-gray-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -131,7 +156,7 @@ const ShiftPage = ({ data }) => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-6">
             <button
               type="button"
               onClick={handleCancelEdit}
@@ -141,7 +166,7 @@ const ShiftPage = ({ data }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white font-medium transition-colors"
             >
               Save Changes
             </button>
@@ -170,49 +195,65 @@ const ShiftPage = ({ data }) => {
 
             <div className="space-y-4">
               <StatusBadge status={data.status} />
-              <InfoItem label="Gender" value={data?.sex} />
               <InfoItem
-                label="Joined"
-                value={`${data.joinedBy?.length} members`}
+                icon={<Users size={18} className="text-purple-400" />}
+                label="Gender"
+                value={data?.sex || "All"}
+              />
+              <InfoItem
+                icon={<Users size={18} className="text-blue-400" />}
+                label="Joined Members"
+                value={`${data.joinedBy?.length || 0}`}
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-700">
+          <div className="pt-6 border-t border-gray-700">
             <button
               onClick={toggleMembers}
-              className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition text-sm mb-4"
+              className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition text-sm mb-4 font-medium"
             >
               {showMembers ? (
-                <ChevronUp size={16} />
+                <>
+                  <ChevronUp size={16} />
+                  Hide Members
+                </>
               ) : (
-                <ChevronDown size={16} />
+                <>
+                  <ChevronDown size={16} />
+                  Show Members ({data.joinedBy?.length || 0})
+                </>
               )}
-              {showMembers ? "Hide Members" : "Show Members"}
             </button>
 
             {showMembers && (
-              <div>
-                {data.joinedBy.length === 0 ? (
-                  <p className="text-gray-500">No members joined yet.</p>
+              <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                {data.joinedBy?.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">
+                    No members joined yet.
+                  </p>
                 ) : (
-                  <div className="flex flex-row overflow-x-auto gap-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent py-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {data.joinedBy.map((member, idx) => (
                       <div
                         key={idx}
-                        className="flex justify-between items-center gap-4 bg-gray-800 p-3 rounded-xl border border-gray-700 shadow-sm"
+                        className="flex items-center gap-3 bg-gray-800 p-3 rounded-xl border border-gray-700 shadow-sm hover:bg-gray-700 transition-colors"
                       >
                         <img
                           src={member.profileImage}
                           alt={member.fullName}
-                          className="w-12 h-12 rounded-full object-cover border border-gray-500"
+                          className="w-10 h-10 rounded-full object-cover border-2 border-gray-600"
                         />
                         <Link
                           to={`/home/user/${member._id}`}
-                          className="hover:underline"
+                          className="hover:underline flex-1 min-w-0"
                         >
-                          <p className="text-white font-medium">
+                          <p className="text-white font-medium truncate">
                             {member.fullName}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">
+                            Joined:{" "}
+                            {new Date(member.joinedAt).toLocaleDateString()}
                           </p>
                         </Link>
                       </div>
@@ -228,7 +269,7 @@ const ShiftPage = ({ data }) => {
   );
 };
 
-const InputField = ({ label, name, type, value, onChange }) => (
+const InputField = ({ label, name, type, value, onChange, min }) => (
   <div className="space-y-2">
     <label className="block text-sm font-medium text-gray-300">{label}</label>
     <input
@@ -236,33 +277,42 @@ const InputField = ({ label, name, type, value, onChange }) => (
       name={name}
       value={value}
       onChange={onChange}
-      className="w-full px-3 py-2 border border-gray-600 bg-gray-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+      min={min}
+      className="w-full px-3 py-2 border border-gray-600 bg-gray-800 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      required
     />
   </div>
 );
 
 const InfoItem = ({ icon, label, value }) => (
-  <div className="flex items-center gap-3">
-    {icon && icon}
-    <div className="text-sm">
-      <p className="text-gray-400">{label}</p>
+  <div className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+    <div className="mt-0.5">{icon}</div>
+    <div>
+      <p className="text-sm text-gray-400">{label}</p>
       <p className="text-white font-medium">{value}</p>
     </div>
   </div>
 );
 
 const StatusBadge = ({ status }) => (
-  <div className="flex items-center gap-2">
-    <p className="text-gray-400">Status:</p>
-    <span
-      className={`font-semibold px-2 py-1 rounded-md text-sm ${
-        status === "Active"
-          ? "bg-green-700 text-green-200"
-          : "bg-red-700 text-red-200"
-      }`}
-    >
-      {status}
-    </span>
+  <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+    <div className="flex items-center gap-3">
+      <div
+        className={`w-3 h-3 rounded-full ${
+          status === "Active" ? "bg-green-500" : "bg-red-500"
+        }`}
+      ></div>
+      <div>
+        <p className="text-sm text-gray-400">Status</p>
+        <p
+          className={`font-medium ${
+            status === "Active" ? "text-green-400" : "text-red-400"
+          }`}
+        >
+          {status}
+        </p>
+      </div>
+    </div>
   </div>
 );
 

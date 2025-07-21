@@ -94,10 +94,9 @@ const GymDashboard = () => {
       <div className="p-4 md:p-6 min-h-screen bg-gray-900">
         <button
           onClick={() => setShowShiftPage(null)}
-          className="mb-4 flex items-center gap-2 p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+          className="mb-4 flex items-center gap-2 p-3 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition-colors"
         >
           <FaArrowLeft className="w-4 h-4" />
-          Back to Dashboard
         </button>
         <ShiftPage data={showShiftPage} darkMode={true} />
       </div>
@@ -157,21 +156,19 @@ const GymDashboard = () => {
       )}
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="">
         {/* Left Column - Gym Profile */}
         <div className="lg:col-span-2 space-y-4 md:space-y-6">
           {/* Gym Profile Card */}
           <div className="bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-gray-700">
             <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
-              <div className="relative">
+              <div className="relative flex flex-col align-middle justify-center items-center">
                 <img
                   src={gymData.profileImage}
                   alt={gymData.fullName}
                   className="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-lg md:rounded-xl object-cover border-4 border-blue-900/50 shadow-md"
                 />
-                <div className="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 bg-blue-500 text-white p-1 md:p-2 rounded-full shadow-lg">
-                  <Award className="w-4 h-4 md:w-5 md:h-5" />
-                </div>
+                <h1 className="  text-sm text-gray-100">{gymData.email}</h1>
               </div>
               <div className="flex-1 relative bg-gray-800 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-gray-700 w-full">
                 <button
@@ -257,219 +254,256 @@ const GymDashboard = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Right Column - Shift Management */}
-        <div className="space-y-4 md:space-y-6">
-          <div className="bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-gray-700">
-            <div className="flex justify-between items-center mb-3 md:mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Clock className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
-                <span className="text-sm md:text-base">Shift Management</span>
+      <div className="flex flex-col md:flex-row md:gap-6 w-full py-5 mx-auto">
+        {gymData.joinedBy?.length > 0 && (
+          <div
+            className={`w-full ${
+              gymData.allShifts?.length > 0 ? "md:w-1/2" : "md:w-full"
+            } bg-gray-800 p-4 md:p-6 rounded-xl shadow-sm border border-gray-700 max-h-64 overflow-auto my-5`}
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+              <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2">
+                <FaUserFriends className="text-blue-400 w-5 h-5" />
+                <span>Members ({gymData.joinedBy.length})</span>
               </h3>
-              <button
-                onClick={() => setShowShiftForm(!showShiftForm)}
-                className="flex items-center gap-1 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md text-sm md:text-base"
-              >
-                <FaPlus className="w-3 h-3 md:w-4 md:h-4" />
-                {showShiftForm ? "Cancel" : "New Shift"}
-              </button>
-            </div>
-
-            {showShiftForm && (
-              <div className="mb-4 md:mb-6 p-3 md:p-4 border border-blue-900/50 rounded-lg bg-gray-700">
-                <h4 className="text-sm md:text-md font-medium text-center mb-3 md:mb-4 text-blue-400">
-                  Create New Shift
-                </h4>
-                <form
-                  onSubmit={handleSubmit}
-                  className="space-y-3 md:space-y-4"
-                >
-                  <div className="grid grid-cols-1 gap-3 md:gap-4">
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-400 mb-1">
-                        Gender
-                      </label>
-                      <select
-                        name="sex"
-                        value={formData.sex}
-                        onChange={handleChange}
-                        className="w-full px-3 py-1.5 md:px-4 md:py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
-                      >
-                        <option value="All">All Genders</option>
-                        <option value="Male">Male Only</option>
-                        <option value="Female">Female Only</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-400 mb-1">
-                        Member Limit
-                      </label>
-                      <input
-                        type="number"
-                        name="limit"
-                        value={formData?.limit}
-                        onChange={handleChange}
-                        min="1"
-                        max="100"
-                        className="w-full px-3 py-1.5 md:px-4 md:py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 md:gap-3">
-                      <div>
-                        <label className="block text-xs md:text-sm font-medium text-gray-400 mb-1">
-                          Start Time
-                        </label>
-                        <input
-                          type="time"
-                          name="startTime"
-                          value={formData.startTime}
-                          onChange={handleChange}
-                          className="w-full px-3 py-1.5 md:px-4 md:py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs md:text-sm font-medium text-gray-400 mb-1">
-                          End Time
-                        </label>
-                        <input
-                          type="time"
-                          name="endTime"
-                          value={formData.endTime}
-                          onChange={handleChange}
-                          className="w-full px-3 py-1.5 md:px-4 md:py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-400 mb-1">
-                        Status
-                      </label>
-                      <select
-                        name="status"
-                        value={formData?.status}
-                        onChange={handleChange}
-                        className="w-full px-3 py-1.5 md:px-4 md:py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
-                      >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                      </select>
-                    </div>
-                  </div>
-
+              <div className="relative w-full md:w-48 lg:w-64">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaSearch className="h-4 w-4 text-gray-500" />
+                </div>
+                <input
+                  type="text"
+                  className="block w-full pl-10 pr-10 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 text-sm"
+                  placeholder="Find members..."
+                  value={searchUser}
+                  onChange={(e) => handleSearchUser(e)}
+                />
+                {searchUser && (
                   <button
-                    type="submit"
-                    className="w-full mt-3 md:mt-4 py-1.5 px-3 md:py-2.5 md:px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors shadow-md text-sm md:text-base"
+                    onClick={() => setSearchUser("")}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-400"
                   >
-                    Create Shift
+                    <FaTimes className="h-4 w-4" />
                   </button>
-                </form>
+                )}
               </div>
-            )}
-
-            {/* Shift List */}
-            <div className="flex flex-col gap-2 md:gap-4 overflow-auto max-h-[300px] md:max-h-[470px]">
-              {gymData?.allShifts?.map((shift, index) => (
+            </div>
+            <div className="flex flex-col gap-2">
+              {filteredMembers?.map((user, index) => (
                 <div
                   key={index}
-                  className="group w-full p-3 md:p-4 bg-gray-700 hover:bg-gray-600 rounded-lg md:rounded-xl border border-gray-600 transition-colors cursor-pointer"
-                  onClick={() => setShowShiftPage(shift)}
+                  className="flex justify-between items-center p-3 bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 cursor-pointer transition-all duration-200 group"
+                  onClick={() => navigate(`/home/user/${user.user._id}`)}
                 >
-                  <div className="flex justify-between items-center flex-wrap gap-2 md:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-white group-hover:text-blue-400 text-sm md:text-base">
-                        Shift {index + 1}
-                      </h4>
-                      <p className="text-xs md:text-sm text-gray-400">
-                        {shift?.startTime} - {shift?.endTime}
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-0.5 md:px-3 md:py-1 text-xs rounded-full font-medium ${
-                        shift?.status === "Active"
-                          ? "bg-green-900/20 text-green-400"
-                          : "bg-gray-600 text-gray-300"
-                      }`}
-                    >
-                      {shift?.status}
-                    </span>
-                    <span className="text-xs md:text-sm text-gray-400">
-                      {shift?.limit} slots
-                    </span>
-                    <button className="text-xs text-blue-400 hover:text-blue-300">
-                      View →
-                    </button>
+                  <img
+                    src={user.user.profileImage}
+                    alt={user.user.fullName}
+                    className="w-12 h-12 rounded-full border-2 border-gray-500 object-cover shadow-md group-hover:border-blue-400 transition-all duration-200"
+                  />
+                  <div>
+                    <p className="text-sm md:text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
+                      {user.user.fullName}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Joined {new Date(user.joinedAt).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Members Section */}
-      {gymData.joinedBy?.length > 0 && (
-        <div className="bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-gray-700 mt-6 md:mt-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 md:mb-4">
-            <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2 mb-2 md:mb-0">
-              <FaUserFriends className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
-              <span className="text-sm md:text-base">
-                Members ({gymData.joinedBy.length})
-              </span>
-            </h3>
-            <div className="relative w-full md:w-48 lg:w-64">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="h-3 w-3 md:h-4 md:w-4 text-gray-500" />
-              </div>
-              <input
-                type="text"
-                className="block w-full pl-8 md:pl-10 pr-8 md:pr-10 py-1.5 md:py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm md:text-base"
-                placeholder="Find members..."
-                value={searchUser}
-                onChange={(e) => handleSearchUser(e)}
-              />
-              {searchUser && (
+        {/* Shifts Section - Right */}
+        {gymData.allShifts?.length > 0 && (
+          <div
+            className={`w-full max-h-64 overflow-auto my-5 ${
+              gymData.joinedBy?.length > 0 ? "md:w-1/2" : "md:w-full"
+            }`}
+          >
+            <div className="bg-gray-800 p-4 md:p-6 rounded-xl shadow-sm border border-gray-700">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Clock className="text-blue-400 w-5 h-5" />
+                  <span>Shift Management</span>
+                </h3>
                 <button
-                  onClick={() => setSearchUser("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-400 transition-colors"
+                  onClick={() => setShowShiftForm(!showShiftForm)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                 >
-                  <FaTimes className="h-3 w-3 md:h-4 md:w-4" />
+                  <FaPlus className="w-4 h-4" />
+                  {showShiftForm ? "Cancel" : "New Shift"}
                 </button>
+              </div>
+
+              {showShiftForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+                  <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-md">
+                    <div className="p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-xl font-semibold text-blue-400 flex items-center gap-2">
+                          <Clock className="text-blue-400" size={20} />
+                          Create New Shift
+                        </h3>
+                        <button
+                          onClick={() => setShowShiftForm(false)}
+                          className="text-gray-400 hover:text-white transition-colors"
+                        >
+                          <FaTimes className="h-5 w-5" />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Gender
+                            </label>
+                            <select
+                              name="sex"
+                              value={formData.sex}
+                              onChange={handleChange}
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            >
+                              <option value="All">All Genders</option>
+                              <option value="Male">Male Only</option>
+                              <option value="Female">Female Only</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Member Limit
+                            </label>
+                            <input
+                              type="number"
+                              name="limit"
+                              value={formData?.limit}
+                              onChange={handleChange}
+                              min="1"
+                              max="100"
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                Start Time
+                              </label>
+                              <input
+                                type="time"
+                                name="startTime"
+                                value={formData.startTime}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                End Time
+                              </label>
+                              <input
+                                type="time"
+                                name="endTime"
+                                value={formData.endTime}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Status
+                            </label>
+                            <select
+                              name="status"
+                              value={formData?.status}
+                              onChange={handleChange}
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            >
+                              <option value="Active">Active</option>
+                              <option value="Inactive">Inactive</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowShiftForm(false)}
+                            className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                          >
+                            Create Shift
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
               )}
+
+              {/* Shift List */}
+              <div className="flex flex-col gap-2">
+                {gymData?.allShifts?.map((shift, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between p-3 bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 cursor-pointer transition-all duration-200 group"
+                    onClick={() => setShowShiftPage(shift)}
+                  >
+                    <div className="w-full flex justify-between items-center gap-2 md:gap-4">
+                      <div className="min-w-[80px]">
+                        <h4 className="text-sm md:text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
+                          Shift {index + 1}
+                        </h4>
+                        <p className="text-xs md:text-sm text-gray-400">
+                          {shift?.startTime} - {shift?.endTime}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`px-2 py-1 text-xs md:text-sm rounded-full font-medium whitespace-nowrap ${
+                          shift?.status === "Active"
+                            ? "bg-green-900/30 text-green-400"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
+                        {shift?.status}
+                      </span>
+
+                      <span className="text-xs md:text-sm text-gray-400 whitespace-nowrap px-2">
+                        {shift?.limit} slots
+                      </span>
+
+                      <button className="text-xs md:text-sm text-blue-400 hover:text-blue-300 transition-colors whitespace-nowrap">
+                        View →
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="flex flex-row gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-            {filteredMembers?.map((user, index) => (
-              <div
-                key={index}
-                className="flex-shrink-0 flex items-center justify-between p-2 md:p-3 bg-gray-700 hover:bg-gray-600 rounded-lg md:rounded-xl transition-all cursor-pointer border border-gray-600 shadow-sm"
-                onClick={() => navigate(`/home/user/${user.user._id}`)}
-              >
-                <img
-                  src={user.user.profileImage}
-                  alt={user.user.fullName}
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl border border-gray-500 shadow-sm object-cover"
-                />
+        )}
 
-                {/* Info - Right */}
-                <div className="text-right ml-2">
-                  <p className="text-xs md:text-sm font-semibold text-white">
-                    {user.user.fullName}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Joined {new Date(user.joinedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            ))}
+        {/* If no members and no shifts */}
+        {!gymData.joinedBy?.length && !gymData.allShifts?.length && (
+          <div className="w-full bg-gray-800 p-4 rounded-xl border border-gray-700 flex items-center justify-center">
+            <p className="text-gray-400">No members or shifts yet</p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Analytics Section */}
-      <div className="mt-6 md:mt-8 bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-gray-700">
+      <div className=" bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-gray-700">
         <h2 className="text-lg md:text-xl font-semibold text-white mb-3 md:mb-4 flex items-center gap-2">
           <Activity className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
           <span className="text-sm md:text-base">Dashboard Overview</span>

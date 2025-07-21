@@ -9,7 +9,7 @@ import {
   FaHeartbeat,
 } from "react-icons/fa";
 import { HiUserGroup, HiOutlineUserAdd } from "react-icons/hi";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AnalyticsDashboard from "../common/chart";
 import HeatMapComponent from "./heatmap";
@@ -63,7 +63,7 @@ const UserProfile = () => {
     fetchData();
   }, [userId]);
 
-  const SendFollowActions = async () => {
+  const SendFollowActions = useCallback(async () => {
     const isCurrentlyFollowing = followStatus === "Following";
     const endpoint = isCurrentlyFollowing
       ? `/unfollow/user/${userId}`
@@ -93,7 +93,7 @@ const UserProfile = () => {
       console.error("Error updating follow status:", err);
       setError("Failed to update follow status. Please try again.");
     }
-  };
+  }, [followStatus, userId]);
 
   useEffect(() => {
     socket.on("accepted", () => {
@@ -104,7 +104,12 @@ const UserProfile = () => {
     socket.on("rejected", () => {
       setFollowRequestPending(false);
     });
-  }, [socket]);
+
+    return () => {
+      socket.off("accepted", () => console.log("socketWillDisconnect"));
+      socket.off("rejected", () => console.log("socketWillDisconnect"));
+    };
+  }, [SendFollowActions, socket]);
 
   if (loading) {
     return (
@@ -141,7 +146,7 @@ const UserProfile = () => {
       socket.emit("request", followDetails);
       dispatch(requestActionThunk(followDetails));
       setFollowRequestPending(true);
-      alert("📨 Sending follow request...");
+      alert("📨 Follow request sent");
     } catch (error) {
       console.log(error);
     }

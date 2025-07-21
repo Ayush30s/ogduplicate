@@ -14,14 +14,17 @@ const requestActionThunk = (data) => async (dispatch) => {
   dispatch(requestActionPending());
 
   try {
-    const response = await fetch("https://gymbackenddddd-1.onrender.com/notify/handleRequest", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      "https://gymbackenddddd-1.onrender.com/notify/handleRequest",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

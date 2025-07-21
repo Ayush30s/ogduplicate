@@ -55,7 +55,6 @@ const profileReducer = (state = initialState, action) => {
       };
 
     case FETCH_PROFILE_DATA_SUCCESS: {
-      console.log(action.payload);
       const {
         bio,
         email,
