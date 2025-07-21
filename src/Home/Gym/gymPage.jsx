@@ -75,8 +75,6 @@ const GymPage = () => {
         }
 
         const data = await response.json();
-        console.log(data);
-
         if (data?.message === "REDIRECT_TO_GYM_DASHBOARD") {
           navigate("/home/gym-dashboard");
         }
@@ -115,7 +113,7 @@ const GymPage = () => {
     };
 
     fetchGym();
-  }, [id, navigate]);
+  }, [id, navigate, followRequestAccepted, followRequestPending]);
 
   useEffect(() => {
     const handleOwnerAccepted = () => {
@@ -177,6 +175,11 @@ const GymPage = () => {
   };
 
   const FollowAction = async () => {
+    if (followRequestPending) {
+      alert("Follow Request is already sent to the user");
+      return;
+    }
+
     const followDetails = {
       reqto: id,
       reqby: userId,
@@ -190,9 +193,7 @@ const GymPage = () => {
       socket.emit("request", followDetails);
       dispatch(requestActionThunk(followDetails));
       setFollowRequestPending(true);
-      alert(
-        "Your request to follow this gym has been sent. You'll be notified when the owner responds."
-      );
+      alert("Sending follow request");
     } catch (error) {
       console.error("Error sending join request:", error);
       setError("Failed to send follow request. Please try again.");
@@ -203,12 +204,19 @@ const GymPage = () => {
     // this logic will run after the second person acceptes the request of first person
     if (followStatus === "Following") {
       setFollowersCount(followersCount - 1);
+      setFollowRequestPending(false);
     } else {
       setFollowersCount(followersCount + 1);
+      setFollowRequestPending(false);
+      setFollowRequestAccepted(true);
     }
 
     const newFollowStatus =
-      followStatus === "Following" ? "Follow" : "Following";
+      followStatus === "Following"
+        ? "Follow"
+        : followStatus === "Follow"
+        ? "Requested"
+        : "Following";
 
     try {
       const response = await fetch(

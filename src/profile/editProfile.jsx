@@ -9,7 +9,6 @@ const EditPersonalDetails = () => {
   const dispatch = useDispatch();
   const profileData = useSelector((state) => state.profile);
   const isUser = profileData?.userType;
-  console.log(isUser);
 
   const [formData, setFormData] = useState({
     fullName: profileData?.fullName || "",
@@ -23,11 +22,9 @@ const EditPersonalDetails = () => {
 
   const handleChange = async (e) => {
     const { name, value, files } = e.target;
-    console.log(formData);
 
     if (name === "profileImage" && files.length > 0) {
       const base64Image = await convertToBase64(files[0]);
-      console.log(base64Image);
       setFormData({ ...formData, profileImage: base64Image });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -46,7 +43,6 @@ const EditPersonalDetails = () => {
 
     if (isUser === "userModel") delete payload.description;
     else delete payload.bio;
-    console.log(payload);
 
     dispatch(updatePersonalProfileDataThunk(payload));
     navigate(-1);

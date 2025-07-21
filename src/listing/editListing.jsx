@@ -208,7 +208,6 @@ const EditListingPage = () => {
       equipment: customEquipment ? customEquipment : formData.equipment,
     };
 
-    console.log(submissionData);
     dispatch(updateListingThunk(listingId, submissionData, navigate));
   };
 

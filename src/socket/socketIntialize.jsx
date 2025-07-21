@@ -22,7 +22,6 @@ const SocketInitializer = () => {
     });
 
     socket.on("follow", () => {
-      console.log("follow")
       setTimeout(() => {
         dispatch(fetchAllRequestThunk("all"));
       }, 1000);
@@ -35,7 +34,6 @@ const SocketInitializer = () => {
     });
 
     socket.on("rejected", () => {
-      console.log("rejected");
       setTimeout(() => {
         dispatch(fetchAllRequestThunk("all"));
       }, 2000);

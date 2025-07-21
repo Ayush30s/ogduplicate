@@ -55,7 +55,6 @@ const QRScannerButton = ({
 
     setTimeout(() => {
       const qrCodeSuccessCallback = (decodedText) => {
-        console.log("✅ Scanned QR Code:", decodedText);
         stopScanner();
         markAttendance(decodedText);
       };
@@ -71,7 +70,6 @@ const QRScannerButton = ({
       Html5Qrcode.getCameras()
         .then((devices) => {
           if (devices && devices.length) {
-            console.log("Available Cameras:", devices);
             html5QrCode
               .start(
                 { facingMode: "environment" },

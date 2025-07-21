@@ -16,8 +16,6 @@ const months = [
 ];
 
 const HeatMapComponent = ({ profileData }) => {
-  console.log(profileData);
-  console.log("ininin");
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [hoveredDay, setHoveredDay] = useState(null);
 

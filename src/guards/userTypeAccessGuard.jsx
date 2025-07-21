@@ -6,12 +6,6 @@ const UserTypeAccessGuard = ({ children }) => {
   const userType = loggedInUser?.user?.userType;
   const childComponentName = children?.type?.name;
 
-  console.log(
-    childComponentName,
-    userType,
-    "childComponentNamechildComponentName"
-  );
-
   if (childComponentName === "WorkoutPlanForm" && userType === "gymModel") {
     return <Navigate to="/access-denied" />;
   }

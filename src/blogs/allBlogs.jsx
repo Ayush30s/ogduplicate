@@ -123,7 +123,7 @@ const AllBlogs = () => {
       <footer className="bg-gray-900 border-t border-gray-800 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-gray-400">
           <p>
-            &copy; {new Date().getFullYear()} FitZone Blog. All rights reserved.
+            &copy; {new Date().getFullYear()} OnlyGym Blog. All rights reserved.
           </p>
         </div>
       </footer>

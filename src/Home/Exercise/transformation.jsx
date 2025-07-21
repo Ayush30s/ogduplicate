@@ -78,7 +78,7 @@ const WorkoutPlanForm = () => {
         alert("Submission failed. Please try again.");
       }
     } catch (err) {
-      console.error(err);
+      console.log(err);
       alert("An error occurred. Please try again.");
     }
   };

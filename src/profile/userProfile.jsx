@@ -9,15 +9,23 @@ import {
   FaHeartbeat,
 } from "react-icons/fa";
 import { HiUserGroup, HiOutlineUserAdd } from "react-icons/hi";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AnalyticsDashboard from "../common/chart";
 import HeatMapComponent from "./heatmap";
-import { Activity, Award, BarChart2, Target, Trophy } from "lucide-react";
+import { Activity, Target, Trophy } from "lucide-react";
+import { SocketContext } from "../socket/socketContext";
+import { useSelector, useDispatch } from "react-redux";
+import { requestActionThunk } from "../store/thunk/requestActionThunk";
 
 const UserProfile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const socket = useContext(SocketContext);
+  const loggedInUser = useSelector((store) => store.login);
+  const loggedInUserId = loggedInUser.user.userId;
+  const loggedInUserModelType = loggedInUser.user.userType;
   const [profileData, setProfileData] = useState();
   const [allData, setAllData] = useState();
   const [loading, setLoading] = useState(true);
@@ -25,9 +33,7 @@ const UserProfile = () => {
   const [followStatus, setFollowStatus] = useState("");
   const [followersCount, setFollowersCount] = useState();
   const [followingCount, setFollowingCount] = useState();
-  const months = Array.from({ length: 12 }, (_, i) =>
-    new Date(0, i).toLocaleString("default", { month: "long" })
-  );
+  const [followRequestPending, setFollowRequestPending] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +52,7 @@ const UserProfile = () => {
         setFollowStatus("Follow");
       }
 
+      setFollowRequestPending(data.isFollowRequestPending);
       setFollowingCount(data.followingCount);
       setFollowersCount(data.followersCount);
       setProfileData(data?.data);
@@ -55,22 +62,6 @@ const UserProfile = () => {
 
     fetchData();
   }, [userId]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="animate-pulse text-2xl text-blue-400">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="text-red-400 text-xl">{profileData.error}</div>
-      </div>
-    );
-  }
 
   const SendFollowActions = async () => {
     const isCurrentlyFollowing = followStatus === "Following";
@@ -101,6 +92,58 @@ const UserProfile = () => {
     } catch (err) {
       console.error("Error updating follow status:", err);
       setError("Failed to update follow status. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    socket.on("accepted", () => {
+      setFollowRequestPending(false);
+      SendFollowActions();
+    });
+
+    socket.on("rejected", () => {
+      setFollowRequestPending(false);
+    });
+  }, [socket]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+        <div className="animate-pulse text-2xl text-blue-400">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+        <div className="text-red-400 text-xl">{profileData.error}</div>
+      </div>
+    );
+  }
+
+  const FollowAction = () => {
+    if (followRequestPending) {
+      alert("Wait for the response. Request Already sent!");
+      return;
+    }
+
+    try {
+      const followDetails = {
+        reqto: userId,
+        reqby: loggedInUserId,
+        reqbyType: loggedInUserModelType,
+        reqtoType: "userModel",
+        requestType: "follow",
+        status: "pending",
+      };
+
+      socket.emit("request", followDetails);
+      dispatch(requestActionThunk(followDetails));
+      setFollowRequestPending(true);
+      alert("📨 Sending follow request...");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -149,14 +192,18 @@ const UserProfile = () => {
             {/* Social Actions */}
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={SendFollowActions}
+                onClick={() => {
+                  followStatus == "Follow"
+                    ? FollowAction()
+                    : SendFollowActions();
+                }}
                 className={`flex items-center px-4 py-2 rounded-lg transition-all ${
                   followStatus === "Following"
                     ? "bg-blue-900/50 text-blue-300 hover:bg-blue-800/50 border border-blue-700/50"
                     : "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
                 }`}
               >
-                {followStatus}
+                {followRequestPending ? "Requested" : followStatus}
               </button>
 
               <button

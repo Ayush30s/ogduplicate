@@ -10,7 +10,6 @@ const AllListing = () => {
   const dispatch = useDispatch();
   const data = useSelector((store) => store.listing);
   const { loading, listings, error } = data;
-  console.log(data);
 
   const [filters, setFilters] = useState({
     type: "sale",

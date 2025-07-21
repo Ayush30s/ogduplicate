@@ -70,9 +70,11 @@ const Header = ({ userData }) => {
       {/* Logo Section */}
       <div className="flex items-center gap-2">
         <FaDumbbell className="text-indigo-400 text-2xl" />
-        <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-indigo-600 bg-clip-text text-transparent">
-          FitZone
-        </span>
+        <Link to="/home">
+          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-indigo-600 bg-clip-text text-transparent">
+            OnlyGym
+          </span>
+        </Link>
       </div>
 
       {/* Mobile Menu Button and Notification Bell */}
