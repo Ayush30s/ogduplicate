@@ -123,7 +123,7 @@ const ExercisePage = ({ exercise, onClose }) => {
       setSaveStatus(null);
 
       const url = `https://gymbackenddddd-1.onrender.com/workout/exercise/${encodeURIComponent(
-        exercise?.exercise || "push-ups"
+        exercise?.exercise || "Not defined"
       )}`;
       const res = await fetch(url, {
         method: "POST",

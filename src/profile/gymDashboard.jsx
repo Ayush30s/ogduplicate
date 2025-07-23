@@ -264,7 +264,7 @@ const GymDashboard = () => {
             } bg-gray-800 p-4 md:p-6 rounded-xl shadow-sm border border-gray-700 max-h-64 overflow-auto my-5`}
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-              <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2 mb-2">
                 <FaUserFriends className="text-blue-400 w-5 h-5" />
                 <span>Members ({gymData.joinedBy.length})</span>
               </h3>
@@ -332,8 +332,8 @@ const GymDashboard = () => {
                   onClick={() => setShowShiftForm(!showShiftForm)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                 >
-                  <FaPlus className="w-4 h-4" />
-                  {showShiftForm ? "Cancel" : "New Shift"}
+                  {!showShiftForm && <FaPlus className="w-4 h-4" />}
+                  {showShiftForm ? "Cancel" : "New"}
                 </button>
               </div>
 

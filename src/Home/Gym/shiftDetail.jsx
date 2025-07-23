@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Users,
@@ -84,16 +84,16 @@ const ShiftPage = ({ data }) => {
 
   return (
     <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg border border-gray-800 max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold text-indigo-400 mb-4 flex items-center gap-2">
-          <Clock className="text-indigo-400" size={20} />
-          Shift Details
+      <div className="flex flex-row justify-between items-center align-middle">
+        <h2 className="text-2xl font-semibold text-white  flex items-center gap-2">
+          <Clock className="text-white" size={20} />
+          Details
         </h2>
         {!isEditing && (
           <div className="flex gap-3">
             <button
               onClick={handleEditClick}
-              className="flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 px-3 py-2 rounded-lg transition text-sm border border-indigo-500/30"
+              className="flex items-center gap-2 bg-gray-700 hover:bg-indigo-600/30 text-white px-3 py-2 rounded-lg transition text-sm border border-indigo-500/30"
             >
               <Edit size={14} />
               Edit
@@ -101,7 +101,7 @@ const ShiftPage = ({ data }) => {
 
             <button
               onClick={handleDeleteShift}
-              className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-3 py-2 rounded-lg transition text-sm border border-red-500/30"
+              className="flex items-center gap-2 bg-gray-700 hover:bg-red-600/30 text-white px-3 py-2 rounded-lg transition text-sm border border-red-500/30"
             >
               <Trash2 size={14} />
               Delete
@@ -211,7 +211,7 @@ const ShiftPage = ({ data }) => {
           <div className="pt-6 border-t border-gray-700">
             <button
               onClick={toggleMembers}
-              className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition text-sm mb-4 font-medium"
+              className="flex items-center gap-2 text-white  transition text-sm mb-4 font-medium"
             >
               {showMembers ? (
                 <>
@@ -271,7 +271,7 @@ const ShiftPage = ({ data }) => {
 
 const InputField = ({ label, name, type, value, onChange, min }) => (
   <div className="space-y-2">
-    <label className="block text-sm font-medium text-gray-300">{label}</label>
+    <label className="block text-sm font-medium text-white">{label}</label>
     <input
       type={type}
       name={name}
@@ -288,7 +288,7 @@ const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
     <div className="mt-0.5">{icon}</div>
     <div>
-      <p className="text-sm text-gray-400">{label}</p>
+      <p className="text-sm text-white">{label}</p>
       <p className="text-white font-medium">{value}</p>
     </div>
   </div>
