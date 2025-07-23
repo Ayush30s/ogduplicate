@@ -82,7 +82,7 @@ const UserProfile = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to update follow status");
+        throw new Error(data);
       }
 
       setFollowStatus(newStatus);

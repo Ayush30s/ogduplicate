@@ -1,18 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+
+const DEFAULT_RESET_SECONDS = 5 * 60;
+const beepSound = new Audio("/audio/beep.wav");
 
 const ExercisePage = ({ exercise, onClose }) => {
-  const [customTime, setCustomTime] = useState(
-    convertToSeconds(exercise.timeLimit)
+  // --- Derive initial duration from props, but we'll always reset to 5 min ---
+  const initialSeconds = useMemo(
+    () => convertToSeconds(exercise?.timeLimit) ?? DEFAULT_RESET_SECONDS,
+    [exercise?.timeLimit]
   );
-  const [newExerciseObj, setNewExerciseObj] = useState(exercise);
-  const [timeLeft, setTimeLeft] = useState(customTime);
+
+  // --- State ---
+  const [customTime, setCustomTime] = useState(initialSeconds); // total duration (sec) for current run
+  const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [circleDashoffset, setCircleDashoffset] = useState(0);
+  const [saveStatus, setSaveStatus] = useState(null); // null | 'success' | 'error'
+  const [isSaving, setIsSaving] = useState(false);
 
+  // We store a minimal payload used when saving to backend.
+  const [exercisePayload, setExercisePayload] = useState(() =>
+    buildInitialPayload(exercise)
+  );
+
+  // When the incoming exercise prop changes, rebuild payload + timer.
+  useEffect(() => {
+    const newPayload = buildInitialPayload(exercise);
+    setExercisePayload(newPayload);
+    const secs = convertToSeconds(exercise?.timeLimit) ?? DEFAULT_RESET_SECONDS;
+    setCustomTime(secs);
+    setTimeLeft(secs);
+    setCircleDashoffset(0);
+    setIsRunning(false);
+  }, [exercise]);
+
+  // --- SVG circle math ---
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
 
+  // --- Countdown effect ---
   useEffect(() => {
     let timer;
     if (isRunning && timeLeft > 0) {
@@ -22,91 +49,127 @@ const ExercisePage = ({ exercise, onClose }) => {
         setCircleDashoffset(offset);
       }, 1000);
     } else if (timeLeft === 0 && isRunning) {
+      beepSound.play(); // 🔊 Play beep sound
       setIsRunning(false);
       setShowDialog(true);
     }
     return () => clearTimeout(timer);
   }, [isRunning, timeLeft, customTime, circumference]);
 
-  function convertToSeconds(timeStr) {
-    const num = parseInt(timeStr);
-    if (timeStr?.toLowerCase().includes("minute")) return num * 60;
-    if (timeStr?.toLowerCase().includes("second")) return num;
-    return 300;
-  }
-
-  function formatTime(sec) {
-    const m = Math.floor(sec / 60)
-      .toString()
-      .padStart(2, "0");
-    const s = (sec % 60).toString().padStart(2, "0");
-    if (isNaN(s)) {
-      return "00:00";
+  // When the timer hits 0 while running, stop + open dialog.
+  useEffect(() => {
+    if (!isRunning) return;
+    if (timeLeft === 0) {
+      setIsRunning(false);
+      setShowDialog(true);
+      setCircleDashoffset(calcOffset(0, customTime, circumference));
     }
-    return `${m}:${s}`;
-  }
+  }, [timeLeft, isRunning, customTime, circumference]);
 
+  // --- Handlers ---
   const handleTimeChange = (e) => {
-    const newMinutes = Math.ceil(parseInt(e.target.value));
-    const exerciseObj = { ...newExerciseObj, time: newMinutes };
-    setNewExerciseObj(exerciseObj);
-    const newTime = newMinutes * 60;
-    setCustomTime(newTime);
-    setTimeLeft(newTime);
+    const raw = e.target.value;
+    const newMinutes = Math.min(Math.max(Math.ceil(Number(raw)), 1), 60); // clamp 1-60
+    const newSeconds = newMinutes * 60;
+
+    setCustomTime(newSeconds);
+    setTimeLeft(newSeconds);
     setCircleDashoffset(0);
+
+    // Update payload.time (minutes)
+    setExercisePayload((p) => ({ ...p, time: newMinutes }));
   };
 
-  const handleReset = () => {
-    setTimeLeft(customTime);
-    setCustomTime(300);
+  const hardResetTo5 = useCallback(() => {
+    setCustomTime(DEFAULT_RESET_SECONDS);
+    setTimeLeft(DEFAULT_RESET_SECONDS);
+    setCircleDashoffset(0);
     setIsRunning(false);
-    setCircleDashoffset(0);
+    setShowDialog(false);
+    setSaveStatus(null);
+    // Update payload.time -> 5 minutes
+    setExercisePayload((p) => ({ ...p, time: 5 }));
+  }, []);
+
+  const handleResetClick = () => {
+    hardResetTo5();
   };
 
-  const getYouTubeId = (url) => {
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+  const handleStartPause = () => {
+    // Restart progress circle if starting fresh
+    if (!isRunning && timeLeft === customTime) {
+      setCircleDashoffset(calcOffset(timeLeft, customTime, circumference));
+    }
+    setIsRunning((r) => !r);
   };
 
-  const videoId = exercise.exerciseVideoURL
+  const handleModalYes = async () => {
+    await handleSaveToBackend();
+    alert(
+      "Well done! Your exercise has been saved and is now visible on your heatmap."
+    );
+    hardResetTo5();
+  };
+
+  const handleModalNo = () => {
+    // Just reset to 5 min; don't save
+    hardResetTo5();
+  };
+
+  // --- Backend save ---
+  const handleSaveToBackend = async () => {
+    try {
+      setIsSaving(true);
+      setSaveStatus(null);
+
+      const url = `https://gymbackenddddd-1.onrender.com/workout/exercise/${encodeURIComponent(
+        exercise?.exercise || "push-ups"
+      )}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(exercisePayload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to save exercise");
+      }
+      setSaveStatus("success");
+    } catch (err) {
+      console.error(err);
+      setSaveStatus("error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // --- Derived UI bits ---
+  const progressPct = timeLeft > 0 ? timeLeft / customTime : 0;
+  const progressColor = getProgressColor(progressPct); // dynamic stroke color
+
+  const videoId = exercise?.exerciseVideoURL
     ? getYouTubeId(exercise.exerciseVideoURL)
     : null;
 
-  const handleStartExercise = async () => {
-    try {
-      const response = await fetch(
-        `https://gymbackenddddd-1.onrender.com/workout/exercise/${exercise?.exerciseName}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newExerciseObj),
-          credentials: "include",
-        }
-      );
-
-      const data = await response.json();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 bg-gray-900 flex flex-col h-screen w-full overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-gray-950/95 flex flex-col h-screen w-full overflow-y-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 py-2 px-5 flex justify-between items-center border-b border-indigo-700 shrink-0 sticky top-0 z-10">
+      <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 py-3 px-5 flex justify-between items-center border-b border-indigo-700 shrink-0 sticky top-0 z-10 shadow-lg">
         <div>
-          <h1 className="text-2xl font-bold text-white">{exercise.exercise}</h1>
-          <p className="text-indigo-200">
-            Focus: <span className="text-yellow-300">{exercise.focusPart}</span>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            {exercise?.exercise}
+          </h1>
+          <p className="text-indigo-200 text-sm">
+            Focus:{" "}
+            <span className="text-yellow-300 font-medium">
+              {exercise?.focusPart}
+            </span>
           </p>
         </div>
         <button
           onClick={onClose}
-          className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white font-medium flex items-center gap-2"
+          className="bg-red-600 hover:bg-red-700 px-2 py-2 rounded-full text-white font-medium flex items-center gap-2 transition-colors"
         >
           <svg
             width="20"
@@ -128,34 +191,45 @@ const ExercisePage = ({ exercise, onClose }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 lg:p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Exercise Details */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-md">
             <h2 className="text-xl font-bold text-white mb-4">
               Exercise Details
             </h2>
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <InfoBox label="Sets" value={exercise.sets} />
-              <InfoBox label="Reps" value={exercise.reps} />
-              <InfoBox label="Difficulty" value={exercise.difficulty} />
+              <InfoBox label="Sets" value={exercise?.sets} />
+              <InfoBox label="Reps" value={exercise?.reps} />
+              <InfoBox label="Difficulty" value={exercise?.difficulty} />
               <InfoBox
                 label="Calories"
-                value={`${exercise.caloriesBurned} kcal`}
+                value={`${exercise?.caloriesBurned} kcal`}
               />
             </div>
             <div className="space-y-4">
-              <InfoSection title="Equipment" content={exercise.equipment} />
-              <InfoSection title="Rest Time" content={exercise.restTime} />
+              <InfoSection
+                title="Equipment"
+                content={exercise?.equipment || "Bodyweight"}
+              />
+              <InfoSection
+                title="Rest Time"
+                content={exercise?.restTime || "--"}
+              />
             </div>
           </div>
 
           {/* Timer */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-md">
             <h2 className="text-xl font-bold text-white mb-4">Workout Timer</h2>
-            <div className="bg-gray-700 p-6 rounded-lg flex flex-col items-center">
-              <div className="relative w-36 h-36 mb-6">
-                <svg className="absolute" viewBox="0 0 120 120">
+            <div className="bg-gray-700 p-6 rounded-lg flex flex-col items-center w-full">
+              <div className="relative w-36 h-36 mb-6 select-none">
+                <svg
+                  className="absolute inset-0"
+                  viewBox="0 0 120 120"
+                  role="img"
+                  aria-label="Workout progress"
+                >
                   <circle
                     cx="60"
                     cy="60"
@@ -168,7 +242,7 @@ const ExercisePage = ({ exercise, onClose }) => {
                     cx="60"
                     cy="60"
                     r={radius}
-                    stroke="#4F46E5"
+                    stroke={progressColor}
                     strokeWidth="10"
                     fill="transparent"
                     strokeDasharray={circumference}
@@ -184,8 +258,8 @@ const ExercisePage = ({ exercise, onClose }) => {
 
               <div className="flex gap-4 mb-6 w-full justify-center flex-wrap">
                 <button
-                  onClick={() => setIsRunning(!isRunning)}
-                  className={`px-6 py-3 rounded-lg font-bold text-white min-w-[120px] ${
+                  onClick={handleStartPause}
+                  className={`px-6 py-3 rounded-lg font-bold text-white min-w-[120px] transition-colors ${
                     isRunning
                       ? "bg-red-600 hover:bg-red-700"
                       : "bg-green-600 hover:bg-green-700"
@@ -194,8 +268,8 @@ const ExercisePage = ({ exercise, onClose }) => {
                   {isRunning ? "⏸ Pause" : "▶ Start"}
                 </button>
                 <button
-                  onClick={handleReset}
-                  className="px-6 py-3 rounded-lg bg-gray-600 hover:bg-gray-500 font-bold text-white min-w-[120px]"
+                  onClick={handleResetClick}
+                  className="px-6 py-3 rounded-lg bg-gray-600 hover:bg-gray-500 font-bold text-white min-w-[120px] transition-colors"
                 >
                   🔄 Reset
                 </button>
@@ -210,15 +284,25 @@ const ExercisePage = ({ exercise, onClose }) => {
                   min="1"
                   max="60"
                   onChange={handleTimeChange}
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white text-center"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Enter time"
                 />
               </div>
+
+              {/* Save status toast under controls */}
+              {saveStatus === "success" && (
+                <p className="mt-4 text-sm text-green-300">Exercise saved!</p>
+              )}
+              {saveStatus === "error" && (
+                <p className="mt-4 text-sm text-red-300">
+                  Save failed. Try again.
+                </p>
+              )}
             </div>
           </div>
 
           {/* Video */}
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-md">
             <h2 className="text-xl font-bold text-white mb-4">
               Exercise Video
             </h2>
@@ -243,7 +327,7 @@ const ExercisePage = ({ exercise, onClose }) => {
               <h3 className="text-xl font-bold text-white mb-2">Description</h3>
               <div className="bg-gray-700 p-4 rounded-lg max-h-40 overflow-y-auto">
                 <p className="text-gray-300 whitespace-pre-line">
-                  {exercise.description}
+                  {exercise?.description}
                 </p>
               </div>
             </div>
@@ -253,24 +337,23 @@ const ExercisePage = ({ exercise, onClose }) => {
 
       {/* Confirmation Modal */}
       {showDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              Do you want to save this exercise in your profile?
+        <div className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm animate-scale-in">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800 text-center">
+              Save this exercise to your profile?
             </h3>
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-center gap-4">
               <button
-                onClick={() => {
-                  handleStartExercise();
-                  setShowDialog(false);
-                }}
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                onClick={handleModalYes}
+                disabled={isSaving}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
               >
-                Yes
+                {isSaving ? "Saving..." : "Yes"}
               </button>
               <button
-                onClick={() => setShowDialog(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                onClick={handleModalNo}
+                disabled={isSaving}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 disabled:opacity-50"
               >
                 No
               </button>
@@ -282,18 +365,86 @@ const ExercisePage = ({ exercise, onClose }) => {
   );
 };
 
-// Helper components for reuse
+/* ------------------------------------------------------------------ */
+/* Helpers                                                            */
+/* ------------------------------------------------------------------ */
+
+function convertToSeconds(timeStr) {
+  if (!timeStr || typeof timeStr !== "string") return null;
+  const num = parseInt(timeStr, 10);
+  if (Number.isNaN(num)) return null;
+  const lower = timeStr.toLowerCase();
+  if (lower.includes("minute")) return num * 60;
+  if (lower.includes("second")) return num;
+  return null; // caller will fallback to default
+}
+
+function formatTime(sec) {
+  const safe = Number(sec);
+  if (Number.isNaN(safe) || safe < 0) return "00:00";
+  const m = Math.floor(safe / 60)
+    .toString()
+    .padStart(2, "0");
+  const s = (safe % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function getProgressColor(pct) {
+  if (pct > 0.66) return "#4ade80"; // green-400
+  if (pct > 0.33) return "#facc15"; // yellow-400
+  return "#f87171"; // red-400
+}
+
+function calcOffset(remaining, total, circumference) {
+  if (!total) return 0;
+  const ratio = remaining / total;
+  return circumference - ratio * circumference;
+}
+
+function getYouTubeId(url = "") {
+  const regExp =
+    /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[1] && match[1].length === 11 ? match[1] : null;
+}
+
+/** Build the outbound payload expected by backend. */
+function buildInitialPayload(exercise = {}) {
+  // Determine reps string (use incoming; fallback to "0")
+  let reps = exercise?.reps ?? "0";
+  // Some sources may provide numeric reps
+  if (typeof reps === "number") reps = String(reps);
+
+  // Determine time (minutes) from exercise.timeLimit if present
+  const secs = convertToSeconds(exercise?.timeLimit);
+  const mins = secs ? Math.round(secs / 60) : 5; // fallback to 5
+
+  return {
+    time: mins, // minutes expected by backend schema you showed earlier
+    focusPart: exercise?.focusPart || "General",
+    exerciseName: exercise?.exercise || "push-ups",
+    caloriesBurned: Number(exercise?.caloriesBurned ?? 0),
+    difficulty: exercise?.difficulty || "Beginner",
+    sets: Number(exercise?.sets ?? 1),
+    reps, // raw; backend will parse range if it contains '-'
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Small presentational helpers                                       */
+/* ------------------------------------------------------------------ */
+
 const InfoBox = ({ label, value }) => (
-  <div className="bg-gray-700 p-3 rounded-lg">
+  <div className="bg-gray-700 p-3 rounded-lg text-center">
     <p className="text-gray-400 text-sm">{label}</p>
-    <p className="text-white font-bold text-xl">{value}</p>
+    <p className="text-white font-bold text-xl break-words">{value}</p>
   </div>
 );
 
 const InfoSection = ({ title, content }) => (
   <div className="bg-gray-700 p-4 rounded-lg">
     <h3 className="text-indigo-300 font-semibold mb-2">{title}</h3>
-    <p className="text-white">{content}</p>
+    <p className="text-white whitespace-pre-line">{content}</p>
   </div>
 );
 

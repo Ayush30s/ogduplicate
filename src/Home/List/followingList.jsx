@@ -22,13 +22,15 @@ const FollowingList = () => {
             credentials: "include",
           }
         );
+
         const result = await response.json();
+        console.log(result);
 
         if (result.message) {
           setError(result.message);
           setFollowingList([]);
         } else {
-          setFollowingList(result.followingUsers || []);
+          setFollowingList(result.userFollowingData || []);
         }
       } catch (err) {
         console.error(err);
@@ -41,6 +43,7 @@ const FollowingList = () => {
     fetchFollowingList();
   }, [id]);
 
+  console.log(followingList);
   const handleNavigateToProfile = (user) => {
     const isCurrentUser = user._id === loggedinUser.user.userId;
     const path =

@@ -113,7 +113,7 @@ const GymPage = () => {
     };
 
     fetchGym();
-  }, [id, navigate, followRequestAccepted, followRequestPending]);
+  }, [id, navigate, followRequestAccepted, followRequestPending, joinStatus]);
 
   useEffect(() => {
     const handleOwnerAccepted = () => {

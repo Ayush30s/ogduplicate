@@ -41,6 +41,8 @@ const FollowersList = () => {
     fetchFollowersList();
   }, [id]);
 
+  console.log(followersList);
+
   const handleNavigateToProfile = (user) => {
     const isSelf = user._id === loggedinUser.user.userId;
     const basePath =
