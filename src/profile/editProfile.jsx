@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { convertToBase64 } from "../../utils/FileToBase64";
 import { useNavigate } from "react-router-dom";
 import { updatePersonalProfileDataThunk } from "../store/thunk/profile-management";
+import { FiArrowLeft } from "react-icons/fi";
 
 const EditPersonalDetails = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const EditPersonalDetails = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900 p-4">
       <form
-        className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-lg"
+        className="bg-transparent md:bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-lg"
         onSubmit={handleSubmit}
       >
         <button
@@ -59,14 +60,7 @@ const EditPersonalDetails = () => {
           onClick={() => navigate(-1)}
           type="button"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-6 h-6"
-          >
-            <path d="M15 19l-7-7 7-7" />
-          </svg>
+          <FiArrowLeft />
         </button>
 
         <h2 className="text-2xl font-semibold text-white mb-6 text-center">

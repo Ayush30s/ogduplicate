@@ -8,13 +8,14 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
+import { FaBell, FaArrowLeft } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import {
   deleteShiftThunk,
   updateShiftThunk,
 } from "../../store/thunk/profile-management";
 
-const ShiftPage = ({ data }) => {
+const ShiftPage = ({ data, setShowShiftPage }) => {
   const [showMembers, setShowMembers] = useState(false);
   const [error, setError] = useState();
   const [isEditing, setIsEditing] = useState(false);
@@ -85,10 +86,13 @@ const ShiftPage = ({ data }) => {
   return (
     <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg border border-gray-800 max-w-4xl mx-auto space-y-6">
       <div className="flex flex-row justify-between items-center align-middle">
-        <h2 className="text-2xl font-semibold text-white  flex items-center gap-2">
-          <Clock className="text-white" size={20} />
-          Details
-        </h2>
+        <button
+          onClick={() => setShowShiftPage(null)}
+          className="mb-4 flex items-center gap-2 p-3 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition-colors"
+        >
+          <FaArrowLeft className="w-4 h-4" />
+        </button>
+
         {!isEditing && (
           <div className="flex gap-3">
             <button

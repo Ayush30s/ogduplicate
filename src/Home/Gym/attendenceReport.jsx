@@ -130,9 +130,6 @@ const AttendanceReport = ({ joinedBy }) => {
 
       {attendance.length === 0 ? (
         <form className="w-full flex flex-col" onSubmit={handleSubmit}>
-          <label className="text-gray-200 text-lg my-1 font-medium">
-            Username
-          </label>
           <div className="flex flex-col md:flex-row gap-2 w-full">
             <div className="relative flex-grow">
               <input
@@ -154,7 +151,7 @@ const AttendanceReport = ({ joinedBy }) => {
                           entry.user._id
                         )
                       }
-                      className="px-3 py-2 hover:bg-gray-600 cursor-pointer text-sm"
+                      className="px-3 py-2 hover:bg-gray-600 text-white cursor-pointer text-sm"
                     >
                       {entry.user.fullName}
                     </li>

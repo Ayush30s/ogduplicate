@@ -54,13 +54,15 @@ const AllListing = () => {
     setShowFilterPanel(false);
   };
 
-  const applyTypeFilter = ({ type }) => {
-    setFilters((prev) => ({ ...prev, type }));
+  const applyTypeFilter = (type) => {
+    const updatedFilters = { ...tempFilters, type };
+    setFilters(updatedFilters);
+    setTempFilters(updatedFilters);
   };
 
   const resetFilters = () => {
     const resetValues = {
-      type: "sale",
+      type: filters.type,
       equipment: "",
       city: "",
       state: "",
@@ -114,7 +116,7 @@ const AllListing = () => {
           {tabs.map((tab) => (
             <button
               key={tab}
-              onClick={() => applyTypeFilter({ type: tab })}
+              onClick={() => applyTypeFilter(tab)}
               className={`px-4 sm:px-6 py-2 sm:py-3 font-medium text-sm tracking-wide transition-all relative min-w-max ${
                 filters.type === tab
                   ? "text-indigo-400"

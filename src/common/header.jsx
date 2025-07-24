@@ -222,14 +222,14 @@ const Header = ({ userData }) => {
                     >
                       Find Listings
                     </Link>
-                    {userData?.userType === "userModel" && (
+                    {
                       <Link
                         to="/listing/new"
                         className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
                       >
                         Post Equipment
                       </Link>
-                    )}
+                    }
                     <Link
                       to="/listing/mylisting"
                       className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
@@ -518,13 +518,13 @@ const Header = ({ userData }) => {
                           Find Listings
                         </li>
                       </Link>
-                      {userData?.userType === "userModel" && (
+                      {
                         <Link to="/listing/new" onClick={toggleMobileMenu}>
                           <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
                             Post Equipment
                           </li>
                         </Link>
-                      )}
+                      }
                       <Link to="/listing/mylisting" onClick={toggleMobileMenu}>
                         <li className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-gray-200 transition-colors">
                           My Listings
