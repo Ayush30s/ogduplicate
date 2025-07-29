@@ -45,6 +45,8 @@ const EditPersonalDetails = () => {
     if (isUser === "userModel") delete payload.description;
     else delete payload.bio;
 
+    console.log(payload, "yhunk----");
+
     dispatch(updatePersonalProfileDataThunk(payload));
     navigate(-1);
   };

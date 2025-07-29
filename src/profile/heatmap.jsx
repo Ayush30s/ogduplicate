@@ -15,12 +15,37 @@ const months = [
   "Dec",
 ];
 
-const HeatMapComponent = ({ profileData }) => {
+const HeatMapComponent = ({ userData }) => {
+  console.log(userData);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [hoveredDay, setHoveredDay] = useState(null);
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-blue-400">
+            Workout Activity Heatmap
+          </h2>
+          <p className="text-sm text-gray-400">
+            Visualization of your workout history
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <div className="flex items-center">
+            <span className="text-xs mr-2 text-gray-400">Intensity:</span>
+            <div className="flex gap-1">
+              <div className="w-3 h-3 bg-gray-700 rounded-sm"></div>
+              <div className="w-3 h-3 bg-blue-900/70 rounded-sm"></div>
+              <div className="w-3 h-3 bg-blue-700 rounded-sm"></div>
+              <div className="w-3 h-3 bg-blue-500 rounded-sm"></div>
+              <div className="w-3 h-3 bg-blue-400 rounded-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Mobile hover info display (fixed at top) */}
       {hoveredDay && (
         <div className="lg:hidden fixed top-4 left-4 right-4 z-50 p-3 bg-gray-900 text-white text-xs rounded shadow-lg border border-gray-700">
@@ -67,7 +92,7 @@ const HeatMapComponent = ({ profileData }) => {
             className="flex transition-transform duration-300 ease-in-out"
             style={{ transform: `translateX(-${currentMonthIndex * 100}%)` }}
           >
-            {(profileData?.HeatMap || profileData.exerciseArray)?.map(
+            {(userData?.HeatMap || userData.exerciseArray)?.map(
               (month, monthIndex) => (
                 <div key={monthIndex} className="w-full flex-shrink-0 px-2">
                   <div className="flex flex-col items-center gap-1 w-full">
@@ -154,13 +179,12 @@ const HeatMapComponent = ({ profileData }) => {
           </button>
         )}
         {currentMonthIndex <
-          (profileData?.HeatMap || profileData.exerciseArray)?.length - 1 && (
+          (userData?.HeatMap || userData.exerciseArray)?.length - 1 && (
           <button
             onClick={() =>
               setCurrentMonthIndex((prev) =>
                 Math.min(
-                  (profileData?.HeatMap || profileData.exerciseArray)?.length -
-                    1,
+                  (userData?.HeatMap || userData.exerciseArray)?.length - 1,
                   prev + 1
                 )
               )
@@ -174,13 +198,13 @@ const HeatMapComponent = ({ profileData }) => {
         {/* Month indicator */}
         <div className="text-center text-xs text-gray-400 mt-2">
           {currentMonthIndex + 1} /{" "}
-          {(profileData?.HeatMap || profileData.exerciseArray)?.length}
+          {(userData?.HeatMap || userData.exerciseArray)?.length}
         </div>
       </div>
 
       {/* Desktop Grid (hidden on mobile) */}
       <div className="hidden lg:grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {(profileData?.HeatMap || profileData.exerciseArray)?.map(
+        {(userData?.HeatMap || userData.exerciseArray)?.map(
           (month, monthIndex) => (
             <div
               key={monthIndex}

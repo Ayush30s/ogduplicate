@@ -35,11 +35,9 @@ const GymPage = () => {
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
   const [daysLeft, setDaysleft] = useState(null);
-  const [attendenceMarked, setAttendenceMarked] = useState(false);
   const [gymData, setGymData] = useState(location.state?.gymData || null);
   const [loading, setLoading] = useState(!gymData);
   const [rateLater, setRateLater] = useState(false);
-  const [followStatus, setFollowStatus] = useState("");
   const [joinCount, setJoinCount] = useState(0);
   const [shiftJoinedIndex, setshiftJoinedIndex] = useState(-1);
   const [followersCount, setFollowersCount] = useState();
@@ -49,13 +47,11 @@ const GymPage = () => {
   const [searchUser, setSearchUser] = useState("");
   const [filteredMembers, setFilteredMembers] = useState("");
   const [isPaymentDone, setIsPaymentDone] = useState(false);
-  const [attendenceStatus, setAttendenceStatus] = useState(false);
-  const [QrScannerResponse, setQrScannerResponse] = useState(null);
+  const [attendenceStatus, setAttendenceStatus] = useState("Absent");
   const [showPaymentGateway, setShowPaymentGateway] = useState(false);
   const [joinRequestPending, setJoinRequestPending] = useState(false);
   const [joinRequestAccepted, setJoinRequestAccepted] = useState(false);
-  const [followRequestPending, setFollowRequestPending] = useState(false);
-  const [followRequestAccepted, setFollowRequestAccepted] = useState(false);
+  const [FollowRequestStatus, setFollowRequestStatus] = useState(-1);
   const [joinStatus, setJoinStatus] = useState(false);
 
   useEffect(() => {
@@ -79,6 +75,7 @@ const GymPage = () => {
           navigate("/home/gym-dashboard");
         }
 
+        console.log(data);
         setGymData(data);
         setDaysleft(data.daysLeft);
         setJoinStatus(data.isUserJoined);
@@ -86,15 +83,13 @@ const GymPage = () => {
         setMembersList(data.gymData?.joinedBy);
         setFollowingCount(data.followingCount);
         setFollowersCount(data.followersCount);
-        setFollowStatus(data.followingGymOrNot);
         setAttendenceStatus(data.attendenceStatus);
         setFilteredMembers(data.gymData?.joinedBy);
         setshiftJoinedIndex(data.shiftJoinedIndex);
         setJoinCount(data?.gymData?.joinedBy?.length);
         setJoinRequestAccepted(data.isJoinRequestAccepted);
         setJoinRequestPending(data.isJoinRequestPending);
-        setFollowRequestAccepted(data.isFollowRequestAccepted);
-        setFollowRequestPending(data.isFollowRequestPending);
+        setFollowRequestStatus(data.FollowRequestStatus);
         setIsPaymentDone(data.isPaymentDone || false);
 
         if (data.isJoinRequestAccepted && !data.isPaymentDone) {
@@ -113,36 +108,45 @@ const GymPage = () => {
     };
 
     fetchGym();
-  }, [id, navigate, followRequestAccepted, followRequestPending, joinStatus]);
+  }, [id, navigate, joinRequestAccepted, joinRequestPending, joinStatus]);
 
   useEffect(() => {
-    const handleOwnerAccepted = () => {
-      setJoinRequestAccepted(true);
-      setJoinRequestPending(false);
-      setShowPaymentGateway(true);
+    const handleOwnerAccepted = (data) => {
+      if (data.requestType === "follow") {
+        if (FollowRequestStatus == 0) {
+          SendFollowActions();
+        }
+      } else {
+        // Handle join request acceptance
+        setJoinRequestAccepted(true);
+        setJoinRequestPending(false);
+        setShowPaymentGateway(true);
+      }
     };
 
-    const handleOwnerRejected = () => {
-      setJoinRequestAccepted(false);
-      setJoinRequestPending(false);
-      setShowPaymentGateway(false);
+    const handleOwnerRejected = (data) => {
+      if (data.requestType === "follow") {
+        if (FollowRequestStatus == 0) {
+          setFollowRequestStatus(-1);
+        }
+      } else {
+        // Handle join request rejection
+        setJoinRequestAccepted(false);
+        setJoinRequestPending(false);
+        setShowPaymentGateway(false);
+      }
     };
 
-    socket.on("accepted", (data) => {
-      if (data.requestType == "follow") SendFollowActions();
-      else handleOwnerAccepted();
-    });
-
-    socket.on("rejected", (data) => {
-      if (data.requestType == "follow") SendFollowActions();
-      else handleOwnerRejected();
-    });
+    socket.on("accepted", handleOwnerAccepted);
+    socket.on("rejected", handleOwnerRejected);
 
     return () => {
       socket.off("accepted", handleOwnerAccepted);
       socket.off("rejected", handleOwnerRejected);
     };
-  }, [socket]);
+  }, [socket, joinRequestPending, FollowRequestStatus]);
+
+  console.log(FollowRequestStatus);
 
   const PostRating = async (rating, gymId) => {
     try {
@@ -175,7 +179,8 @@ const GymPage = () => {
   };
 
   const FollowAction = async () => {
-    if (followRequestPending) {
+    console.log("FollowAction");
+    if (FollowRequestStatus == 0) {
       alert("Follow Request is already sent to the user");
       return;
     }
@@ -190,40 +195,35 @@ const GymPage = () => {
     };
 
     try {
+      setFollowRequestStatus(0);
       socket.emit("request", followDetails);
+
       dispatch(requestActionThunk(followDetails));
-      setFollowRequestPending(true);
       alert("Sending follow request");
     } catch (error) {
-      console.error("Error sending join request:", error);
+      console.error("Error sending follow request:", error);
       setError("Failed to send follow request. Please try again.");
+      // Reset pending state on error
+      setFollowRequestStatus(-1);
     }
   };
 
   const SendFollowActions = async () => {
-    // this logic will run after the second person acceptes the request of first person
-    if (followStatus === "Following") {
-      setFollowersCount(followersCount - 1);
-      setFollowRequestPending(false);
-    } else {
-      setFollowersCount(followersCount + 1);
-      setFollowRequestPending(false);
-      setFollowRequestAccepted(true);
-    }
-
-    const newFollowStatus =
-      followStatus === "Following"
-        ? "Follow"
-        : followStatus === "Follow"
-        ? "Requested"
-        : "Following";
+    console.log("sendFollowAction");
 
     try {
+      let newFollowStatus = "";
+      if (FollowRequestStatus === 0) {
+        newFollowStatus = "Following";
+      } else if (FollowRequestStatus === 1) {
+        newFollowStatus = "Follow";
+      }
+
       const response = await fetch(
         `https://gymbackenddddd-1.onrender.com/request${
-          followStatus === "Following"
-            ? "/unfollow/user/" + id
-            : "/follow/user/" + id
+          newFollowStatus === "Following"
+            ? "/follow/user/" + id
+            : "/unfollow/user/" + id
         }`,
         {
           method: "POST",
@@ -233,11 +233,17 @@ const GymPage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        setFollowStatus(followStatus);
         throw new Error(data.message || "Failed to update follow status");
       }
 
-      setFollowStatus(newFollowStatus);
+      // Update all state at once to prevent partial updates
+      newFollowStatus == "Follow"
+        ? setFollowRequestStatus(-1)
+        : setFollowRequestStatus(1);
+      console.log(newFollowStatus);
+      setFollowersCount((prev) =>
+        newFollowStatus === "Following" ? prev + 1 : prev - 1
+      );
     } catch (err) {
       console.error("Error updating follow status:", err);
       setError("Failed to update follow status. Please try again.");
@@ -290,12 +296,10 @@ const GymPage = () => {
       }
 
       if (data.message === "USER_JOIN_GYM_SUCCESSFUL") {
-        console.log("✅ User joined gym successfully");
         setJoinCount((prev) => prev + 1);
         setJoinStatus(true);
         setShowPaymentGateway(false);
       } else if (data.message === "USER_LEFT_GYM_SUCCESSFUL") {
-        console.log("👋 User left gym successfully");
         setJoinCount((prev) => prev - 1);
         setJoinStatus(false);
         setJoinRequestPending(false);
@@ -314,7 +318,7 @@ const GymPage = () => {
     const filteredMemberList = membersList.filter((user) => {
       let allMatch = true;
       let searchValue = e.target.value;
-      let fullName = user.user.fullName;
+      let fullName = user.user?.fullName;
       for (let index = 0; index < searchValue.length; index++) {
         if (
           searchValue[index]?.toUpperCase() !== fullName[index]?.toUpperCase()
@@ -351,6 +355,8 @@ const GymPage = () => {
 
     navigate(path);
   };
+
+  console.log(daysLeft);
 
   if (loading)
     return (
@@ -429,6 +435,8 @@ const GymPage = () => {
     );
   }
 
+  // make attedence status and follow request
+
   const {
     gymData: gym,
     followingOrNot,
@@ -439,37 +447,10 @@ const GymPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
-      {attendenceMarked && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300">
-          <div className="bg-white rounded-2xl p-6 shadow-2xl w-80 text-center animate-bounce-in">
-            <div className="flex justify-center mb-4">
-              <div className="bg-green-100 rounded-full p-3">
-                <svg
-                  className="w-6 h-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-xl font-bold text-gray-800 mb-1">Success!</h2>
-            <p className="text-gray-600">
-              Attendance marked {attendenceStatus ? "In" : "Out"} successfully.
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Hero Section */}
       <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-8">
-        <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-8 mb-5 overflow-hidden h-[300px] md:h-[400px]">
+        <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-8 mb-5 overflow-hidden h-[300px] md:h-[400px] lg:h-[500px]">
+          {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
             <img
               src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
@@ -480,54 +461,124 @@ const GymPage = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
 
-          {/* {daysLeft && (
-            <span className="absolute right-5 top-5 animate-pulse font-bold text-green-600 bg-green-100 px-4 py-2 rounded-full shadow-md">
-              <span className=" text-2xl">{daysLeft + "      "}</span>
-              Days Left in this month to complete, To have access of the gym
-              make sure you pay next month membership fee before month-end
-            </span>
-          )} */}
+          {/* Days Left Component - Responsive Positioning */}
+          {daysLeft !== null && (
+            <div className="absolute right-2 top-2 sm:right-4 sm:top-4 md:right-5 md:top-5 animate-pulse z-10">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 rounded-lg shadow-lg p-3 sm:p-4 max-w-xs sm:max-w-md">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-2 sm:ml-3">
+                    <div className="flex items-center">
+                      <span className="text-base sm:text-lg font-bold text-green-700 mr-1 sm:mr-2">
+                        {daysLeft}
+                      </span>
+                      <span className="text-base sm:text-lg font-semibold text-green-600">
+                        {daysLeft === 1 ? "day" : "days"} left
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs sm:text-sm text-gray-600">
+                      Renew membership before period ends
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-          <div className="relative z-0 text-center space-y-3 px-2 sm:px-4 md:px-8">
+          {/* Mobile Floating Days Left - Appears only when main one is hidden */}
+          {daysLeft !== null && (
+            <div className="lg:hidden fixed bottom-4 right-4 z-50 sm:hidden">
+              <div className="bg-green-600 text-white rounded-full p-3 shadow-xl animate-bounce">
+                <div className="flex items-center">
+                  <span className="text-lg font-bold mr-1">{daysLeft}</span>
+                  <span className="text-sm">
+                    {daysLeft === 1 ? "day" : "days"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <div className="relative z-10 text-center space-y-3 px-2 sm:px-4 md:px-8 w-full">
             <h1
-              className="text-4xl sm:text-6xl md:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words"
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words px-2"
               style={{
                 textShadow: `
-          2px 2px 0 white,
-          -2px -2px 0 white,
-          2px -2px 0 white,
-          -2px 2px 0 white,
-          0 2px 0 white,
-          2px 0 0 white,
-          0 -2px 0 white,
-          -2px 0 0 white,
-          2px 2px 5px white
+          1px 1px 0 rgba(0,0,0,0.5),
+          -1px -1px 0 rgba(0,0,0,0.5),
+          1px -1px 0 rgba(0,0,0,0.5),
+          -1px 1px 0 rgba(0,0,0,0.5),
+          0 1px 0 rgba(0,0,0,0.5),
+          1px 0 0 rgba(0,0,0,0.5),
+          0 -1px 0 rgba(0,0,0,0.5),
+          -1px 0 0 rgba(0,0,0,0.5),
+          1px 1px 3px rgba(0,0,0,0.7)
         `,
               }}
             >
               {gym?.gymName}
             </h1>
-            <p className="text-gray-100 max-w-2xl mx-auto text-base sm:text-lg md:text-xl drop-shadow-md">
+            <p className="text-gray-100 max-w-2xl mx-auto text-sm sm:text-base md:text-lg lg:text-xl drop-shadow-md px-4">
               {gym?.description}
             </p>
           </div>
         </div>
 
         {/* Join/Payment Section */}
-        <div className="my-6 w-full">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-4 w-full px-4">
-            <div className="w-full lg:w-auto lg:flex-1 max-w-md">
+        <div className="my-8 w-full">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-6 w-full px-4">
+            {/* Join/Leave Gym Section */}
+            <div className="w-full lg:flex-1 max-w-md space-y-4">
               {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
                 <button
                   onClick={JoinAction}
-                  className="w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-all bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base"
+                  className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
                 >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                   Request to Join Gym
                 </button>
               )}
 
               {joinRequestPending && !joinRequestAccepted && !joinStatus && (
-                <div className="w-full px-6 py-3 rounded-full font-medium bg-yellow-600 text-white text-sm sm:text-base text-center">
+                <div className="w-full px-6 py-3.5 rounded-full font-medium bg-gradient-to-r from-amber-500 to-amber-400 text-white text-sm sm:text-base text-center flex items-center justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 animate-pulse"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                   Request Pending Approval
                 </div>
               )}
@@ -535,8 +586,21 @@ const GymPage = () => {
               {joinRequestAccepted && !isPaymentDone && !joinStatus && (
                 <button
                   onClick={() => setShowPaymentGateway(true)}
-                  className="w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-all bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base"
+                  className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
                 >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                   Complete Payment
                 </button>
               )}
@@ -544,69 +608,131 @@ const GymPage = () => {
               {joinStatus && (
                 <button
                   onClick={SendJoinActions}
-                  className="w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-all bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base"
+                  className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white text-sm sm:text-base flex items-center justify-center gap-2"
                 >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                   Leave Gym
                 </button>
               )}
             </div>
 
-            {joinStatus && joinRequestAccepted && isPaymentDone && (
-              <div className="w-full lg:w-auto lg:flex-1 max-w-md">
-                {QrScannerResponse === "ATTENDANCE_MARKED_OUT_SUCCESSFULLY" ||
-                attendenceStatus == -1 ? (
-                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-4 rounded-2xl text-center shadow-xl border-l-4 border-blue-500 relative ring-1 ring-blue-600/30 w-full">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
-                      Daily Limit Reached
+            {/* Attendance Status Section */}
+            {joinStatus && (
+              <div className="w-full lg:flex-1 max-w-md">
+                {attendenceStatus === "Both Marked" ? (
+                  <div className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border-l-4 border-green-500 shadow-md overflow-hidden relative">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 bg-green-100 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-green-600 animate-bounce"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-green-800">
+                        Attendance Recorded
+                      </h3>
                     </div>
-                    <button
-                      className="bg-gray-700 text-gray-100 px-5 py-3 mt-3 rounded-lg text-sm sm:text-base cursor-not-allowed w-full"
-                      disabled
-                    >
-                      ✅ Check-in Completed
-                    </button>
-                    <p className="mt-4 text-gray-200 text-xs sm:text-sm font-medium">
-                      You've already checked in and out today. Come back
-                      tomorrow!
-                    </p>
-                  </div>
-                ) : QrScannerResponse === "Invalid or expired QR token." ? (
-                  <div className="text-red-500 text-sm sm:text-base font-medium text-center w-full">
-                    {QrScannerResponse}{" "}
-                    <button
-                      onClick={() => setQrScannerResponse(null)}
-                      className="text-yellow-500 ml-2 text-sm sm:text-base"
-                    >
-                      Try Again
-                    </button>
+                    <div className="space-y-1 pl-11">
+                      <p className="text-gray-700">
+                        Today's{" "}
+                        <span className="font-bold text-green-600">
+                          check-in/out
+                        </span>{" "}
+                        was successful!
+                      </p>
+                      <p className="text-sm text-gray-500 italic">
+                        See you tomorrow!
+                      </p>
+                    </div>
+                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
                   </div>
                 ) : (
-                  <div className="w-full">
-                    <QRScannerButton
-                      setQrScannerResponse={setQrScannerResponse}
-                      attendenceStatus={attendenceStatus}
-                      setAttendenceMarked={setAttendenceMarked}
-                      setAttendenceStatus={setAttendenceStatus}
-                    />
-                  </div>
+                  <QRScannerButton
+                    attendenceStatus={attendenceStatus}
+                    setAttendenceStatus={setAttendenceStatus}
+                  />
                 )}
               </div>
             )}
 
+            {/* Follow Button Section */}
             {showFollowButton && (
-              <div className="w-full lg:w-auto lg:flex-1 max-w-md">
+              <div className="w-full lg:flex-1 max-w-md">
                 <button
                   onClick={() => {
-                    if (followStatus == "Follow") FollowAction();
+                    if (FollowRequestStatus === -1) FollowAction();
                     else SendFollowActions();
                   }}
-                  className={`w-full px-6 py-3 rounded-full font-medium shadow-sm shadow-white hover:scale-[1.02] transition-colors ${
-                    followStatus === "Following"
-                      ? "bg-gray-800 hover:bg-gray-700 text-white border border-gray-700"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
-                  } text-sm sm:text-base`}
+                  className={`w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2 ${
+                    FollowRequestStatus === 1
+                      ? "bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white"
+                      : FollowRequestStatus === 0
+                      ? "bg-gradient-to-r from-amber-500 to-amber-400 text-white"
+                      : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
+                  }`}
                 >
-                  {followRequestPending ? "Requested" : followStatus}
+                  {FollowRequestStatus === 1 ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  ) : FollowRequestStatus === 0 ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 animate-pulse"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+                    </svg>
+                  )}
+                  {FollowRequestStatus === 0
+                    ? "Requested"
+                    : FollowRequestStatus === 1
+                    ? "Following"
+                    : "Follow"}
                 </button>
               </div>
             )}
@@ -803,14 +929,14 @@ const GymPage = () => {
                 onClick={() => handleNavigateToProfile(user.user)}
               >
                 <img
-                  src={user.user.profileImage}
-                  alt={user.user.fullName}
+                  src={user.user?.profileImage}
+                  alt={user.user?.fullName}
                   className="w-10 h-10 min-w-10 rounded-full border-2 border-gray-500 object-cover shrink-0"
                 />
 
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">
-                    {user.user.fullName}
+                    {user.user?.fullName}
                   </p>
                 </div>
 

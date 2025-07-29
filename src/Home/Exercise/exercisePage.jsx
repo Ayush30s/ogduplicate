@@ -4,19 +4,17 @@ const DEFAULT_RESET_SECONDS = 5 * 60;
 const beepSound = new Audio("/audio/beep.wav");
 
 const ExercisePage = ({ exercise, onClose }) => {
-  // --- Derive initial duration from props, but we'll always reset to 5 min ---
   const initialSeconds = useMemo(
     () => convertToSeconds(exercise?.timeLimit) ?? DEFAULT_RESET_SECONDS,
     [exercise?.timeLimit]
   );
 
-  // --- State ---
-  const [customTime, setCustomTime] = useState(initialSeconds); // total duration (sec) for current run
+  const [customTime, setCustomTime] = useState(initialSeconds);
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [circleDashoffset, setCircleDashoffset] = useState(0);
-  const [saveStatus, setSaveStatus] = useState(null); // null | 'success' | 'error'
+  const [saveStatus, setSaveStatus] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // We store a minimal payload used when saving to backend.
@@ -24,7 +22,6 @@ const ExercisePage = ({ exercise, onClose }) => {
     buildInitialPayload(exercise)
   );
 
-  // When the incoming exercise prop changes, rebuild payload + timer.
   useEffect(() => {
     const newPayload = buildInitialPayload(exercise);
     setExercisePayload(newPayload);
@@ -35,11 +32,9 @@ const ExercisePage = ({ exercise, onClose }) => {
     setIsRunning(false);
   }, [exercise]);
 
-  // --- SVG circle math ---
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
 
-  // --- Countdown effect ---
   useEffect(() => {
     let timer;
     if (isRunning && timeLeft > 0) {
@@ -49,14 +44,13 @@ const ExercisePage = ({ exercise, onClose }) => {
         setCircleDashoffset(offset);
       }, 1000);
     } else if (timeLeft === 0 && isRunning) {
-      beepSound.play(); // 🔊 Play beep sound
+      beepSound.play();
       setIsRunning(false);
       setShowDialog(true);
     }
     return () => clearTimeout(timer);
   }, [isRunning, timeLeft, customTime, circumference]);
 
-  // When the timer hits 0 while running, stop + open dialog.
   useEffect(() => {
     if (!isRunning) return;
     if (timeLeft === 0) {
@@ -66,17 +60,15 @@ const ExercisePage = ({ exercise, onClose }) => {
     }
   }, [timeLeft, isRunning, customTime, circumference]);
 
-  // --- Handlers ---
   const handleTimeChange = (e) => {
     const raw = e.target.value;
-    const newMinutes = Math.min(Math.max(Math.ceil(Number(raw)), 1), 60); // clamp 1-60
+    const newMinutes = Math.min(Math.max(Math.ceil(Number(raw)), 1), 60);
     const newSeconds = newMinutes * 60;
 
     setCustomTime(newSeconds);
     setTimeLeft(newSeconds);
     setCircleDashoffset(0);
 
-    // Update payload.time (minutes)
     setExercisePayload((p) => ({ ...p, time: newMinutes }));
   };
 
@@ -87,7 +79,7 @@ const ExercisePage = ({ exercise, onClose }) => {
     setIsRunning(false);
     setShowDialog(false);
     setSaveStatus(null);
-    // Update payload.time -> 5 minutes
+
     setExercisePayload((p) => ({ ...p, time: 5 }));
   }, []);
 
@@ -96,7 +88,6 @@ const ExercisePage = ({ exercise, onClose }) => {
   };
 
   const handleStartPause = () => {
-    // Restart progress circle if starting fresh
     if (!isRunning && timeLeft === customTime) {
       setCircleDashoffset(calcOffset(timeLeft, customTime, circumference));
     }
@@ -112,11 +103,9 @@ const ExercisePage = ({ exercise, onClose }) => {
   };
 
   const handleModalNo = () => {
-    // Just reset to 5 min; don't save
     hardResetTo5();
   };
 
-  // --- Backend save ---
   const handleSaveToBackend = async () => {
     try {
       setIsSaving(true);

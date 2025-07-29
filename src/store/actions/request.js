@@ -1,16 +1,10 @@
-export const REQUEST_ACTION_PENDING = "REQUEST_ACTION_PENDING";
 export const REQUEST_ACTION_SUCCESS = "REQUEST_ACTION_SUCCESS";
 export const REQUEST_ACTION_FAILED = "REQUEST_ACTION_FAILED";
 export const FETCH_ALL_REQUEST_SUCCESS = "FETCH_ALL_REQUEST_SUCCESS";
-export const UPDATE_STATUS_REQUEST = "UPDATE_STATUS_REQUEST";
 export const UPDATE_STATUS_SUCCESS = "UPDATE_STATUS_SUCCESS";
 export const UPDATE_STATUS_FAILED = "UPDATE_STATUS_FAILED";
 export const DELETE_NOTIFICATION_SUCCESS = "DELETE_NOTIFICATION_SUCCESS";
-
-const requestActionPending = () => ({
-  type: REQUEST_ACTION_PENDING,
-  payload: null,
-});
+export const DELETE_NOTIFICATION_FAILED = "DELETE_NOTIFICATION_FAILED";
 
 const requestActionSuccess = (data) => ({
   type: REQUEST_ACTION_SUCCESS,
@@ -25,11 +19,6 @@ const requestActionFailed = (error) => ({
 const fetchAllRequestSuccess = (data) => ({
   type: FETCH_ALL_REQUEST_SUCCESS,
   payload: data,
-});
-
-const updateStatusRequest = () => ({
-  type: UPDATE_STATUS_REQUEST,
-  payload: null,
 });
 
 const updateStatusSuccess = (data) => ({
@@ -47,13 +36,17 @@ const deletNotificationSuccess = (notificationId) => ({
   payload: notificationId,
 });
 
+const deletNotificationFailed = (error) => ({
+  type: DELETE_NOTIFICATION_FAILED,
+  payload: error,
+});
+
 export {
   requestActionFailed,
-  requestActionPending,
   requestActionSuccess,
   fetchAllRequestSuccess,
-  updateStatusRequest,
   updateStatusSuccess,
   updateStatusFailed,
   deletNotificationSuccess,
+  deletNotificationFailed,
 };

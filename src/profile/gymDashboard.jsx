@@ -58,11 +58,12 @@ const GymDashboard = () => {
   });
 
   const handleSearchUser = (e) => {
+    console.log(gymData.joinedBy);
     setSearchUser(e.target.value);
     const filteredMemberList = gymData?.joinedBy?.filter((user) => {
       let allMatch = true;
       let searchValue = e.target.value;
-      let fullName = user.user.fullName;
+      let fullName = user.user?.fullName;
       for (let index = 0; index < searchValue.length; index++) {
         if (
           searchValue[index]?.toUpperCase() !== fullName[index]?.toUpperCase()
@@ -104,7 +105,7 @@ const GymDashboard = () => {
       {/* Welcome Header */}
       <div className="mb-4 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl md:rounded-2xl p-4 md:p-6 text-white shadow-lg">
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
-          Welcome back, {gymData.fullName?.split(" ")[0]}!
+          Welcome back, {gymData?.fullName?.split(" ")[0]}!
         </h1>
         <p className="text-blue-200 text-sm md:text-base">
           {new Date().toLocaleDateString("en-US", {
@@ -116,11 +117,11 @@ const GymDashboard = () => {
         <div className="flex flex-wrap items-center mt-4 gap-2 md:gap-4">
           <div className="flex items-center bg-blue-500/20 px-3 py-1 md:px-4 md:py-2 rounded-lg text-sm md:text-base">
             <Users className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
-            <span>{gymData.joinedBy?.length || 0} Members</span>
+            <span>{gymData?.joinedBy?.length || 0} Members</span>
           </div>
           <div className="flex items-center bg-blue-500/20 px-3 py-1 md:px-4 md:py-2 rounded-lg text-sm md:text-base">
             <Activity className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
-            <span>{gymData.allShifts?.length || 0} Shifts</span>
+            <span>{gymData?.allShifts?.length || 0} Shifts</span>
           </div>
           <button
             onClick={() => setShowQRCode(!showQRCode)}
@@ -158,11 +159,11 @@ const GymDashboard = () => {
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
             <div className="relative flex flex-col align-middle justify-center items-center">
               <img
-                src={gymData.profileImage}
-                alt={gymData.fullName}
+                src={gymData?.profileImage}
+                alt={gymData?.fullName}
                 className="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-lg md:rounded-xl object-cover border-4 border-blue-900/50 shadow-md"
               />
-              <h1 className="  text-sm text-gray-100">{gymData.email}</h1>
+              <h1 className="  text-sm text-gray-100">{gymData?.email}</h1>
             </div>
             <div className="flex-1 relative bg-gray-800 p-3 md:p-4 rounded-lg md:rounded-xl shadow-sm border border-gray-700 w-full">
               <button
@@ -174,20 +175,20 @@ const GymDashboard = () => {
 
               {/* Gym Info */}
               <h1 className="text-xl md:text-2xl font-bold text-white">
-                {gymData.fullName}
+                {gymData?.fullName}
               </h1>
               <p className="text-gray-400 mt-1 md:mt-2 text-sm md:text-base">
-                {gymData.description}
+                {gymData?.description}
               </p>
 
               <div className="flex flex-wrap gap-2 md:gap-3 mt-3 md:mt-4">
                 <div className="flex items-center text-xs md:text-sm bg-gray-700 text-blue-400 px-2 py-0.5 md:px-3 md:py-1 rounded-full">
                   <MapPin className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                  {gymData.location || "Add location"}
+                  {gymData?.location || "Add location"}
                 </div>
                 <div className="flex items-center text-xs md:text-sm bg-gray-700 text-green-400 px-2 py-0.5 md:px-3 md:py-1 rounded-full">
                   <Phone className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                  {gymData.contactNumber || "Add contact"}
+                  {gymData?.contactNumber || "Add contact"}
                 </div>
               </div>
             </div>
@@ -206,7 +207,7 @@ const GymDashboard = () => {
               <div>
                 <p className="text-xs md:text-sm text-gray-400">Monthly Fee</p>
                 <p className="text-base md:text-xl font-bold text-blue-400">
-                  ₹{gymData.monthlyCharge || "0"}
+                  ₹{gymData?.monthlyCharge || "0"}
                 </p>
               </div>
               <div className="bg-gray-600 p-2 md:p-3 rounded-md md:rounded-lg">
@@ -224,7 +225,7 @@ const GymDashboard = () => {
               >
                 <p className="text-xs md:text-sm text-gray-400">Followers</p>
                 <p className="text-base md:text-lg font-bold text-green-400">
-                  {gymData.followersCount || "0"}
+                  {gymData?.followersCount || "0"}
                 </p>
               </div>
             </div>
@@ -239,7 +240,7 @@ const GymDashboard = () => {
               >
                 <p className="text-xs md:text-sm text-gray-400">Following</p>
                 <p className="text-base md:text-lg font-bold text-purple-400">
-                  {gymData.followingCount || "0"}
+                  {gymData?.followingCount || "0"}
                 </p>
               </div>
             </div>
@@ -248,16 +249,16 @@ const GymDashboard = () => {
       </div>
 
       <div className="flex flex-col md:flex-row md:gap-6 w-full mx-auto">
-        {gymData.joinedBy?.length > 0 && (
+        {gymData?.joinedBy?.length > 0 && (
           <div
             className={`w-full ${
-              gymData.allShifts?.length > 0 ? "md:w-1/2" : "md:w-full"
+              gymData?.allShifts?.length > 0 ? "md:w-1/2" : "md:w-full"
             } bg-gray-800 p-4 md:p-6 rounded-xl shadow-sm border border-gray-700 max-h-64 overflow-auto`}
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
               <h3 className="text-lg md:text-xl font-semibold text-white flex items-center gap-2 mb-2">
                 <FaUserFriends className="text-blue-400 w-5 h-5" />
-                <span>Members ({gymData.joinedBy.length})</span>
+                <span>Members ({gymData?.joinedBy.length})</span>
               </h3>
               <div className="relative w-full md:w-48 lg:w-64">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -288,16 +289,16 @@ const GymDashboard = () => {
                   onClick={() => navigate(`/home/user/${user.user._id}`)}
                 >
                   <img
-                    src={user.user.profileImage}
-                    alt={user.user.fullName}
+                    src={user?.user?.profileImage}
+                    alt={user?.user?.fullName}
                     className="w-12 h-12 rounded-full border-2 border-gray-500 object-cover shadow-md group-hover:border-blue-400 transition-all duration-200"
                   />
                   <div>
                     <p className="text-sm md:text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
-                      {user.user.fullName}
+                      {user?.user?.fullName}
                     </p>
                     <p className="text-xs text-gray-400">
-                      Joined {new Date(user.joinedAt).toLocaleDateString()}
+                      Joined {new Date(user?.joinedAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -307,10 +308,10 @@ const GymDashboard = () => {
         )}
 
         {/* Shifts Section - Right */}
-        {gymData.allShifts?.length > 0 && (
+        {gymData?.allShifts?.length > 0 && (
           <div
             className={`w-full max-h-64 overflow-auto ${
-              gymData.joinedBy?.length > 0 ? "md:w-1/2" : "md:w-full"
+              gymData?.joinedBy?.length > 0 ? "md:w-1/2" : "md:w-full"
             }`}
           >
             <div className="bg-gray-800 p-4 md:p-6 mt-4 md:mt-0 rounded-xl shadow-sm border border-gray-700">
@@ -486,7 +487,7 @@ const GymDashboard = () => {
         )}
 
         {/* If no members and no shifts */}
-        {!gymData.joinedBy?.length && !gymData.allShifts?.length && (
+        {!gymData?.joinedBy?.length && !gymData?.allShifts?.length && (
           <div className="w-full bg-gray-800 p-4 rounded-xl border border-gray-700 flex items-center justify-center">
             <p className="text-gray-400">No members or shifts yet</p>
           </div>

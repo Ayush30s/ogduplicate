@@ -2,17 +2,19 @@ import { useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { useSelector } from "react-redux";
 
-const QRScannerButton = ({
-  setAttendenceMarked,
-  setAttendenceStatus,
-  attendenceStatus,
-  setQrScannerResponse,
-}) => {
+const QRScannerButton = ({ attendenceStatus, setAttendenceStatus }) => {
   const loggedIn = useSelector((state) => state.login);
   const [scanning, setScanning] = useState(false);
   const scannerRef = useRef(null);
 
   const markAttendance = async (token) => {
+    let newAttendenceStatus = "Absent";
+    if (attendenceStatus === "Absent") {
+      newAttendenceStatus = "Checkout Pending";
+    } else if (attendenceStatus === "Checkout Pending") {
+      newAttendenceStatus = "Both Marked";
+    }
+
     try {
       const response = await fetch(
         `https://gymbackenddddd-1.onrender.com/home/gym/mark-attendance?status=${attendenceStatus}`,
@@ -29,17 +31,14 @@ const QRScannerButton = ({
         }
       );
 
-      const data = await response.json();
-      console.log("Attendance Response:", data);
-      setQrScannerResponse(data.message);
-
-      if (data.success) {
-        setAttendenceMarked(true);
-        setAttendenceStatus(!attendenceStatus);
-        setTimeout(() => {
-          setAttendenceMarked(false);
-        }, 5000);
+      if (!response.ok) {
+        alert(newAttendenceStatus, " failed");
+        return;
       }
+
+      const data = await response.json();
+      setAttendenceStatus(newAttendenceStatus);
+      alert(data?.message || data?.error);
     } catch (error) {
       console.error("Error marking attendance:", error);
     }
@@ -108,7 +107,7 @@ const QRScannerButton = ({
         className="w-full max-w-md mx-auto px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-2xl shadow-lg hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
       >
         <span>
-          {!attendenceStatus
+          {attendenceStatus == "Absent"
             ? "Scan QR to Mark Attendance In"
             : "Scan QR to Mark Attendance Out"}
         </span>

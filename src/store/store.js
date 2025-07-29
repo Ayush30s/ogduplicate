@@ -1,6 +1,5 @@
 import { persistReducer, persistStore } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
-import { thunk } from "redux-thunk";
 import { combineReducers } from "redux";
 import storage from "redux-persist/lib/storage";
 
@@ -23,12 +22,17 @@ import requestReducer, {
   initialState as requestInitialState,
 } from "./reducer/requestReducer";
 
+import activeUserReducer, {
+  initialState as activeUserInitialState,
+} from "../store/reducer/userActiveReducer";
+
 export const initialState = {
   login: authInitialState,
   blog: blogInitialState,
   profile: profileInitialState,
   listing: listingInitialState,
   listingActive: listingActiveInitialState,
+  userActive: activeUserInitialState,
   request: requestInitialState,
 };
 
@@ -38,6 +42,7 @@ const rootReducer = combineReducers({
   profile: profileReducer,
   listing: listingReducer,
   listingActive: listingReducerActive,
+  userActive: activeUserReducer,
   request: requestReducer,
 });
 

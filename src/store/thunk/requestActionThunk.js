@@ -1,18 +1,14 @@
 import {
   requestActionFailed,
-  requestActionPending,
   requestActionSuccess,
   fetchAllRequestSuccess,
   updateStatusFailed,
-  updateStatusRequest,
   updateStatusSuccess,
   deletNotificationSuccess,
+  deletNotificationFailed,
 } from "../actions/request";
 
 const requestActionThunk = (data) => async (dispatch) => {
-  console.log("request action thunk", data);
-  dispatch(requestActionPending());
-
   try {
     const response = await fetch(
       "https://gymbackenddddd-1.onrender.com/notify/handleRequest",
@@ -32,8 +28,6 @@ const requestActionThunk = (data) => async (dispatch) => {
     }
 
     const resdata = await response.json();
-    console.log("single thunk adata", resdata);
-
     dispatch(requestActionSuccess(resdata.data));
   } catch (err) {
     console.log(err.message);
@@ -66,7 +60,6 @@ const fetchAllRequestThunk = (reqAction) => async (dispatch) => {
 
 // Thunk to change request status
 const changeRequestStatusThunk = (data) => async (dispatch) => {
-  dispatch(updateStatusRequest());
   try {
     const response = await fetch(
       "https://gymbackenddddd-1.onrender.com/notify/updatejoinstatus",
@@ -113,6 +106,7 @@ const deleteNotificationThunk = (notification) => async (dispatch) => {
     dispatch(deletNotificationSuccess(notification._id));
   } catch (error) {
     console.log(error);
+    dispatch(deletNotificationFailed(error.message));
   }
 };
 

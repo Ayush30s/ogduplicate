@@ -9,7 +9,7 @@ import Loading from "./common/loading.jsx";
 import UserTypeAccessGuard from "./guards/userTypeAccessGuard.jsx";
 import GymDashboard from "./profile/gymDashboard.jsx";
 import UserDashboard from "./profile/userDashboard.jsx";
-import ProtectedRoute from "../src/Home/protectedRoute.jsx";
+import ProtectedRoute from "./guards/protectedRoute.jsx";
 import WorkoutPlanForm from "./Home/Exercise/transformation.jsx";
 
 const App = lazy(() => import("./App.jsx"));

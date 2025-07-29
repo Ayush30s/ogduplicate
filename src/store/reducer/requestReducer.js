@@ -1,12 +1,11 @@
 import {
   REQUEST_ACTION_FAILED,
-  REQUEST_ACTION_PENDING,
   REQUEST_ACTION_SUCCESS,
   FETCH_ALL_REQUEST_SUCCESS,
-  UPDATE_STATUS_REQUEST,
   UPDATE_STATUS_FAILED,
   UPDATE_STATUS_SUCCESS,
   DELETE_NOTIFICATION_SUCCESS,
+  DELETE_NOTIFICATION_FAILED,
 } from "../actions/request";
 
 export const initialState = {
@@ -23,13 +22,6 @@ const requestReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
-
-    case REQUEST_ACTION_PENDING: {
-      return {
-        ...state,
-        loading: true,
-      };
-    }
 
     case REQUEST_ACTION_SUCCESS:
       console.log(action.payload, "one request");
@@ -53,13 +45,6 @@ const requestReducer = (state = initialState, action) => {
         loading: false,
       };
 
-    case UPDATE_STATUS_REQUEST:
-      return {
-        ...state,
-        loading: true,
-        error: null,
-      };
-
     case UPDATE_STATUS_SUCCESS:
       return {
         ...state,
@@ -78,6 +63,13 @@ const requestReducer = (state = initialState, action) => {
         requsetArray: state.requsetArray.filter((req) => {
           req._id != action.payload;
         }),
+      };
+
+    case DELETE_NOTIFICATION_FAILED:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
       };
 
     default:
