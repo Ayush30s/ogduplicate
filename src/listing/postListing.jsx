@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { equipmentCategories } from "../../public/data";
 import { addNewListingThunk } from "../store/thunk/listing-management";
+import Loading from "../common/loading";
 
 const CreateListingPage = () => {
   const navigate = useNavigate();
@@ -537,11 +538,7 @@ const CreateListingPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen flex-col text-center bg-gray-800">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mb-4"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

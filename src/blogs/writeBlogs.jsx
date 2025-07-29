@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { convertToBase64 } from "../../utils/FileToBase64";
 import { postBlogThunk } from "../store/thunk/blog-management";
+import Loading from "../common/loading";
 
 const TextEditor = () => {
   const quillRef = useRef(null);
@@ -88,11 +89,7 @@ const TextEditor = () => {
   ];
 
   if (data.loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

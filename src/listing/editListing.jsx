@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { convertToBase64 } from "../../utils/FileToBase64";
 import { equipmentCategories } from "../../public/data";
 import { updateListingThunk } from "../store/thunk/listing-management";
+import Loading from "../common/loading";
 
 const EditListingPage = () => {
   const navigate = useNavigate();
@@ -274,14 +275,7 @@ const EditListingPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen flex-col text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mb-4"></div>
-        <p className="text-lg text-gray-700 font-medium">
-          Posting your listing... Please wait.
-        </p>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

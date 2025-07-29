@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { userBlogDataThunk } from "../store/thunk/blog-management";
 import BlogCard from "./blogCard";
+import Loading from "../common/loading";
 
 const SavedBlogs = () => {
   const dispatch = useDispatch();
@@ -24,14 +25,7 @@ const SavedBlogs = () => {
   }, [data?.blogsData?.savedblogs, data.error, data.loading]);
 
   if (loading) {
-    return (
-      <div className="bg-gray-900 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-300">Loading your saved blogs...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

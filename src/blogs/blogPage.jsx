@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Loading from "../common/loading";
 
 const BlogPage = () => {
   // State declarations remain the same
@@ -175,11 +176,7 @@ const BlogPage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

@@ -5,6 +5,7 @@ import { equipments } from "../../public/data";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "lucide-react";
 import { allListingsThunk } from "../store/thunk/listing-management";
+import Loading from "../common/loading";
 
 const AllListing = () => {
   const dispatch = useDispatch();
@@ -76,11 +77,7 @@ const AllListing = () => {
   const tabs = ["sale", "rent"];
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

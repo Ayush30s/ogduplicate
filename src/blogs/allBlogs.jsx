@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import BlogCard from "./blogCard";
 import { allBlogsThunk } from "../store/thunk/blog-management";
 import { motion } from "framer-motion";
+import Loading from "../common/loading";
 
 const AllBlogs = () => {
   const dispatch = useDispatch();
@@ -21,11 +22,7 @@ const AllBlogs = () => {
   }, [dispatch, navigate]);
 
   if (blogsData.loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

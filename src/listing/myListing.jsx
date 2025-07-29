@@ -4,6 +4,7 @@ import { handleMyListingThunk } from "../store/thunk/listing-management";
 import ListingCard from "./listingCard";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import Loading from "../common/loading";
 
 const MyListing = () => {
   const navigate = useNavigate();
@@ -32,9 +33,7 @@ const MyListing = () => {
         </AnimatePresence>
 
         {loading ? (
-          <div className="flex justify-center items-center h-[50vh]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-          </div>
+          <Loading />
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-[50vh]">
             <motion.div
