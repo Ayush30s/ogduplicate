@@ -564,6 +564,7 @@ const CreateListingPage = () => {
             </div>
           )}
 
+           <h2 class="text-2xl font-bold mb-4 text-[#4F46E5] text-center">Post Your Equipment</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block font-medium mb-2 text-gray-300">
