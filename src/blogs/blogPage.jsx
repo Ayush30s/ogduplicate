@@ -339,8 +339,8 @@ const BlogPage = () => {
                     <div>
                       <h4 className="font-medium text-white">
                         {comment?.user?.userType === "gymModel"
-                          ? comment.user.gymName || comment.user.fullName
-                          : comment.user.fullName}
+                          ? comment?.user.gymName || comment?.user?.fullName
+                          : comment?.user?.fullName}
                       </h4>
                       <p className="text-xs text-gray-400">
                         {formatDate(comment?.commentAt)}
