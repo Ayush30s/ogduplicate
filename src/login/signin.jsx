@@ -10,7 +10,7 @@ function SignIn() {
 
   const [formData, setFormData] = useState({
     email: "ayush@gmail.com",
-    password: "1234",
+    password: "123456",
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
