@@ -11,15 +11,16 @@ import GymDashboard from "./profile/gymDashboard.jsx";
 import UserDashboard from "./profile/userDashboard.jsx";
 import ProtectedRoute from "./guards/protectedRoute.jsx";
 import WorkoutPlanForm from "./Home/Exercise/transformation.jsx";
+import SignIn from "./login/signin.jsx";
+import AboutPage from "./Home/about.jsx";
+import Home from "./Home/home.jsx";
+import FrontPage from "./Home/frontPage.jsx";
 
 const App = lazy(() => import("./App.jsx"));
-const Home = lazy(() => import("./Home/home.jsx"));
 const Blogs = lazy(() => import("./blogs/blog.jsx"));
-const SignIn = lazy(() => import("./login/signin.jsx"));
 const MyBlogs = lazy(() => import("./blogs/myBlogs.jsx"));
 const BlogPage = lazy(() => import("./blogs/blogPage.jsx"));
 const AllBlogs = lazy(() => import("./blogs/allBlogs.jsx"));
-const FrontPage = lazy(() => import("./Home/frontPage.jsx"));
 const TextEditor = lazy(() => import("./blogs/writeBlogs.jsx"));
 const SavedBlogs = lazy(() => import("./blogs/savedBlogs.jsx"));
 const LikedBlogs = lazy(() => import("./blogs/likedBlogs.jsx"));
@@ -33,7 +34,6 @@ const RegisterOwner = lazy(() => import("./login/registerOwner.jsx"));
 const CreateListingPage = lazy(() => import("./listing/postListing.jsx"));
 const FollowersList = lazy(() => import("../src/Home/List/followersList.jsx"));
 const FollowingList = lazy(() => import("../src/Home/List/followingList.jsx"));
-const AboutPage = lazy(() => import("./Home/about.jsx"));
 const Listing = lazy(() => import("./listing/listing.jsx"));
 const AllListing = lazy(() => import("./listing/allListings.jsx"));
 const ListingPage = lazy(() => import("./listing/listingPage.jsx"));
@@ -54,11 +54,7 @@ const appRouter = createBrowserRouter([
       // Unprotected Routes
       {
         path: "/",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <SignIn />
-          </Suspense>
-        ),
+        element: <SignIn />,
       },
       {
         path: "/register",
@@ -84,42 +80,26 @@ const appRouter = createBrowserRouter([
           </Suspense>
         ),
       },
-
-      // Protected Routes
       {
         path: "/about",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <ProtectedRoute>
-              <AboutPage />
-            </ProtectedRoute>
-          </Suspense>
-        ),
+        element: <AboutPage />,
       },
       {
         path: "/home",
         element: (
-          <Suspense fallback={<Loading />}>
-            <ErrorBoundary>
-              <ProtectedRoute>
-                <FrontPage />
-              </ProtectedRoute>
-            </ErrorBoundary>
-          </Suspense>
+          <ErrorBoundary>
+            <FrontPage />
+          </ErrorBoundary>
         ),
         children: [
           {
             path: "/home",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <Home />
-              </Suspense>
-            ),
+            element: <Home />,
           },
           {
             path: "/home/transformation",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Loading message="Workout Planing..." />}>
                 <UserTypeAccessGuard>
                   <WorkoutPlanForm />
                 </UserTypeAccessGuard>
@@ -164,7 +144,9 @@ const appRouter = createBrowserRouter([
             element: (
               <Suspense fallback={<Loading />}>
                 <UserTypeAccessGuard>
-                  <GymDashboard />
+                  <ProtectedRoute>
+                    <GymDashboard />
+                  </ProtectedRoute>
                 </UserTypeAccessGuard>
               </Suspense>
             ),
@@ -174,7 +156,9 @@ const appRouter = createBrowserRouter([
             element: (
               <Suspense fallback={<Loading />}>
                 <UserTypeAccessGuard>
-                  <UserDashboard />
+                  <ProtectedRoute>
+                    <UserDashboard />
+                  </ProtectedRoute>
                 </UserTypeAccessGuard>
               </Suspense>
             ),
@@ -183,7 +167,9 @@ const appRouter = createBrowserRouter([
             path: "/home/profile/edit",
             element: (
               <Suspense fallback={<Loading />}>
-                <EditPersonalDetails />
+                <ProtectedRoute>
+                  <EditPersonalDetails />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -194,9 +180,7 @@ const appRouter = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <ErrorBoundary>
-              <ProtectedRoute>
-                <Blogs />
-              </ProtectedRoute>
+              <Blogs />
             </ErrorBoundary>
           </Suspense>
         ),
@@ -213,7 +197,9 @@ const appRouter = createBrowserRouter([
             path: "/blog/new",
             element: (
               <Suspense fallback={<Loading />}>
-                <TextEditor />
+                <ProtectedRoute>
+                  <TextEditor />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -229,7 +215,9 @@ const appRouter = createBrowserRouter([
             path: "/blog/myBlogs",
             element: (
               <Suspense fallback={<Loading />}>
-                <MyBlogs />
+                <ProtectedRoute>
+                  <MyBlogs />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -237,7 +225,9 @@ const appRouter = createBrowserRouter([
             path: "/blog/savedblogs",
             element: (
               <Suspense fallback={<Loading />}>
-                <SavedBlogs />
+                <ProtectedRoute>
+                  <SavedBlogs />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -245,7 +235,9 @@ const appRouter = createBrowserRouter([
             path: "/blog/likedBlogs",
             element: (
               <Suspense fallback={<Loading />}>
-                <LikedBlogs />
+                <ProtectedRoute>
+                  <LikedBlogs />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -256,9 +248,7 @@ const appRouter = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <ErrorBoundary>
-              <ProtectedRoute>
-                <Listing />
-              </ProtectedRoute>
+              <Listing />
             </ErrorBoundary>
           </Suspense>
         ),
@@ -275,7 +265,9 @@ const appRouter = createBrowserRouter([
             path: "/listing/new",
             element: (
               <Suspense fallback={<Loading />}>
-                <CreateListingPage />
+                <ProtectedRoute>
+                  <CreateListingPage />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -283,7 +275,9 @@ const appRouter = createBrowserRouter([
             path: "/listing/mylisting",
             element: (
               <Suspense fallback={<Loading />}>
-                <MyListing />
+                <ProtectedRoute>
+                  <MyListing />
+                </ProtectedRoute>
               </Suspense>
             ),
           },
@@ -299,7 +293,9 @@ const appRouter = createBrowserRouter([
             path: "/listing/edit/:listingId",
             element: (
               <Suspense fallback={<Loading />}>
-                <EditListingPage />
+                <ProtectedRoute>
+                  <EditListingPage />
+                </ProtectedRoute>
               </Suspense>
             ),
           },

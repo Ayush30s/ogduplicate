@@ -25,7 +25,6 @@ const FollowingList = () => {
         );
 
         const result = await response.json();
-        console.log(result);
 
         if (result.message) {
           setError(result.message);
@@ -34,7 +33,6 @@ const FollowingList = () => {
           setFollowingList(result.userFollowingData || []);
         }
       } catch (err) {
-        console.error(err);
         setError("Failed to fetch following list");
       } finally {
         setLoading(false);

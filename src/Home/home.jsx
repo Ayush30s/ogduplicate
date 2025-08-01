@@ -35,6 +35,7 @@ const Home = () => {
     );
     navigate(`/home?${params.toString()}`);
   };
+
   const handleReset = () => {
     setFormData({
       city: "",
@@ -80,7 +81,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Hero Section */}
-      {loggedInuser.user.userType === "userModel" ? (
+      {loggedInuser?.user?.userType === "userModel" ? (
         <div className="bg-gradient-to-r from-indigo-900 to-purple-900 py-16">
           <div className="container mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -113,7 +114,7 @@ const Home = () => {
       )}
 
       {/* Main Content */}
-      {loggedInuser.user.userType === "userModel" ? (
+      {loggedInuser?.user?.userType === "userModel" ? (
         <div className="container mx-auto px-6 py-8 -mt-12">
           {/* Filter Section */}
           <div className="bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
