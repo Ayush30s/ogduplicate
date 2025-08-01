@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -40,7 +40,7 @@ const GymDashboard = () => {
   useEffect(() => {
     if (data?.user?.userType === "gymModel")
       dispatch(profileDataThuk(data.user.userType));
-  }, [dispatch, data?.user?.userType, handleSearchUser]);
+  }, [dispatch, data?.user?.userType]);
 
   const [showShiftForm, setShowShiftForm] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -57,27 +57,25 @@ const GymDashboard = () => {
     status: "Active",
   });
 
-  const handleSearchUser = useCallback(
-    (e) => {
-      setSearchUser(e.target.value);
-      const filteredMemberList = gymData?.joinedBy?.filter((user) => {
-        let allMatch = true;
-        let searchValue = e.target.value;
-        let fullName = user.user?.fullName;
-        for (let index = 0; index < searchValue.length; index++) {
-          if (
-            searchValue[index]?.toUpperCase() !== fullName[index]?.toUpperCase()
-          ) {
-            allMatch = false;
-            break;
-          }
+  const handleSearchUser = (e) => {
+    console.log(gymData.joinedBy);
+    setSearchUser(e.target.value);
+    const filteredMemberList = gymData?.joinedBy?.filter((user) => {
+      let allMatch = true;
+      let searchValue = e.target.value;
+      let fullName = user.user?.fullName;
+      for (let index = 0; index < searchValue.length; index++) {
+        if (
+          searchValue[index]?.toUpperCase() !== fullName[index]?.toUpperCase()
+        ) {
+          allMatch = false;
+          break;
         }
-        return allMatch;
-      });
-      setFilteredMembers(filteredMemberList);
-    },
-    [gymData?.joinedBy]
-  );
+      }
+      return allMatch;
+    });
+    setFilteredMembers(filteredMemberList);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -198,60 +196,56 @@ const GymDashboard = () => {
         </div>
 
         {/* Stats Card */}
-        {
-          <div className="bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-gray-700">
-            <h3 className="text-lg font-semibold text-white mb-1 md:mb-4 flex items-center gap-2">
-              <Activity className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
-              Gym Stats
-            </h3>
-            <div className="grid grid-cols-2 md:flex md:flex-row gap-2 md:gap-4">
-              {/* Monthly Membership */}
-              <div className="flex flex-1 justify-between items-center p-3 md:p-4 bg-gray-700 rounded-lg md:rounded-xl shadow-sm">
-                <div>
-                  <p className="text-xs md:text-sm text-gray-400">
-                    Monthly Fee
-                  </p>
-                  <p className="text-base md:text-xl font-bold text-blue-400">
-                    ₹{gymData?.monthlyCharge || "0"}
-                  </p>
-                </div>
-                <div className="bg-gray-600 p-2 md:p-3 rounded-md md:rounded-lg">
-                  <Calendar className="w-4 h-4 md:w-6 md:h-6 text-blue-400" />
-                </div>
+        <div className="bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-gray-700">
+          <h3 className="text-lg font-semibold text-white mb-1 md:mb-4 flex items-center gap-2">
+            <Activity className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
+            Gym Stats
+          </h3>
+          <div className="grid grid-cols-2 md:flex md:flex-row gap-2 md:gap-4">
+            {/* Monthly Membership */}
+            <div className="flex flex-1 justify-between items-center p-3 md:p-4 bg-gray-700 rounded-lg md:rounded-xl shadow-sm">
+              <div>
+                <p className="text-xs md:text-sm text-gray-400">Monthly Fee</p>
+                <p className="text-base md:text-xl font-bold text-blue-400">
+                  ₹{gymData?.monthlyCharge || "0"}
+                </p>
               </div>
-
-              {/* Followers */}
-              <div className="flex flex-1 items-center justify-between p-3 md:p-4 bg-gray-700 rounded-lg md:rounded-xl shadow-sm">
-                <div
-                  onClick={() =>
-                    navigate(`/home/gym/${data.user.userId}/followersList`)
-                  }
-                  className="cursor-pointer"
-                >
-                  <p className="text-xs md:text-sm text-gray-400">Followers</p>
-                  <p className="text-base md:text-lg font-bold text-green-400">
-                    {gymData?.followersCount || "0"}
-                  </p>
-                </div>
+              <div className="bg-gray-600 p-2 md:p-3 rounded-md md:rounded-lg">
+                <Calendar className="w-4 h-4 md:w-6 md:h-6 text-blue-400" />
               </div>
+            </div>
 
-              {/* Following */}
-              <div className="flex flex-1 items-center justify-between p-3 md:p-4 bg-gray-700 rounded-lg md:rounded-xl shadow-sm">
-                <div
-                  onClick={() =>
-                    navigate(`/home/gym/${data.user.userId}/followingList`)
-                  }
-                  className="cursor-pointer"
-                >
-                  <p className="text-xs md:text-sm text-gray-400">Following</p>
-                  <p className="text-base md:text-lg font-bold text-purple-400">
-                    {gymData?.followingCount || "0"}
-                  </p>
-                </div>
+            {/* Followers */}
+            <div className="flex flex-1 items-center justify-between p-3 md:p-4 bg-gray-700 rounded-lg md:rounded-xl shadow-sm">
+              <div
+                onClick={() =>
+                  navigate(`/home/gym/${data.user.userId}/followersList`)
+                }
+                className="cursor-pointer"
+              >
+                <p className="text-xs md:text-sm text-gray-400">Followers</p>
+                <p className="text-base md:text-lg font-bold text-green-400">
+                  {gymData?.followersCount || "0"}
+                </p>
+              </div>
+            </div>
+
+            {/* Following */}
+            <div className="flex flex-1 items-center justify-between p-3 md:p-4 bg-gray-700 rounded-lg md:rounded-xl shadow-sm">
+              <div
+                onClick={() =>
+                  navigate(`/home/gym/${data.user.userId}/followingList`)
+                }
+                className="cursor-pointer"
+              >
+                <p className="text-xs md:text-sm text-gray-400">Following</p>
+                <p className="text-base md:text-lg font-bold text-purple-400">
+                  {gymData?.followingCount || "0"}
+                </p>
               </div>
             </div>
           </div>
-        }
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row md:gap-6 w-full mx-auto">
@@ -314,235 +308,234 @@ const GymDashboard = () => {
         )}
 
         {/* Shifts Section - Right */}
+        {gymData?.allShifts?.length > 0 && (
+          <div
+            className={`w-full max-h-64 overflow-auto ${
+              gymData?.joinedBy?.length > 0 ? "md:w-1/2" : "md:w-full"
+            }`}
+          >
+            <div className="bg-gray-800 p-4 md:p-6 mt-4 md:mt-0 rounded-xl shadow-sm border border-gray-700">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Clock className="text-blue-400 w-5 h-5" />
+                  <span>Shifts</span>
+                </h3>
+                <button
+                  onClick={() => setShowShiftForm(!showShiftForm)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                >
+                  {!showShiftForm && <FaPlus className="w-4 h-4" />}
+                  {showShiftForm ? "Cancel" : "New"}
+                </button>
+              </div>
 
-        <div
-          className={`w-full max-h-64 overflow-auto ${
-            gymData?.joinedBy?.length > 0 ? "md:w-1/2" : "md:w-full"
-          }`}
-        >
-          <div className="bg-gray-800 p-4 md:p-6 mt-4 md:mt-0 rounded-xl shadow-sm border border-gray-700">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Clock className="text-blue-400 w-5 h-5" />
-                <span>Shifts</span>
-              </h3>
-              <button
-                onClick={() => setShowShiftForm(!showShiftForm)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-              >
-                {!showShiftForm && <FaPlus className="w-4 h-4" />}
-                {showShiftForm ? "Cancel" : "New"}
-              </button>
-            </div>
+              {showShiftForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+                  <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-md">
+                    <div className="p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-xl font-semibold text-blue-400 flex items-center gap-2">
+                          <Clock className="text-blue-400" size={20} />
+                          Create New Shift
+                        </h3>
+                        <button
+                          onClick={() => setShowShiftForm(false)}
+                          className="text-gray-400 hover:text-white transition-colors"
+                        >
+                          <FaTimes className="h-5 w-5" />
+                        </button>
+                      </div>
 
-            {showShiftForm && (
-              <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-                <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl w-full max-w-md">
-                  <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-xl font-semibold text-blue-400 flex items-center gap-2">
-                        <Clock className="text-blue-400" size={20} />
-                        Create New Shift
-                      </h3>
-                      <button
-                        onClick={() => setShowShiftForm(false)}
-                        className="text-gray-400 hover:text-white transition-colors"
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Gender
+                            </label>
+                            <select
+                              name="sex"
+                              value={formData.sex}
+                              onChange={handleChange}
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            >
+                              <option value="All">All Genders</option>
+                              <option value="Male">Male Only</option>
+                              <option value="Female">Female Only</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Member Limit
+                            </label>
+                            <input
+                              type="number"
+                              name="limit"
+                              value={formData?.limit}
+                              onChange={handleChange}
+                              min="1"
+                              max="100"
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                Start Time
+                              </label>
+                              <input
+                                type="time"
+                                name="startTime"
+                                value={formData.startTime}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                End Time
+                              </label>
+                              <input
+                                type="time"
+                                name="endTime"
+                                value={formData.endTime}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                              Status
+                            </label>
+                            <select
+                              name="status"
+                              value={formData?.status}
+                              onChange={handleChange}
+                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            >
+                              <option value="Active">Active</option>
+                              <option value="Inactive">Inactive</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowShiftForm(false)}
+                            className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                          >
+                            Create Shift
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Shift List */}
+              <div className="flex flex-col gap-2">
+                {gymData?.allShifts?.map((shift, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between p-3 bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 cursor-pointer transition-all duration-200 group"
+                    onClick={() => setShowShiftPage(shift)}
+                  >
+                    <div className="w-full flex justify-between items-center gap-2 md:gap-4">
+                      <div className="min-w-[80px]">
+                        <h4 className="text-sm md:text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
+                          Shift {index + 1}
+                        </h4>
+                        <p className="text-xs md:text-sm text-gray-400">
+                          {shift?.startTime} - {shift?.endTime}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`px-2 py-1 text-xs md:text-sm rounded-full font-medium whitespace-nowrap ${
+                          shift?.status === "Active"
+                            ? "bg-green-900/30 text-green-400"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
                       >
-                        <FaTimes className="h-5 w-5" />
+                        {shift?.status}
+                      </span>
+
+                      <span className="text-xs md:text-sm text-gray-400 whitespace-nowrap px-2">
+                        {shift?.limit} slots
+                      </span>
+
+                      <button className="text-xs md:text-sm text-blue-400 hover:text-blue-300 transition-colors whitespace-nowrap">
+                        View →
                       </button>
                     </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Gender
-                          </label>
-                          <select
-                            name="sex"
-                            value={formData.sex}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                          >
-                            <option value="All">All Genders</option>
-                            <option value="Male">Male Only</option>
-                            <option value="Female">Female Only</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Member Limit
-                          </label>
-                          <input
-                            type="number"
-                            name="limit"
-                            value={formData?.limit}
-                            onChange={handleChange}
-                            min="1"
-                            max="100"
-                            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
-                              Start Time
-                            </label>
-                            <input
-                              type="time"
-                              name="startTime"
-                              value={formData.startTime}
-                              onChange={handleChange}
-                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
-                              End Time
-                            </label>
-                            <input
-                              type="time"
-                              name="endTime"
-                              value={formData.endTime}
-                              onChange={handleChange}
-                              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Status
-                          </label>
-                          <select
-                            name="status"
-                            value={formData?.status}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                          >
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-3 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setShowShiftForm(false)}
-                          className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-                        >
-                          Create Shift
-                        </button>
-                      </div>
-                    </form>
                   </div>
-                </div>
+                ))}
               </div>
-            )}
-
-            {/* Shift List */}
-            <div className="flex flex-col gap-2">
-              {gymData?.allShifts?.map((shift, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between p-3 bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 cursor-pointer transition-all duration-200 group"
-                  onClick={() => setShowShiftPage(shift)}
-                >
-                  <div className="w-full flex justify-between items-center gap-2 md:gap-4">
-                    <div className="min-w-[80px]">
-                      <h4 className="text-sm md:text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
-                        Shift {index + 1}
-                      </h4>
-                      <p className="text-xs md:text-sm text-gray-400">
-                        {shift?.startTime} - {shift?.endTime}
-                      </p>
-                    </div>
-
-                    <span
-                      className={`px-2 py-1 text-xs md:text-sm rounded-full font-medium whitespace-nowrap ${
-                        shift?.status === "Active"
-                          ? "bg-green-900/30 text-green-400"
-                          : "bg-gray-700 text-gray-300"
-                      }`}
-                    >
-                      {shift?.status}
-                    </span>
-
-                    <span className="text-xs md:text-sm text-gray-400 whitespace-nowrap px-2">
-                      {shift?.limit} slots
-                    </span>
-
-                    <button className="text-xs md:text-sm text-blue-400 hover:text-blue-300 transition-colors whitespace-nowrap">
-                      View →
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* If no members and no shifts */}
-        {gymData?.joinedBy?.length == 0 && (
+        {!gymData?.joinedBy?.length && !gymData?.allShifts?.length && (
           <div className="w-full bg-gray-800 p-4 rounded-xl border border-gray-700 flex items-center justify-center">
-            <p className="text-gray-400">No members yet</p>
+            <p className="text-gray-400">No members or shifts yet</p>
           </div>
         )}
       </div>
 
       {/* Analytics Section */}
-      {gymData?.joinedBy?.length !== 0 && (
-        <div className=" bg-gray-800 mt-4 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-gray-700">
-          <h2 className="text-lg md:text-xl font-semibold text-white mb-3 md:mb-4 flex items-center gap-2">
-            <Activity className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
-            <span className="text-sm md:text-base">Dashboard Overview</span>
-          </h2>
+      <div className=" bg-gray-800 mt-4 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border border-gray-700">
+        <h2 className="text-lg md:text-xl font-semibold text-white mb-3 md:mb-4 flex items-center gap-2">
+          <Activity className="text-blue-400 w-4 h-4 md:w-5 md:h-5" />
+          <span className="text-sm md:text-base">Dashboard Overview</span>
+        </h2>
 
-          <div className="flex flex-wrap gap-2 md:gap-4 mb-3 md:mb-4">
-            <button
-              className={`${
-                showAnalytics ? "bg-red-500" : "bg-blue-500"
-              } text-white py-1.5 px-3 md:py-2 md:px-4 rounded-lg shadow-md hover:bg-blue-600 transition-all text-xs md:text-sm`}
-              onClick={() => setShowAnalytics(!showAnalytics)}
-            >
-              {showAnalytics ? "Hide Analytics" : "Show Analytics"}
-            </button>
+        <div className="flex flex-wrap gap-2 md:gap-4 mb-3 md:mb-4">
+          <button
+            className={`${
+              showAnalytics ? "bg-red-500" : "bg-blue-500"
+            } text-white py-1.5 px-3 md:py-2 md:px-4 rounded-lg shadow-md hover:bg-blue-600 transition-all text-xs md:text-sm`}
+            onClick={() => setShowAnalytics(!showAnalytics)}
+          >
+            {showAnalytics ? "Hide Analytics" : "Show Analytics"}
+          </button>
 
-            <button
-              className={`${
-                attendenceReport ? "bg-red-500" : "bg-blue-500"
-              } text-white py-1.5 px-3 md:py-2 md:px-4 rounded-lg shadow-md hover:bg-blue-600 transition-all text-xs md:text-sm`}
-              onClick={() => setAttendenceReport(!attendenceReport)}
-            >
-              {attendenceReport ? "Hide Report" : "Show Report"}
-            </button>
-          </div>
-
-          {showAnalytics && (
-            <div className="mt-4 md:mt-6 ">
-              <AnalyticsChart
-                activeMonth={gymData?.activeMonths}
-                darkMode={true}
-              />
-            </div>
-          )}
-
-          {attendenceReport && (
-            <div className="mt-4 md:mt-6">
-              <AttendanceReport joinedBy={gymData?.joinedBy} />
-            </div>
-          )}
+          <button
+            className={`${
+              attendenceReport ? "bg-red-500" : "bg-blue-500"
+            } text-white py-1.5 px-3 md:py-2 md:px-4 rounded-lg shadow-md hover:bg-blue-600 transition-all text-xs md:text-sm`}
+            onClick={() => setAttendenceReport(!attendenceReport)}
+          >
+            {attendenceReport ? "Hide Report" : "Show Report"}
+          </button>
         </div>
-      )}
+
+        {showAnalytics && (
+          <div className="mt-4 md:mt-6 ">
+            <AnalyticsChart
+              activeMonth={gymData?.activeMonths}
+              darkMode={true}
+            />
+          </div>
+        )}
+
+        {attendenceReport && (
+          <div className="mt-4 md:mt-6">
+            <AttendanceReport joinedBy={gymData?.joinedBy} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

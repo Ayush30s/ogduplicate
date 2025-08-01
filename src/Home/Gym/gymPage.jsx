@@ -20,7 +20,6 @@ import { useSelector } from "react-redux";
 import { requestActionThunk } from "../../store/thunk/requestActionThunk";
 import PaymentGateway from "../Payment/paymentGateway";
 import ShiftsSection from "./shiftSection";
-import Loading from "../../common/loading";
 
 const GymPage = () => {
   const userData = useSelector((store) => store.login);
@@ -146,6 +145,8 @@ const GymPage = () => {
       socket.off("rejected", handleOwnerRejected);
     };
   }, [socket, joinRequestPending, FollowRequestStatus]);
+
+  console.log(FollowRequestStatus);
 
   const PostRating = async (rating, gymId) => {
     try {
@@ -357,7 +358,12 @@ const GymPage = () => {
 
   console.log(daysLeft);
 
-  if (loading) return <Loading />;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
 
   if (error)
     return (

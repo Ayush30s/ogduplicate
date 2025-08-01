@@ -275,7 +275,8 @@ const EditListingPage = () => {
   };
 
   if (loading) {
-    return <Loading />;
+    return <Loading
+     />;
   }
 
   return (

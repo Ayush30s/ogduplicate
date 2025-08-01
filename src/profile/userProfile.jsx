@@ -133,7 +133,9 @@ const UserProfile = () => {
               <div className="flex flex-wrap gap-3 mb-5  pb-5 border-b border-gray-600">
                 <button
                   onClick={() => handleFollowUser()}
-                  className={`flex text-white ${loggedInUserFollowMe ? "bg-slate-900" : "bg-blue-600"} items-center px-4 py-2 rounded-lg transition-all`}
+                  className={`flex text-white ${
+                    loggedInUserFollowMe ? "bg-slate-900" : "bg-blue-600"
+                  } items-center px-4 py-2 rounded-lg transition-all`}
                 >
                   {loggedInUserFollowMe ? "Following" : "Follow"}
                 </button>
