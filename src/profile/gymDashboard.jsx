@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -40,7 +40,7 @@ const GymDashboard = () => {
   useEffect(() => {
     if (data?.user?.userType === "gymModel")
       dispatch(profileDataThuk(data.user.userType));
-  }, [dispatch, data?.user?.userType]);
+  }, [dispatch, data?.user?.userType, handleSearchUser]);
 
   const [showShiftForm, setShowShiftForm] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -57,25 +57,27 @@ const GymDashboard = () => {
     status: "Active",
   });
 
-  const handleSearchUser = (e) => {
-    console.log(gymData.joinedBy);
-    setSearchUser(e.target.value);
-    const filteredMemberList = gymData?.joinedBy?.filter((user) => {
-      let allMatch = true;
-      let searchValue = e.target.value;
-      let fullName = user.user?.fullName;
-      for (let index = 0; index < searchValue.length; index++) {
-        if (
-          searchValue[index]?.toUpperCase() !== fullName[index]?.toUpperCase()
-        ) {
-          allMatch = false;
-          break;
+  const handleSearchUser = useCallback(
+    (e) => {
+      setSearchUser(e.target.value);
+      const filteredMemberList = gymData?.joinedBy?.filter((user) => {
+        let allMatch = true;
+        let searchValue = e.target.value;
+        let fullName = user.user?.fullName;
+        for (let index = 0; index < searchValue.length; index++) {
+          if (
+            searchValue[index]?.toUpperCase() !== fullName[index]?.toUpperCase()
+          ) {
+            allMatch = false;
+            break;
+          }
         }
-      }
-      return allMatch;
-    });
-    setFilteredMembers(filteredMemberList);
-  };
+        return allMatch;
+      });
+      setFilteredMembers(filteredMemberList);
+    },
+    [gymData?.joinedBy]
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
