@@ -936,6 +936,7 @@ const GymPage = () => {
 
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">
+                    {user.user.fullName}
                     {user.user?.fullName}
                   </p>
                 </div>
