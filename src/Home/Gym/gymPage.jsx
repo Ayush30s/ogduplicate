@@ -52,6 +52,7 @@ const GymPage = () => {
   const [joinRequestPending, setJoinRequestPending] = useState(false);
   const [joinRequestAccepted, setJoinRequestAccepted] = useState(false);
   const [FollowRequestStatus, setFollowRequestStatus] = useState(-1);
+  const [followingGymOrNot, setFollowingGymOrNot] = useState("Follow");
   const [joinStatus, setJoinStatus] = useState(false);
 
   useEffect(() => {
@@ -91,6 +92,7 @@ const GymPage = () => {
         setJoinRequestPending(data.isJoinRequestPending);
         setFollowRequestStatus(data.FollowRequestStatus);
         setIsPaymentDone(data.isPaymentDone || false);
+        setFollowingGymOrNot(data.followingGymOrNot);
 
         if (data.isJoinRequestAccepted && !data.isPaymentDone) {
           setShowPaymentGateway(true);
@@ -212,12 +214,16 @@ const GymPage = () => {
     console.log("sendFollowAction");
 
     try {
-      let newFollowStatus = "";
-      if (FollowRequestStatus === 0) {
-        newFollowStatus = "Following";
-      } else if (FollowRequestStatus === 1) {
-        newFollowStatus = "Follow";
-      }
+      const newFollowStatus =
+        followingGymOrNot === "Follow" ? "Following" : "Follow";
+
+      console.log(
+        `https://gymbackenddddd-1.onrender.com/request${
+          newFollowStatus === "Following"
+            ? "/follow/user/" + id
+            : "/unfollow/user/" + id
+        }`
+      );
 
       const response = await fetch(
         `https://gymbackenddddd-1.onrender.com/request${
@@ -236,11 +242,14 @@ const GymPage = () => {
         throw new Error(data.message || "Failed to update follow status");
       }
 
-      // Update all state at once to prevent partial updates
-      newFollowStatus == "Follow"
-        ? setFollowRequestStatus(-1)
-        : setFollowRequestStatus(1);
-      console.log(newFollowStatus);
+      // When unfollowing, reset all follow request states
+      if (newFollowStatus === "Follow") {
+        setFollowRequestStatus(-1);
+      } else {
+        setFollowRequestStatus(1);
+      }
+
+      setFollowingGymOrNot(newFollowStatus);
       setFollowersCount((prev) =>
         newFollowStatus === "Following" ? prev + 1 : prev - 1
       );
@@ -437,13 +446,7 @@ const GymPage = () => {
 
   // make attedence status and follow request
 
-  const {
-    gymData: gym,
-    followingOrNot,
-    userFollowLoggedInUser,
-    showFollowButton,
-    ratingdone,
-  } = gymData;
+  const { gymData: gym, showFollowButton, ratingdone } = gymData;
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
@@ -678,34 +681,24 @@ const GymPage = () => {
 
             {/* Follow Button Section */}
             {showFollowButton && (
-              <div className="w-full lg:flex-1 max-w-md">
-                <button
-                  onClick={() => {
-                    if (FollowRequestStatus === -1) FollowAction();
-                    else SendFollowActions();
-                  }}
-                  className={`w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2 ${
-                    FollowRequestStatus === 1
-                      ? "bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white"
-                      : FollowRequestStatus === 0
-                      ? "bg-gradient-to-r from-amber-500 to-amber-400 text-white"
-                      : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
-                  }`}
-                >
-                  {FollowRequestStatus === 1 ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : FollowRequestStatus === 0 ? (
+              <button
+                onClick={() => {
+                  if (followingGymOrNot === "Follow") {
+                    FollowAction();
+                  } else {
+                    SendFollowActions();
+                  }
+                }}
+                className={`w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2 ${
+                  followingGymOrNot === "Following"
+                    ? "bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white"
+                    : FollowRequestStatus === 0
+                    ? "bg-gradient-to-r from-amber-500 to-amber-400 text-white"
+                    : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
+                }`}
+              >
+                {FollowRequestStatus === 0 ? (
+                  <>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 animate-pulse"
@@ -718,7 +711,26 @@ const GymPage = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                  ) : (
+                    Requested
+                  </>
+                ) : followingGymOrNot === "Following" ? (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Following
+                  </>
+                ) : (
+                  <>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -727,14 +739,10 @@ const GymPage = () => {
                     >
                       <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
                     </svg>
-                  )}
-                  {FollowRequestStatus === 0
-                    ? "Requested"
-                    : FollowRequestStatus === 1
-                    ? "Following"
-                    : "Follow"}
-                </button>
-              </div>
+                    Follow
+                  </>
+                )}
+              </button>
             )}
           </div>
         </div>
