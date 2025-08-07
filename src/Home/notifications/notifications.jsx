@@ -179,7 +179,10 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
 
         {/* Notification List */}
         {filteredNotifications?.length === 0 ? (
-          <div className="p-8 text-center text-gray-400 text-lg">
+          <div
+            className="p-8 text-center text-gray-400 text-lg"
+            onClick={() => setShowNotificationStatus(!notificationStatus)}
+          >
             No {statusFilter === "all" ? "" : statusFilter + " "}notifications{" "}
             {activeTab === "received" ? "received" : "sent"}
           </div>
@@ -222,6 +225,11 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                                 <h3 className="font-bold text-white text-lg mb-1">
                                   {
                                     <Link
+                                      onClick={() =>
+                                        setShowNotificationStatus(
+                                          !notificationStatus
+                                        )
+                                      }
                                       to={
                                         activeTab === "received"
                                           ? `/home/${
@@ -265,6 +273,11 @@ const Notifications = ({ setShowNotificationStatus, notificationStatus }) => {
                                 <h3 className="font-bold text-white text-lg mb-1">
                                   {
                                     <Link
+                                      onClick={() =>
+                                        setShowNotificationStatus(
+                                          !notificationStatus
+                                        )
+                                      }
                                       to={
                                         activeTab === "received"
                                           ? `/home/${

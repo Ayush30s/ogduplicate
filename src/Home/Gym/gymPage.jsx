@@ -2,6 +2,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import { debounce } from "lodash";
 import {
   Heart,
   Users,
@@ -180,8 +181,7 @@ const GymPage = () => {
     setRating(selectedRating);
   };
 
-  const FollowAction = async () => {
-    console.log("FollowAction");
+  const FollowAction = debounce(async () => {
     if (FollowRequestStatus == 0) {
       alert("Follow Request is already sent to the user");
       return;
@@ -208,9 +208,9 @@ const GymPage = () => {
       // Reset pending state on error
       setFollowRequestStatus(-1);
     }
-  };
+  }, [1000]);
 
-  const SendFollowActions = async () => {
+  const SendFollowActions = debounce(async () => {
     console.log("sendFollowAction");
 
     try {
@@ -257,9 +257,9 @@ const GymPage = () => {
       console.error("Error updating follow status:", err);
       setError("Failed to update follow status. Please try again.");
     }
-  };
+  }, [1000]);
 
-  const JoinAction = async () => {
+  const JoinAction = debounce(async () => {
     const data = {
       reqto: id,
       reqby: userId,
@@ -280,9 +280,9 @@ const GymPage = () => {
       console.error("Error sending join request:", error);
       setError("Failed to send join request. Please try again.");
     }
-  };
+  }, [1000]);
 
-  const SendJoinActions = async () => {
+  const SendJoinActions = debounce(async () => {
     if (joinStatus === true) {
       setDaysleft(null);
       setshiftJoinedIndex(-1);
@@ -320,7 +320,7 @@ const GymPage = () => {
       console.error("❌ Error in join/leave action:", error.message);
       setError(error.message);
     }
-  };
+  }, [1000]);
 
   const handleSearchUser = (e) => {
     setSearchUser(e.target.value);
@@ -364,8 +364,6 @@ const GymPage = () => {
 
     navigate(path);
   };
-
-  console.log(daysLeft);
 
   if (loading)
     return (
@@ -453,8 +451,8 @@ const GymPage = () => {
       {/* Hero Section */}
       <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-8">
         <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-8 mb-5 overflow-hidden h-[300px] md:h-[400px] lg:h-[500px]">
-          {/* Background Image with Overlay */}
-          <div className="absolute inset-0 z-0">
+          {/* Background Image with Overlay - Should stay behind everything */}
+          <div className="absolute inset-0">
             <img
               src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
               alt="Gym Background"
@@ -464,9 +462,8 @@ const GymPage = () => {
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>
           </div>
 
-          {/* Days Left Component - Responsive Positioning */}
-          {daysLeft !== null && (
-            <div className="absolute right-2 top-2 sm:right-4 sm:top-4 md:right-5 md:top-5 animate-pulse z-10">
+          {daysLeft !== null && daysLeft < 10 && (
+            <div className="absolute right-2 top-2 sm:right-4 sm:top-4 md:right-5 md:top-5 animate-pulse">
               <div className="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 rounded-lg shadow-lg p-3 sm:p-4 max-w-xs sm:max-w-md">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -502,9 +499,9 @@ const GymPage = () => {
             </div>
           )}
 
-          {/* Mobile Floating Days Left - Appears only when main one is hidden */}
-          {daysLeft !== null && (
-            <div className="lg:hidden fixed bottom-4 right-4 z-50 sm:hidden">
+          {/* Mobile Floating Days Left - Should also appear below header */}
+          {daysLeft !== null && daysLeft < 10 && (
+            <div className="lg:hidden fixed bottom-4 right-4 z-10">
               <div className="bg-green-600 text-white rounded-full p-3 shadow-xl animate-bounce">
                 <div className="flex items-center">
                   <span className="text-lg font-bold mr-1">{daysLeft}</span>
@@ -516,8 +513,8 @@ const GymPage = () => {
             </div>
           )}
 
-          {/* Main Content */}
-          <div className="relative z-10 text-center space-y-3 px-2 sm:px-4 md:px-8 w-full">
+          {/* Main Content - Should appear below header */}
+          <div className="relative text-center space-y-3 px-2 sm:px-4 md:px-8 w-full">
             <h1
               className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words px-2"
               style={{
@@ -543,144 +540,144 @@ const GymPage = () => {
         </div>
 
         {/* Join/Payment Section */}
-        <div className="my-8 w-full">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-6 w-full px-4">
-            {/* Join/Leave Gym Section */}
-            <div className="w-full lg:flex-1 max-w-md space-y-4">
-              {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
-                <button
-                  onClick={JoinAction}
-                  className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
+        <div className="flex flex-col my-8 lg:flex-row justify-between items-center gap-4 lg:gap-6 w-full px-4">
+          {/* Join/Leave Gym Section */}
+          <div className="w-full lg:w-auto lg:flex-1 max-w-md space-y-4">
+            {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
+              <button
+                onClick={JoinAction}
+                className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Request to Join Gym
-                </button>
-              )}
-
-              {joinRequestPending && !joinRequestAccepted && !joinStatus && (
-                <div className="w-full px-6 py-3.5 rounded-full font-medium bg-gradient-to-r from-amber-500 to-amber-400 text-white text-sm sm:text-base text-center flex items-center justify-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 animate-pulse"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Request Pending Approval
-                </div>
-              )}
-
-              {joinRequestAccepted && !isPaymentDone && !joinStatus && (
-                <button
-                  onClick={() => setShowPaymentGateway(true)}
-                  className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Complete Payment
-                </button>
-              )}
-
-              {joinStatus && (
-                <button
-                  onClick={SendJoinActions}
-                  className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white text-sm sm:text-base flex items-center justify-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Leave Gym
-                </button>
-              )}
-            </div>
-
-            {/* Attendance Status Section */}
-            {joinStatus && (
-              <div className="w-full lg:flex-1 max-w-md">
-                {attendenceStatus === "Both Marked" ? (
-                  <div className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border-l-4 border-green-500 shadow-md overflow-hidden relative">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-green-100 rounded-full">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6 text-green-600 animate-bounce"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-semibold text-green-800">
-                        Attendance Recorded
-                      </h3>
-                    </div>
-                    <div className="space-y-1 pl-11">
-                      <p className="text-gray-700">
-                        Today's{" "}
-                        <span className="font-bold text-green-600">
-                          check-in/out
-                        </span>{" "}
-                        was successful!
-                      </p>
-                      <p className="text-sm text-gray-500 italic">
-                        See you tomorrow!
-                      </p>
-                    </div>
-                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
-                  </div>
-                ) : (
-                  <QRScannerButton
-                    attendenceStatus={attendenceStatus}
-                    setAttendenceStatus={setAttendenceStatus}
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                    clipRule="evenodd"
                   />
-                )}
+                </svg>
+                Request to Join Gym
+              </button>
+            )}
+
+            {joinRequestPending && !joinRequestAccepted && !joinStatus && (
+              <div className="w-full px-6 py-3.5 rounded-full font-medium bg-gradient-to-r from-amber-500 to-amber-400 text-white text-sm sm:text-base text-center flex items-center justify-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 animate-pulse"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Request Pending Approval
               </div>
             )}
 
-            {/* Follow Button Section */}
-            {showFollowButton && (
+            {joinRequestAccepted && !isPaymentDone && !joinStatus && (
+              <button
+                onClick={() => setShowPaymentGateway(true)}
+                className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Complete Payment
+              </button>
+            )}
+
+            {joinStatus && (
+              <button
+                onClick={SendJoinActions}
+                className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white text-sm sm:text-base flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Leave Gym
+              </button>
+            )}
+          </div>
+
+          {/* Attendance Status Section */}
+          {joinStatus && (
+            <div className="w-full lg:w-auto lg:flex-1 max-w-md">
+              {attendenceStatus === "Both Marked" ? (
+                <div className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border-l-4 border-green-500 shadow-md overflow-hidden relative">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6 text-green-600 animate-bounce"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-green-800">
+                      Attendance Recorded
+                    </h3>
+                  </div>
+                  <div className="space-y-1 pl-11">
+                    <p className="text-gray-700">
+                      Today's{" "}
+                      <span className="font-bold text-green-600">
+                        check-in/out
+                      </span>{" "}
+                      was successful!
+                    </p>
+                    <p className="text-sm text-gray-500 italic">
+                      See you tomorrow!
+                    </p>
+                  </div>
+                  <div className="absolute -top-1 -left-1 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
+                </div>
+              ) : (
+                <QRScannerButton
+                  attendenceStatus={attendenceStatus}
+                  setAttendenceStatus={setAttendenceStatus}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Follow Button Section */}
+          {showFollowButton && (
+            <div className="w-full lg:w-auto lg:flex-1 max-w-md">
               <button
                 onClick={() => {
                   if (followingGymOrNot === "Follow") {
@@ -743,8 +740,8 @@ const GymPage = () => {
                   </>
                 )}
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Stats Section */}

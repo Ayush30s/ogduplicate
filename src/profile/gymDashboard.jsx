@@ -444,7 +444,7 @@ const GymDashboard = () => {
               )}
 
               {/* Shift List */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 my-5">
                 {gymData?.allShifts?.map((shift, index) => (
                   <div
                     key={index}

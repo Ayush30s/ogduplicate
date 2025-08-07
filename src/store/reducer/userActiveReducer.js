@@ -104,12 +104,7 @@ const activeUserReducer = (state = initialState, action) => {
           action.payload === "UNFOLLOW_SUCCESSFUL"
             ? state.followersCount - 1
             : state.followersCount + 1,
-        loggedInUserFollowMe:
-          action.payload === "FOLLOW_SUCCESSFUL"
-            ? true
-            : action.payload === "UNFOLLOW_SUCCESSFUL"
-            ? false
-            : state.loggedInUserFollowMe,
+        loggedInUserFollowMe: !state.loggedInUserFollowMe,
       };
 
     default:

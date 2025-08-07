@@ -149,6 +149,7 @@ const AnalyticsChart = ({ activeMonth, darkMode = false }) => {
         darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-100"
       }`}
     >
+      <h2 className="text-xl font-bold text-gray-800">Monthly Member Growth</h2>
       <Bar ref={chartRef} data={data} options={options} />
     </div>
   );

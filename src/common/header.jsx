@@ -66,7 +66,7 @@ const Header = ({ userData }) => {
   }, []);
 
   return (
-    <header className="bg-gray-900 z-50 text-white p-4 flex justify-between items-center shadow-lg border-b border-gray-800 sticky top-0">
+    <header className="bg-gray-900 z-999 text-white p-4 flex justify-between items-center shadow-lg border-b border-gray-800 sticky top-0">
       {/* Logo Section */}
       <div className="flex items-center gap-2">
         <FaDumbbell className="text-indigo-400 text-2xl" />

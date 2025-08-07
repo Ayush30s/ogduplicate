@@ -20,6 +20,7 @@ import {
   fetchActiveUserDataThunk,
   followRequestThunk,
 } from "../store/thunk/userActive-management";
+import { debounce } from "lodash";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -63,13 +64,13 @@ const UserProfile = () => {
     dispatch(fetchActiveUserDataThunk(userId));
   }, [dispatch, userId]);
 
-  const handleFollowUser = () => {
+  const handleFollowUser = debounce(() => {
     if (loggedInUserFollowMe == true) {
       dispatch(followRequestThunk(`unfollow/user/${userId}`));
     } else {
       dispatch(followRequestThunk(`follow/user/${userId}`));
     }
-  };
+  }, [1000]);
 
   if (loading) {
     return <Loading />;
@@ -133,7 +134,9 @@ const UserProfile = () => {
               <div className="flex flex-wrap gap-3 mb-5  pb-5 border-b border-gray-600">
                 <button
                   onClick={() => handleFollowUser()}
-                  className={`flex text-white ${loggedInUserFollowMe ? "bg-slate-900" : "bg-blue-600"} items-center px-4 py-2 rounded-lg transition-all`}
+                  className={`flex text-white ${
+                    loggedInUserFollowMe ? "bg-slate-900" : "bg-blue-600"
+                  } items-center px-4 py-2 rounded-lg transition-all`}
                 >
                   {loggedInUserFollowMe ? "Following" : "Follow"}
                 </button>

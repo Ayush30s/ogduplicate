@@ -86,6 +86,9 @@ const AttendanceReport = ({ joinedBy }) => {
 
   return (
     <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+      <h2 className="text-xl font-bold text-gray-800">
+        Yearly Attendance Heatmap
+      </h2>
       {/* Mobile Tooltip */}
       {selectedDay && (
         <div className="lg:hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
