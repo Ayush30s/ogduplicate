@@ -15,6 +15,7 @@ import {
   Star,
   X,
 } from "lucide-react";
+import RateGym from "./Rate";
 import QRScannerButton from "./qrScannerButton";
 import { SocketContext } from "../../socket/socketContext";
 import { useSelector } from "react-redux";
@@ -77,7 +78,6 @@ const GymPage = () => {
           navigate("/home/gym-dashboard");
         }
 
-        console.log(data);
         setGymData(data);
         setDaysleft(data.daysLeft);
         setJoinStatus(data.isUserJoined);
@@ -149,8 +149,6 @@ const GymPage = () => {
     };
   }, [socket, joinRequestPending, FollowRequestStatus]);
 
-  console.log(FollowRequestStatus);
-
   const PostRating = async (rating, gymId) => {
     try {
       const response = await fetch(
@@ -211,19 +209,9 @@ const GymPage = () => {
   }, [1000]);
 
   const SendFollowActions = debounce(async () => {
-    console.log("sendFollowAction");
-
     try {
       const newFollowStatus =
         followingGymOrNot === "Follow" ? "Following" : "Follow";
-
-      console.log(
-        `https://gymbackenddddd-1.onrender.com/request${
-          newFollowStatus === "Following"
-            ? "/follow/user/" + id
-            : "/unfollow/user/" + id
-        }`
-      );
 
       const response = await fetch(
         `https://gymbackenddddd-1.onrender.com/request${
@@ -374,7 +362,7 @@ const GymPage = () => {
 
   if (error)
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-red-400">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-red-400 p-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-12 w-12 mb-4"
@@ -389,13 +377,13 @@ const GymPage = () => {
             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p className="text-lg">{error}</p>
+        <p className="text-lg text-center">{error}</p>
       </div>
     );
 
   if (message)
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-green-400">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-green-400 p-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-12 w-12 mb-4"
@@ -410,10 +398,10 @@ const GymPage = () => {
             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p className="text-lg">{message}</p>
+        <p className="text-lg text-center">{message}</p>
         <button
           onClick={() => setMessage(null)}
-          className="mt-4 px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-700"
+          className="mt-4 px-6 py-3 bg-blue-600 rounded-md hover:bg-blue-700 text-white"
         >
           Continue
         </button>
@@ -422,7 +410,7 @@ const GymPage = () => {
 
   if (!gymData) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-gray-400">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-gray-400 p-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-12 w-12 mb-4"
@@ -437,21 +425,19 @@ const GymPage = () => {
             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p className="text-lg">Gym data not found</p>
+        <p className="text-lg text-center">Gym data not found</p>
       </div>
     );
   }
 
-  // make attedence status and follow request
-
   const { gymData: gym, showFollowButton, ratingdone } = gymData;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-4">
       {/* Hero Section */}
-      <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-8">
-        <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-8 mb-5 overflow-hidden h-[300px] md:h-[400px] lg:h-[500px]">
-          {/* Background Image with Overlay - Should stay behind everything */}
+      <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-6">
+        <div className="relative flex items-center justify-center px-4 overflow-hidden h-[300px] md:h-[500px]">
+          {/* Background Image */}
           <div className="absolute inset-0">
             <img
               src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
@@ -459,16 +445,17 @@ const GymPage = () => {
               className="w-full h-full object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-gray-900/40"></div>
           </div>
 
+          {/* Days Left - Top Badge */}
           {daysLeft !== null && daysLeft < 10 && (
-            <div className="absolute right-2 top-2 sm:right-4 sm:top-4 md:right-5 md:top-5 animate-pulse">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 rounded-lg shadow-lg p-3 sm:p-4 max-w-xs sm:max-w-md">
+            <div className="absolute right-3 top-3 md:right-6 md:top-6 animate-pulse">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 rounded-lg shadow-lg p-3 max-w-xs">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
                     <svg
-                      className="h-5 w-5 sm:h-6 sm:w-6 text-green-600"
+                      className="h-5 w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -481,16 +468,16 @@ const GymPage = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-2 sm:ml-3">
+                  <div className="ml-2">
                     <div className="flex items-center">
-                      <span className="text-base sm:text-lg font-bold text-green-700 mr-1 sm:mr-2">
+                      <span className="text-base font-bold text-green-700 mr-1">
                         {daysLeft}
                       </span>
-                      <span className="text-base sm:text-lg font-semibold text-green-600">
+                      <span className="text-base font-semibold text-green-600">
                         {daysLeft === 1 ? "day" : "days"} left
                       </span>
                     </div>
-                    <p className="mt-1 text-xs sm:text-sm text-gray-600">
+                    <p className="mt-1 text-xs text-gray-600">
                       Renew membership before period ends
                     </p>
                   </div>
@@ -499,9 +486,9 @@ const GymPage = () => {
             </div>
           )}
 
-          {/* Mobile Floating Days Left - Should also appear below header */}
+          {/* Mobile Floating Days Left */}
           {daysLeft !== null && daysLeft < 10 && (
-            <div className="lg:hidden fixed bottom-4 right-4 z-10">
+            <div className="lg:hidden fixed bottom-5 right-5 z-20">
               <div className="bg-green-600 text-white rounded-full p-3 shadow-xl animate-bounce">
                 <div className="flex items-center">
                   <span className="text-lg font-bold mr-1">{daysLeft}</span>
@@ -513,189 +500,42 @@ const GymPage = () => {
             </div>
           )}
 
-          {/* Main Content - Should appear below header */}
-          <div className="relative text-center space-y-3 px-2 sm:px-4 md:px-8 w-full">
-            <h1
-              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words px-2"
-              style={{
-                textShadow: `
-          1px 1px 0 rgba(0,0,0,0.5),
-          -1px -1px 0 rgba(0,0,0,0.5),
-          1px -1px 0 rgba(0,0,0,0.5),
-          -1px 1px 0 rgba(0,0,0,0.5),
-          0 1px 0 rgba(0,0,0,0.5),
-          1px 0 0 rgba(0,0,0,0.5),
-          0 -1px 0 rgba(0,0,0,0.5),
-          -1px 0 0 rgba(0,0,0,0.5),
-          1px 1px 3px rgba(0,0,0,0.7)
-        `,
-              }}
-            >
+          {/* Content */}
+          <div className="relative space-y-4 w-full max-w-5xl mx-auto text-center">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white uppercase drop-shadow-lg leading-tight break-words">
               {gym?.gymName}
             </h1>
-            <p className="text-gray-100 max-w-2xl mx-auto text-sm sm:text-base md:text-lg lg:text-xl drop-shadow-md px-4">
+            <p className="text-gray-100 max-w-2xl mx-auto text-sm sm:text-base md:text-lg drop-shadow-md">
               {gym?.description}
             </p>
-          </div>
-        </div>
 
-        {/* Join/Payment Section */}
-        <div className="flex flex-col my-8 lg:flex-row justify-between items-center gap-4 lg:gap-6 w-full px-4">
-          {/* Join/Leave Gym Section */}
-          <div className="w-full lg:w-auto lg:flex-1 max-w-md space-y-4">
-            {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
-              <button
-                onClick={JoinAction}
-                className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Request to Join Gym
-              </button>
-            )}
+            {/* Action Buttons Section */}
+            <div className="flex flex-col justify-center items-center gap-4 mt-6">
+              {/* Join / Leave Gym */}
+              <div className="w-full max-w-md">
+                {!joinRequestPending && !joinRequestAccepted && !joinStatus && (
+                  <button
+                    onClick={JoinAction}
+                    className="w-full px-4 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-sm flex items-center justify-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Request to Join Gym
+                  </button>
+                )}
 
-            {joinRequestPending && !joinRequestAccepted && !joinStatus && (
-              <div className="w-full px-6 py-3.5 rounded-full font-medium bg-gradient-to-r from-amber-500 to-amber-400 text-white text-sm sm:text-base text-center flex items-center justify-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 animate-pulse"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Request Pending Approval
-              </div>
-            )}
-
-            {joinRequestAccepted && !isPaymentDone && !joinStatus && (
-              <button
-                onClick={() => setShowPaymentGateway(true)}
-                className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white text-sm sm:text-base flex items-center justify-center gap-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Complete Payment
-              </button>
-            )}
-
-            {joinStatus && (
-              <button
-                onClick={SendJoinActions}
-                className="w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white text-sm sm:text-base flex items-center justify-center gap-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Leave Gym
-              </button>
-            )}
-          </div>
-
-          {/* Attendance Status Section */}
-          {joinStatus && (
-            <div className="w-full lg:w-auto lg:flex-1 max-w-md">
-              {attendenceStatus === "Both Marked" ? (
-                <div className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border-l-4 border-green-500 shadow-md overflow-hidden relative">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-green-100 rounded-full">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 text-green-600 animate-bounce"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-green-800">
-                      Attendance Recorded
-                    </h3>
-                  </div>
-                  <div className="space-y-1 pl-11">
-                    <p className="text-gray-700">
-                      Today's{" "}
-                      <span className="font-bold text-green-600">
-                        check-in/out
-                      </span>{" "}
-                      was successful!
-                    </p>
-                    <p className="text-sm text-gray-500 italic">
-                      See you tomorrow!
-                    </p>
-                  </div>
-                  <div className="absolute -top-1 -left-1 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
-                </div>
-              ) : (
-                <QRScannerButton
-                  attendenceStatus={attendenceStatus}
-                  setAttendenceStatus={setAttendenceStatus}
-                />
-              )}
-            </div>
-          )}
-
-          {/* Follow Button Section */}
-          {showFollowButton && (
-            <div className="w-full lg:w-auto lg:flex-1 max-w-md">
-              <button
-                onClick={() => {
-                  if (followingGymOrNot === "Follow") {
-                    FollowAction();
-                  } else {
-                    SendFollowActions();
-                  }
-                }}
-                className={`w-full px-6 py-3.5 rounded-full font-medium shadow-md hover:shadow-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2 ${
-                  followingGymOrNot === "Following"
-                    ? "bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white"
-                    : FollowRequestStatus === 0
-                    ? "bg-gradient-to-r from-amber-500 to-amber-400 text-white"
-                    : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white"
-                }`}
-              >
-                {FollowRequestStatus === 0 ? (
-                  <>
+                {joinRequestPending && !joinRequestAccepted && !joinStatus && (
+                  <div className="w-full px-4 py-3 rounded-full font-medium bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm text-center flex items-center justify-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 animate-pulse"
@@ -708,10 +548,37 @@ const GymPage = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Requested
-                  </>
-                ) : followingGymOrNot === "Following" ? (
-                  <>
+                    Request Pending Approval
+                  </div>
+                )}
+
+                {joinRequestAccepted && !isPaymentDone && !joinStatus && (
+                  <button
+                    onClick={() => setShowPaymentGateway(true)}
+                    className="w-full px-4 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white text-sm flex items-center justify-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Complete Payment
+                  </button>
+                )}
+
+                {joinStatus && (
+                  <button
+                    onClick={SendJoinActions}
+                    className="w-full px-4 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm flex items-center justify-center gap-2"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5"
@@ -720,168 +587,257 @@ const GymPage = () => {
                     >
                       <path
                         fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    Following
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
-                    </svg>
-                    Follow
-                  </>
+                    Leave Gym
+                  </button>
                 )}
-              </button>
-            </div>
-          )}
-        </div>
+              </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div
-            onClick={() => navigate(`/home/gym/${id}/memberList`)}
-            className="cursor-pointer bg-gray-800 p-2 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-blue-500/10">
-                <Users className="w-6 h-6 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Members</p>
-                <p className="text-2xl font-bold text-white">{joinCount}</p>
-              </div>
-            </div>
-          </div>
+              {/* Attendance Status */}
+              {joinStatus && (
+                <div className="w-full max-w-md">
+                  {attendenceStatus === "Both Marked" ? (
+                    <div className="p-3 bg-gradient-to-br from-teal-900/70 to-blue-900/70 rounded-xl border-l-4 border-teal-400 shadow-lg overflow-hidden relative">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="p-1 bg-teal-800 rounded-full">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-teal-400 animate-bounce"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                        <h3 className="text-base font-semibold text-teal-300">
+                          Attendance Recorded
+                        </h3>
+                      </div>
+                      <div className="space-y-1 pl-8">
+                        <p className="text-xs text-gray-200">
+                          Today's{" "}
+                          <span className="font-bold text-teal-300">
+                            check-in/out
+                          </span>{" "}
+                          was successful!
+                        </p>
+                        <p className="text-xs text-teal-200 italic">
+                          See you tomorrow!
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <QRScannerButton
+                      attendenceStatus={attendenceStatus}
+                      setAttendenceStatus={setAttendenceStatus}
+                    />
+                  )}
+                </div>
+              )}
 
-          <div
-            onClick={() => navigate(`/home/gym/${id}/followersList`)}
-            className="cursor-pointer bg-gray-800 p-2 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-blue-500/10">
-                <Heart className="w-6 h-6 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Followers</p>
-                <p className="text-2xl font-bold text-white">
-                  {followersCount}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div
-            onClick={() => navigate(`/home/gym/${id}/followingList`)}
-            className="cursor-pointer bg-gray-800 p-2 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-blue-500/10">
-                <Heart className="w-6 h-6 text-blue-400" fill="currentColor" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Following</p>
-                <p className="text-2xl font-bold text-white">
-                  {followingCount}
-                </p>
-              </div>
+              {/* Follow Button */}
+              {showFollowButton && (
+                <div className="w-full max-w-md">
+                  <button
+                    onClick={() => {
+                      if (followingGymOrNot === "Follow") {
+                        FollowAction();
+                      } else {
+                        SendFollowActions();
+                      }
+                    }}
+                    className={`w-full px-4 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all text-sm flex items-center justify-center gap-2 ${
+                      followingGymOrNot === "Following"
+                        ? "bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white"
+                        : FollowRequestStatus === 0
+                        ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white"
+                        : "bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white"
+                    }`}
+                  >
+                    {FollowRequestStatus === 0 ? (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 animate-pulse"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Requested
+                      </>
+                    ) : followingGymOrNot === "Following" ? (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Following
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+                        </svg>
+                        Follow
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {!ratingdone && !rateLater && (
-        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-white">Rate This Gym</h3>
-            <button
-              onClick={() => setRateLater(true)}
-              className="text-gray-400 hover:text-white transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      {/* Stats Section */}
+      <div className="flex md:flex-row flex-col gap-2 mb-6">
+        <div
+          onClick={() => navigate(`/home/gym/${id}/memberList`)}
+          className="w-[100%] cursor-pointer bg-gray-800 p-3 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Users className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-400">Members</p>
+            </div>
+            <p className="text-xl font-bold text-white">{joinCount}</p>
           </div>
-
-          <div className="flex justify-center gap-2 mb-4">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => HandleRating(star)}
-                className="focus:outline-none"
-              >
-                <Star
-                  className={`w-8 h-8 transition-colors ${
-                    star <= rating
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-600 fill-gray-600"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() => {
-              PostRating(rating, id);
-              setRateLater(true);
-            }}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-          >
-            Submit Rating
-          </button>
         </div>
+
+        <div
+          onClick={() => navigate(`/home/gym/${id}/followersList`)}
+          className="w-[100%] cursor-pointer bg-gray-800 p-3 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Heart className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-400">Followers</p>
+            </div>
+            <p className="text-xl font-bold text-white">{followersCount}</p>
+          </div>
+        </div>
+
+        <div
+          onClick={() => navigate(`/home/gym/${id}/followingList`)}
+          className="w-[100%] cursor-pointer bg-gray-800 p-3 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Heart className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-400">Following</p>
+            </div>
+            <p className="text-xl font-bold text-white">{followingCount}</p>
+          </div>
+        </div>
+      </div>
+
+      {!ratingdone && !rateLater && joinStatus && (
+        <RateGym
+          rating={rating}
+          setRateLater={setRateLater}
+          HandleRating={HandleRating}
+          PostRating={PostRating}
+        />
       )}
 
       {/* Gym Details */}
-      <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-8">
-        <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b border-gray-700">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-5 rounded-2xl border border-gray-700 mb-6 shadow-lg">
+        <h3 className="text-xl font-bold text-white mb-5 pb-2 border-b border-gray-700 flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+            <Dumbbell className="w-5 h-5 text-white" />
+          </div>
           Gym Details
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-wrap md:flex-row flex-col gap-4 mb-6">
           {[
             {
-              icon: <Dumbbell className="w-5 h-5 text-blue-400" />,
+              icon: <Dumbbell className="w-5 h-5 text-white" />,
               label: "Owned by",
               value: gym?.fullName,
+              gradient: "from-blue-500 to-blue-600",
             },
             {
-              icon: <Mail className="w-5 h-5 text-blue-400" />,
+              icon: <Mail className="w-5 h-5 text-white" />,
               label: "Email",
               value: gym?.email,
+              gradient: "from-purple-500 to-purple-600",
             },
             {
-              icon: <Phone className="w-5 h-5 text-blue-400" />,
+              icon: <Phone className="w-5 h-5 text-white" />,
               label: "Contact",
               value: gym?.contactNumber,
+              gradient: "from-green-500 to-green-600",
             },
             {
-              icon: <Calendar className="w-5 h-5 text-blue-400" />,
+              icon: <Calendar className="w-5 h-5 text-white" />,
               label: "Established",
               value: gym?.createdAt?.slice(0, 10),
+              gradient: "from-orange-500 to-orange-600",
             },
             {
-              icon: <MapPin className="w-5 h-5 text-blue-400" />,
+              icon: <MapPin className="w-5 h-5 text-white" />,
               label: "Location",
               value: gym?.street + ", " + gym?.city + ", " + gym?.state,
+              gradient: "from-red-500 to-red-600",
             },
             {
-              icon: <Clock className="w-5 h-5 text-blue-400" />,
+              icon: <Clock className="w-5 h-5 text-white" />,
               label: "Monthly Charge",
               value: `₹${gym?.monthlyCharge}/month`,
+              gradient: "from-teal-500 to-teal-600",
             },
           ].map((item, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <div className="mt-0.5">{item.icon}</div>
-              <div>
-                <p className="text-sm text-gray-400">{item.label}</p>
-                <p className="text-white font-medium">{item.value}</p>
+            <div
+              key={index}
+              className="md:w-[32%] w-[100%] bg-gradient-to-br from-gray-800 to-gray-900 p-3 rounded-xl border border-gray-700 hover:border-blue-500 transition-all duration-300"
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={`p-2 rounded-lg bg-gradient-to-r ${item.gradient} shadow-md`}
+                >
+                  {item.icon}
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-gray-400 font-medium mb-1">
+                    {item.label}
+                  </p>
+                  <p className="text-white font-semibold text-sm">
+                    {item.value}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
@@ -889,54 +845,56 @@ const GymPage = () => {
       </div>
 
       {/* About Section */}
-      <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-8">
-        <h3 className="text-xl font-bold text-white mb-4 pb-2 border-b border-gray-700">
+      <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 mb-6">
+        <h3 className="text-lg font-bold text-white mb-3 pb-2 border-b border-gray-700">
           About the Gym
         </h3>
-        <p className="text-gray-300 leading-relaxed">{gym?.description}</p>
+        <p className="text-gray-300 leading-relaxed text-sm">
+          {gym?.description}
+        </p>
       </div>
 
       {/* Members Section */}
       {membersList?.length > 0 && (
-        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-4">
-            <h3 className="text-xl font-bold text-white">
+        <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 mb-6">
+          <div className="flex flex-col justify-between mb-4 gap-3">
+            <h3 className="text-lg font-bold text-white">
               Members ({gym?.joinedBy.length})
             </h3>
 
-            <div className="relative w-full lg:max-w-sm">
+            <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="h-5 w-5 text-gray-400" />
+                <FaSearch className="h-4 w-4 text-gray-400" />
               </div>
               <input
                 type="text"
                 placeholder="Search Members..."
                 value={searchUser}
                 onChange={(e) => handleSearchUser(e)}
-                className="w-full py-2.5 pl-10 pr-10 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full py-2 pl-9 pr-8 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
               {searchUser && (
                 <button
                   onClick={() => setSearchUser("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
                 >
-                  <FaTimes className="h-5 w-5" />
+                  <FaTimes className="h-4 w-4" />
                 </button>
               )}
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 max-h-60 overflow-y-auto">
             {filteredMembers?.map((user, index) => (
               <div
                 key={index}
-                className="flex items-center gap-4 bg-gray-700 p-3 rounded-lg border border-gray-600 hover:border-blue-500 transition-colors cursor-pointer"
+                className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg border border-gray-600 hover:border-blue-500 transition-colors cursor-pointer"
                 onClick={() => handleNavigateToProfile(user.user)}
               >
                 <img
                   src={user.user?.profileImage}
                   alt={user.user?.fullName}
-                  className="w-10 h-10 min-w-10 rounded-full border-2 border-gray-500 object-cover shrink-0"
+                  className="w-8 h-8 min-w-8 rounded-full border-2 border-gray-500 object-cover shrink-0"
                 />
 
                 <div className="flex-1 min-w-0">
@@ -973,14 +931,14 @@ const GymPage = () => {
       {/* Payment Gateway Modal */}
       {showPaymentGateway && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700">
+          <div className="bg-gray-800 rounded-xl p-5 w-full max-w-md border border-gray-700 mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Complete Payment</h3>
+              <h3 className="text-lg font-bold text-white">Complete Payment</h3>
               <button
                 onClick={() => setShowPaymentGateway(false)}
                 className="text-gray-400 hover:text-white"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             </div>
             <PaymentGateway

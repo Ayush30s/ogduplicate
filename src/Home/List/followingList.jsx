@@ -80,6 +80,33 @@ const FollowingList = () => {
     </button>
   );
 
+  if (followingList.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6">
+        <svg
+          className="w-16 h-16 text-gray-500 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+          />
+        </svg>
+        <h1 className="text-xl text-gray-400 font-medium">
+          No following found
+        </h1>
+        <p className="text-gray-500 mt-2 text-center max-w-md">
+          This gym doesn't have any following yet.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-900 min-h-screen py-5 lg:py-10 px-5">
       <div className="max-w-2xl mx-auto relative border border-blue-500 rounded-lg p-5">

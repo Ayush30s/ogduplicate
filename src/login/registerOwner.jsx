@@ -266,18 +266,6 @@ const RegisterOwner = () => {
               Register your gym to start managing members and services.
             </p>
 
-            {successMessage && (
-              <div className="bg-green-600 p-3 rounded mb-4 text-center">
-                {successMessage}
-              </div>
-            )}
-
-            {errors.form && (
-              <div className="bg-red-600 p-3 rounded mb-4 text-center">
-                {errors.form}
-              </div>
-            )}
-
             <form onSubmit={handleSubmitForm} className="space-y-5">
               {/* Name and Gender */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -545,6 +533,18 @@ const RegisterOwner = () => {
                 {isSubmitting ? "Registering..." : "Register Gym"}
               </button>
             </form>
+
+            {successMessage && (
+              <div className="bg-green-600 p-3 rounded mt-4 text-center">
+                {successMessage}
+              </div>
+            )}
+
+            {errors.form && (
+              <div className="bg-red-600 p-3 rounded mt-4 text-center">
+                {errors.form}
+              </div>
+            )}
           </div>
         </div>
       </div>

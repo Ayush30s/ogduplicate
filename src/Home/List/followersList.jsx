@@ -79,6 +79,33 @@ const FollowersList = () => {
     </button>
   );
 
+  if (followersList.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-6">
+        <svg
+          className="w-16 h-16 text-gray-500 mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+          />
+        </svg>
+        <h1 className="text-xl text-gray-400 font-medium">
+          No Followers found
+        </h1>
+        <p className="text-gray-500 mt-2 text-center max-w-md">
+          This account doesn't have any followers yet. Be the first to follow!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-900 min-h-screen py-5 lg:py-10 px-5">
       <div className="p-5 max-w-2xl mx-auto relative border border-blue-500 rounded-lg">
@@ -92,28 +119,6 @@ const FollowersList = () => {
         ) : error ? (
           <div className="text-center text-red-400 bg-red-900/30 border border-red-800 rounded-lg p-4 mt-16">
             <p>{error}</p>
-          </div>
-        ) : followersList.length === 0 ? (
-          <div className="flex flex-col items-center justify-center mt-16">
-            <svg
-              className="w-16 h-16 text-gray-500 mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-            <h1 className="text-xl text-gray-400 font-medium">
-              No followers yet
-            </h1>
-            <p className="text-gray-500 mt-2 text-center max-w-md">
-              When someone follows you, they'll appear here.
-            </p>
           </div>
         ) : (
           <>
