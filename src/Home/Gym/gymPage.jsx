@@ -15,7 +15,7 @@ import {
   Star,
   X,
 } from "lucide-react";
-import RateGym from "./Rate";
+import RateGym from "./rateGym";
 import QRScannerButton from "./qrScannerButton";
 import { SocketContext } from "../../socket/socketContext";
 import { useSelector } from "react-redux";
