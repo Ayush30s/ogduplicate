@@ -29,7 +29,7 @@ const AllBlogs = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen -z-10 bg-gray-950 text-gray-100">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-indigo-900/50 to-gray-900/50 py-16 md:py-24 text-center">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
