@@ -436,7 +436,7 @@ const GymPage = () => {
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4">
       {/* Hero Section */}
       <div className="rounded-xl overflow-hidden bg-gradient-to-r mb-6">
-        <div className="relative flex items-center justify-center px-4 overflow-hidden h-[300px] md:h-[500px]">
+        <div className="relative flex items-center justify-center px-4 overflow-hidden h-[500px] md:h-[500px]">
           {/* Background Image */}
           <div className="absolute inset-0">
             <img
