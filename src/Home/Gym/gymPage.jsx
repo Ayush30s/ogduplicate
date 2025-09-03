@@ -618,7 +618,7 @@ const GymPage = () => {
                             />
                           </svg>
                         </div>
-                        <h3 className="text-base font-semibold text-teal-300">
+                        <h3 className="text-center font-semibold text-teal-300">
                           Attendance Recorded
                         </h3>
                       </div>
