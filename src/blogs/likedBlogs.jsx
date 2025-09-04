@@ -83,9 +83,11 @@ const LikedBlogs = () => {
 
         {/* Blog Grid */}
         {likedBlogs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap gap-8 align-middle justify-center">
             {likedBlogs.map((blog, index) => (
-              <BlogCard key={index} blog={blog} />
+              <div key={index}>
+                <BlogCard blog={blog} />
+              </div>
             ))}
           </div>
         ) : (

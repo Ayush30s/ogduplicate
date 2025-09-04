@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { userBlogDataThunk } from "../store/thunk/blog-management";
 import BlogCard from "./blogCard";
+import { Link } from "react-router-dom";
 
 const SavedBlogs = () => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const SavedBlogs = () => {
   if (error) {
     return (
       <div className="bg-gray-900 min-h-screen flex items-center justify-center">
-        <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 text-center">
+        <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-2xl shadow-xl border border-gray-700 text-center">
           <svg
             className="w-16 h-16 text-red-500 mx-auto mb-4"
             fill="none"
@@ -68,10 +69,10 @@ const SavedBlogs = () => {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-900 min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-3">
+        <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-300 mb-4">
             My Saved Blogs
           </h1>
@@ -82,14 +83,16 @@ const SavedBlogs = () => {
 
         {/* Blog Grid */}
         {savedBlogs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap gap-8 align-middle justify-center">
             {savedBlogs.map((blog, index) => (
-              <BlogCard key={index} blog={blog} />
+              <div key={index}>
+                <BlogCard blog={blog} />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-10">
-            <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700">
+          <div className="text-center py-12">
+            <div className="max-w-md mx-auto p-8 bg-gray-800 rounded-2xl shadow-xl border border-gray-700">
               <svg
                 className="w-16 h-16 text-red-500 mx-auto mb-4"
                 fill="none"
@@ -111,9 +114,11 @@ const SavedBlogs = () => {
                 Start exploring and save blogs that inspire your fitness
                 journey!
               </p>
-              <button className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
-                Explore Blogs
-              </button>
+              <Link to="/blog">
+                <button className="bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                  Explore Blogs
+                </button>
+              </Link>
             </div>
           </div>
         )}

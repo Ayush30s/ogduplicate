@@ -10,6 +10,7 @@ const AllBlogs = () => {
   const navigate = useNavigate();
   const [allblogsData, setAllBlogsData] = useState([]);
   const blogsData = useSelector((state) => state.blog);
+
   useEffect(() => {
     if (blogsData.allblogs) {
       setAllBlogsData(blogsData?.allblogs);
@@ -31,9 +32,12 @@ const AllBlogs = () => {
   return (
     <div className="min-h-screen -z-10 bg-gray-950 text-gray-100">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-indigo-900/50 to-gray-900/50 py-16 md:py-24 text-center">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
-        <div className="relative max-w-4xl mx-auto px-4">
+      <div className="relative bg-gradient-to-r from-indigo-900/50 to-gray-900/50 py-16 md:py-24 text-center overflow-hidden">
+        {/* Background image */}
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 z-0" />
+
+        {/* Foreground content */}
+        <div className="relative max-w-4xl mx-auto px-4 z-0">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,7 +78,7 @@ const AllBlogs = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="flex flex-wrap gap-6"
           >
             {allblogsData.map((blog, index) => (
               <motion.div

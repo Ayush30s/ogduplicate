@@ -229,20 +229,6 @@ const WorkoutPlanForm = () => {
         </form>
       </div>
 
-      {showTokenMessage && (
-        <div className="w-full max-w-3xl mt-6 p-4 bg-blue-900 border border-blue-700 rounded-lg text-center">
-          <p className="text-blue-200 font-bold">⚠️ Demo Mode Activated ⚠️</p>
-          <p className="text-blue-100">
-            Our AI service limit has been reached for this demo period. You're
-            seeing sample exercises identical to what our AI would generate.
-          </p>
-          <p className="text-blue-100 mt-2">
-            In a production environment, this would be your personalized
-            AI-generated workout plan.
-          </p>
-        </div>
-      )}
-
       {selectedExercise && (
         <ExercisePage
           exercise={selectedExercise}
@@ -259,6 +245,20 @@ const WorkoutPlanForm = () => {
               setSelectedExercise={setSelectedExercise}
             />
           ))}
+        </div>
+      )}
+
+      {showTokenMessage && (
+        <div className="w-full max-w-3xl mt-6 p-4 bg-blue-900 border border-blue-700 rounded-lg text-center">
+          <p className="text-blue-200 font-bold">⚠️ Demo Mode Activated ⚠️</p>
+          <p className="text-blue-100">
+            Our AI service limit has been reached for this demo period. You're
+            seeing sample exercises identical to what our AI would generate.
+          </p>
+          <p className="text-blue-100 mt-2">
+            In a production environment, this would be your personalized
+            AI-generated workout plan.
+          </p>
         </div>
       )}
     </div>

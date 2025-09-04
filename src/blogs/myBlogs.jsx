@@ -23,7 +23,7 @@ const MyBlogs = () => {
     <div className="bg-gray-900 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-3">
+        <div className="text-center mb-7">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-300 mb-4">
             My Blogs
           </h1>
@@ -34,14 +34,11 @@ const MyBlogs = () => {
 
         {/* Blog Grid */}
         {blogs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap gap-8 align-middle justify-center">
             {blogs.map((blog, index) => (
-              <BlogCard
-                key={index}
-                blog={blog}
-                blogs={blogs}
-                setBlogs={setBlogs}
-              />
+              <div key={index}>
+                <BlogCard blog={blog} blogs={blogs} setBlogs={setBlogs} />
+              </div>
             ))}
           </div>
         ) : (

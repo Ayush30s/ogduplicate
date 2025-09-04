@@ -5,7 +5,7 @@ const ExcerciseCard = (data) => {
       <h3 className="text-2xl font-extrabold text-indigo-400 mb-2 uppercase">
         {exercise.exerciseName}
       </h3>
-      <p className="text-gray-300 text-sm mb-2">
+      <p className="text-gray-300 text-md font-bold mb-2">
         Focus: <span className="text-yellow-400">{exercise.focusPart}</span>
       </p>
       <p className="text-gray-300 text-sm">
