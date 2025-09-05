@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loading from "../../common/loading";
 
 const FollowersList = () => {
   const { id } = useParams();
@@ -113,9 +114,7 @@ const FollowersList = () => {
         <CloseButton />
 
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
+          <Loading />
         ) : error ? (
           <div className="text-center text-red-400 bg-red-900/30 border border-red-800 rounded-lg p-4 mt-16">
             <p>{error}</p>

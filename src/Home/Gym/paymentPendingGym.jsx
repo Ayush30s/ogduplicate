@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import GymCard from "./gymcard";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Loading from "../../common/loading";
 
 const PendingPaymentGyms = () => {
   const loggedInUser = useSelector((store) => store.login);
@@ -38,11 +39,7 @@ const PendingPaymentGyms = () => {
   }, [userId]);
 
   if (loading) {
-    return (
-      <div className="text-center py-10 text-blue-400 font-medium">
-        Loading gyms pending payment...
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

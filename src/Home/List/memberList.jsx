@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Loading from "../../common/loading";
 
 const MemberList = () => {
   const navigate = useNavigate();
@@ -63,11 +64,7 @@ const MemberList = () => {
   // };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (membersList.length === 0) {

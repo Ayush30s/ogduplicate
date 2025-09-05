@@ -4,6 +4,7 @@ import GymCard from "./Gym/gymcard";
 import { useSelector } from "react-redux";
 import AllListing from "../listing/allListings";
 import GymFilter from "./Gym/gymFilter";
+import Loading from "../common/loading";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -130,9 +131,7 @@ const Home = () => {
             </h2>
 
             {loading ? (
-              <div className="flex justify-center items-center h-40">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-              </div>
+              <Loading />
             ) : gyms.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {gyms.map((gym, index) => (

@@ -35,6 +35,7 @@ import {
   handleReportListingThunk,
 } from "../store/thunk/listing-management";
 import { useDispatch, useSelector } from "react-redux";
+import Loading from "../common/loading";
 
 const ListingPage = () => {
   const id = useParams();
@@ -65,7 +66,7 @@ const ListingPage = () => {
       prevIndex === 0 ? listingData?.images.length - 1 : prevIndex - 1
     );
   };
-  
+
   const toggleFavorite = debounce(() => {
     dispatch(handleLikeListingThunk(listingId));
   }, 500);
@@ -90,18 +91,7 @@ const ListingPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-full animate-spin flex items-center justify-center">
-            <FiSettings className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-          </div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">
-            Loading listing...
-          </p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

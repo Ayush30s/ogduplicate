@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import Loading from "../../common/loading";
 
 export default function PaymentStatus() {
   const [status, setStatus] = useState(null);
@@ -18,7 +19,7 @@ export default function PaymentStatus() {
       .catch(() => setStatus({ error: "Couldn't fetch status" }));
   }, [txnId]);
 
-  if (!status) return <div>Loading...</div>;
+  if (!status) return <Loading />;
 
   return (
     <div>

@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import { requestActionThunk } from "../../store/thunk/requestActionThunk";
 import PaymentGateway from "../Payment/paymentGateway";
 import ShiftsSection from "./shiftSection";
+import Loading from "../../common/loading";
 
 const GymPage = () => {
   const userData = useSelector((store) => store.login);
@@ -353,12 +354,7 @@ const GymPage = () => {
     navigate(path);
   };
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+  if (loading) return <Loading />;
 
   if (error)
     return (
