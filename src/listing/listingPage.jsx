@@ -65,25 +65,19 @@ const ListingPage = () => {
       prevIndex === 0 ? listingData?.images.length - 1 : prevIndex - 1
     );
   };
+  
+  const toggleFavorite = debounce(() => {
+    dispatch(handleLikeListingThunk(listingId));
+  }, 500);
 
-  const toggleFavorite = useCallback(
-    debounce(() => {
-      dispatch(handleLikeListingThunk(listingId));
-    }, 500),
-    [dispatch, listingId]
-  );
-
-  const handleReport = useCallback(
-    debounce(() => {
-      dispatch(
-        handleReportListingThunk(listingId, {
-          reason: "Fraud",
-          message: "please check the model",
-        })
-      );
-    }, 500),
-    [dispatch, listingId]
-  );
+  const handleReport = debounce(() => {
+    dispatch(
+      handleReportListingThunk(listingId, {
+        reason: "Fraud",
+        message: "please check the model",
+      })
+    );
+  }, 500);
 
   const formatDate = (dateString) => {
     if (!dateString) return "Not specified";

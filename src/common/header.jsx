@@ -10,11 +10,9 @@ import { useDispatch } from "react-redux";
 import { onLogoutThunk } from "../store/thunk/auth-management";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useContext } from "react";
 import { useSelector } from "react-redux";
 import Notifications from "../Home/notifications/notifications";
 import { fetchAllRequestThunk } from "../store/thunk/requestActionThunk";
-import { SocketContext } from "../socket/socketContext";
 
 const Header = ({ userData }) => {
   const navigate = useNavigate();

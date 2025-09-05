@@ -18,7 +18,6 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
     brand,
     location,
     status,
-    createdAt,
     negotiable,
     warrantyIncluded,
     gurrantyIncluded,
@@ -39,9 +38,9 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
     if (type === "both") {
       return (
         <div className="flex flex-col items-end">
-          <span className="text-indigo-400 font-bold">₹{price}</span>
+          <span className="text-indigo-400 font-bold text-lg">₹{price}</span>
           {rental?.rentalPrice && (
-            <span className="text-indigo-300 text-xs">
+            <span className="text-indigo-300 text-sm">
               ₹{rental.rentalPrice}/day
             </span>
           )}
@@ -49,7 +48,7 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
       );
     }
     return (
-      <span className="text-indigo-400 font-bold">
+      <span className="text-indigo-400 font-bold text-lg">
         {isRent ? `₹${rental?.rentalPrice || price}/day` : `₹${price}`}
       </span>
     );
@@ -58,59 +57,63 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
   const getConditionColor = () => {
     switch (condition) {
       case "New":
-        return "text-green-400";
+        return "bg-green-500/10 text-green-400";
       case "Good":
-        return "text-blue-400";
+        return "bg-blue-500/10 text-blue-400";
       default:
-        return "text-orange-400";
+        return "bg-orange-500/10 text-orange-400";
     }
   };
 
   return (
-    <div className="w-full max-w-sm bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 hover:border-indigo-500 transition-all duration-300 hover:shadow-indigo-500/20">
-      {/* Image Section */}
-      <div className="relative aspect-square">
+    <div className="text-gray-100 w-full max-w-[300px] rounded-xl border border-gray-700 overflow-hidden transition-all hover:shadow-md hover:shadow-blue-400 cursor-pointer">
+      {/* Image with overlay */}
+      <div className="relative h-48  overflow-hidden" onClick={handleClick}>
         <img
           src={images?.length > 0 ? images[currentImageIndex] : listingavatar}
           alt={title}
-          className="w-full h-[300px] object-cover"
+          className="w-full h-full object-cover"
         />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent flex items-end p-4">
+          <h2 className="text-lg font-bold text-white line-clamp-2">{title}</h2>
+        </div>
 
         {/* Admin Controls */}
         {loggedInUserCreated && (
-          <div className="absolute top-2 left-2 flex gap-2">
+          <div className="absolute top-3 left-3 flex gap-2">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/listing/edit/${_id}`);
               }}
-              className="p-2 bg-gray-800/90 hover:bg-indigo-600 text-white rounded-full transition-all shadow-lg"
+              className="p-2 bg-gray-900/80 hover:bg-indigo-600 text-white rounded-full transition-all shadow-md"
               aria-label="Edit listing"
             >
-              <FiEdit className="w-4 h-4" />
+              <FiEdit className="w-3 h-3" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleDelete();
               }}
-              className="p-2 bg-gray-800/90 hover:bg-red-600 text-white rounded-full transition-all shadow-lg"
+              className="p-2 bg-gray-900/80 hover:bg-red-600 text-white rounded-full transition-all shadow-md"
               aria-label="Delete listing"
             >
-              <FaTrashAlt className="w-4 h-4" />
+              <FaTrashAlt className="w-3 h-3" />
             </button>
           </div>
         )}
 
         {/* Status Badge */}
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-3 right-3">
           <span
-            className={`text-xs px-2 py-1 rounded-full ${
+            className={`text-sm font-medium px-3 py-1 rounded-full shadow ${
               status === "active"
-                ? "bg-green-900/80 text-green-100"
+                ? "bg-green-600/80 text-green-100"
                 : status === "sold"
-                ? "bg-purple-900/80 text-purple-100"
-                : "bg-gray-700/80 text-gray-300"
+                ? "bg-purple-600/80 text-purple-100"
+                : "bg-gray-600/80 text-gray-200"
             }`}
           >
             {status}
@@ -118,34 +121,30 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
         </div>
       </div>
 
-      {/* Content Section */}
-      <div className="p-4 space-y-3 cursor-pointer" onClick={handleClick}>
-        {/* Title and Price */}
-        <div className="flex justify-between items-start">
-          <h3 className="text-white font-medium line-clamp-2">{title}</h3>
-          <div className="text-right">{getPriceDisplay()}</div>
-        </div>
-
-        {/* Meta Information */}
-        <div className="flex flex-wrap gap-2">
-          <span className="bg-indigo-600/20 text-indigo-300 text-xs px-2 py-1 rounded">
+      {/* Content */}
+      <div className="space-y-3 p-4" onClick={handleClick}>
+        {/* Price */}
+        <div className="flex justify-between items-center">
+          <span className="bg-indigo-500/10 text-indigo-300 text-xs px-2 py-1 rounded-full">
             {type === "both" ? "Rent/Sale" : isRent ? "Rent" : "Sale"}
           </span>
+          {getPriceDisplay()}
+        </div>
 
+        {/* Meta info */}
+        <div className="flex flex-wrap gap-2">
           {negotiable && (
-            <span className="bg-green-600/20 text-green-300 text-xs px-2 py-1 rounded">
+            <span className="bg-green-500/10 text-green-300 text-xs px-2 py-1 rounded-full">
               Negotiable
             </span>
           )}
-
           <span
-            className={`${getConditionColor()} bg-opacity-20 text-xs px-2 py-1 rounded`}
+            className={`${getConditionColor()} text-xs px-2 py-1 rounded-full`}
           >
             {condition}
           </span>
-
           {(warrantyIncluded || gurrantyIncluded) && (
-            <span className="bg-blue-600/20 text-blue-300 text-xs px-2 py-1 rounded">
+            <span className="bg-blue-500/10 text-blue-300 text-xs px-2 py-1 rounded-full">
               {warrantyIncluded
                 ? `Warranty ${warrantyTime}`
                 : `Guaranty ${gurrantyTime}`}
@@ -153,14 +152,9 @@ const ListingCard = ({ listing, loggedInUserCreated }) => {
           )}
         </div>
 
-        {/* Brand and Location */}
-        <div className="flex justify-between items-center text-sm text-gray-400">
-          {brand && (
-            <span className="truncate">
-              <span className="text-gray-300 font-medium">{brand}</span>
-            </span>
-          )}
-
+        {/* Brand + Location */}
+        <div className="flex justify-between items-center text-sm text-gray-300 border-t border-gray-700 pt-3 mt-3">
+          {brand && <span className="font-medium">{brand}</span>}
           <div className="flex items-center gap-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"

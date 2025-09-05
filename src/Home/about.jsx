@@ -8,11 +8,11 @@ const AboutPage = () => {
       <div className="min-h-screen bg-gray-900 text-white py-16 px-6 flex flex-col items-center">
         <div className="max-w-4xl text-center">
           <h1 className="text-4xl font-extrabold text-indigo-500 mb-6">
-            About GymAI
+            About OnlyGym
           </h1>
           <p className="text-lg text-gray-300 mb-10 leading-relaxed">
-            GymAI is your personal fitness assistant, designed to help you crush
-            your goals using smart, AI-driven technology. Whether you're a
+            OnlyGym is your personal fitness assistant, designed to help you
+            crush your goals using smart, AI-driven technology. Whether you're a
             beginner just starting out or a seasoned athlete looking to optimize
             your performance, our app tailors every workout to match your body,
             goals, and available equipment.
@@ -46,7 +46,7 @@ const AboutPage = () => {
 
         <div className="w-full max-w-4xl text-center text-gray-400 mb-12">
           <p className="italic text-lg">
-            "Fitness is personal. GymAI helps you stay consistent, challenge
+            "Fitness is personal. OnlyGym helps you stay consistent, challenge
             your limits, and never guess what to do next."
           </p>
         </div>
@@ -57,10 +57,10 @@ const AboutPage = () => {
           </h2>
           <p className="text-gray-300 leading-relaxed">
             We believe fitness should be accessible, intelligent, and
-            personalized. GymAI was built to take the guesswork out of workouts—
-            using technology to understand you, your goals, and your
+            personalized. OnlyGym was built to take the guesswork out of
+            workouts— using technology to understand you, your goals, and your
             constraints. Whether you train at home with dumbbells or hit the gym
-            daily, GymAI adapts to your reality and helps you grow stronger,
+            daily, OnlyGym adapts to your reality and helps you grow stronger,
             smarter.
           </p>
         </div>
