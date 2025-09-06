@@ -36,6 +36,7 @@ const Home = () => {
     );
     navigate(`/home?${params.toString()}`);
   };
+
   const handleReset = () => {
     setFormData({
       city: "",
@@ -82,7 +83,7 @@ const Home = () => {
     <div className="min-h-screen bg-gray-950 text-white z-0">
       {/* Hero Section */}
       {loggedInuser.user.userType === "userModel" ? (
-        <section className="z-0 bg-gradient-to-r from-indigo-900 to-purple-900 py-16 relative overflow-hidden">
+        <section className="relative z-0 bg-gradient-to-r from-indigo-900 to-purple-900 pt-16 pb-24 overflow-hidden">
           <div className="container mx-auto px-6 text-center relative z-10">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
               Find Your Perfect Gym
@@ -94,7 +95,7 @@ const Home = () => {
           </div>
         </section>
       ) : (
-        <section className="z-0 bg-gradient-to-r from-indigo-900 to-purple-900 py-16 relative overflow-hidden">
+        <section className="relative z-0 bg-gradient-to-r from-indigo-900 to-purple-900 pt-16 pb-24 overflow-hidden">
           <div className="container mx-auto px-6 text-center relative z-10">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
               Gym Owner Dashboard
@@ -115,7 +116,7 @@ const Home = () => {
 
       {/* Main Content */}
       {loggedInuser.user.userType === "userModel" ? (
-        <main className="container mx-auto px-6 py-12 -mt-16 relative z-10">
+        <main className="relative container mx-auto px-6 py-12 z-10">
           {/* Filter Section */}
           <div className="bg-gray-900/70 backdrop-blur-md rounded-xl shadow-lg mb-10 border border-gray-800">
             <GymFilter
@@ -162,7 +163,7 @@ const Home = () => {
           </div>
         </main>
       ) : (
-        <main className="max-w-7xl mx-auto px-6 py-10">
+        <main className="relative max-w-7xl mx-auto px-6 py-10 z-10">
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
               Equipments for <span className="text-indigo-400">Rent</span> and{" "}

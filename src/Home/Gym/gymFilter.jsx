@@ -5,7 +5,7 @@ const GymFilter = ({
   handleFilterChange,
 }) => {
   return (
-    <div className="bg-gray-800 rounded-lg shadow-lg p-8 mb-6">
+    <div className="bg-gray-800 rounded-lg shadow-lg p-8">
       <h2 className="text-2xl font-semibold mb-6 text-gray-200">Filter Gyms</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
