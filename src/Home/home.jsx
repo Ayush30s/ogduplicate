@@ -116,7 +116,7 @@ const Home = () => {
 
       {/* Main Content */}
       {loggedInuser.user.userType === "userModel" ? (
-        <main className="relative container mx-auto px-6 py-12 z-10">
+        <main className="relative container mx-auto px-6 py-12 z-0">
           {/* Filter Section */}
           <div className="bg-gray-900/70 backdrop-blur-md rounded-xl shadow-lg mb-10 border border-gray-800">
             <GymFilter
@@ -163,8 +163,8 @@ const Home = () => {
           </div>
         </main>
       ) : (
-        <main className="relative max-w-7xl mx-auto px-6 py-10 z-10">
-          <div className="text-center">
+        <main className="relative max-w-7xl mx-auto px-6 pt-4 z-0">
+          <div className="text-center mt-4">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
               Equipments for <span className="text-indigo-400">Rent</span> and{" "}
               <span className="text-indigo-400">Sale</span>
