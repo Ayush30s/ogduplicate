@@ -79,7 +79,7 @@ const Home = () => {
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gray-950 text-white z-0">
       {/* Hero Section */}
       {loggedInuser.user.userType === "userModel" ? (
         <section className="z-0 bg-gradient-to-r from-indigo-900 to-purple-900 py-16 relative overflow-hidden">
@@ -117,7 +117,7 @@ const Home = () => {
       {loggedInuser.user.userType === "userModel" ? (
         <main className="container mx-auto px-6 py-12 -mt-16 relative z-10">
           {/* Filter Section */}
-          <div className="bg-gray-900/70 backdrop-blur-md rounded-xl shadow-lg p-6 mb-10 border border-gray-800">
+          <div className="bg-gray-900/70 backdrop-blur-md rounded-xl shadow-lg mb-10 border border-gray-800">
             <GymFilter
               handleReset={handleReset}
               handleSubmit={handleSubmit}
@@ -127,7 +127,7 @@ const Home = () => {
           </div>
 
           {/* Results Section */}
-          <div>
+          <div className="z-0">
             <h2 className="text-3xl font-bold mb-8 text-gray-100 border-b border-gray-800 pb-3">
               Available Gyms
             </h2>
@@ -135,7 +135,7 @@ const Home = () => {
             {loading ? (
               <Loading />
             ) : gyms.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="z-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {gyms.map((gym, index) => (
                   <Link
                     to={`/home/gym/${gym.gymId}`}
