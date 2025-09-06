@@ -79,54 +79,56 @@ const Home = () => {
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-950 text-white">
       {/* Hero Section */}
       {loggedInuser.user.userType === "userModel" ? (
-        <div className="bg-gradient-to-r from-indigo-900 to-purple-900 py-10">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <section className="z-0 bg-gradient-to-r from-indigo-900 to-purple-900 py-16 relative overflow-hidden">
+          <div className="container mx-auto px-6 text-center relative z-10">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
               Find Your Perfect Gym
             </h1>
-            <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Discover premium fitness centers tailored to your goals with our
               curated selection of top-rated gyms.
             </p>
           </div>
-        </div>
+        </section>
       ) : (
-        <div className="bg-gradient-to-r from-indigo-900 to-purple-900 py-16">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <section className="z-0 bg-gradient-to-r from-indigo-900 to-purple-900 py-16 relative overflow-hidden">
+          <div className="container mx-auto px-6 text-center relative z-10">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">
               Gym Owner Dashboard
             </h1>
-            <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
               Manage your gym profile and connect with fitness enthusiasts
               looking for quality training facilities.
             </p>
             <Link
               to="/home/gym-dashboard"
-              className="inline-block px-8 py-3 bg-white text-indigo-900 font-semibold rounded-lg hover:bg-gray-100 transition duration-300"
+              className="inline-block px-8 py-3 bg-white text-indigo-900 font-semibold rounded-lg shadow hover:bg-gray-100 transition duration-300"
             >
               Go to Dashboard
             </Link>
           </div>
-        </div>
+        </section>
       )}
 
       {/* Main Content */}
       {loggedInuser.user.userType === "userModel" ? (
-        <div className="container mx-auto px-6 py-8 -mt-12">
+        <main className="container mx-auto px-6 py-12 -mt-16 relative z-10">
           {/* Filter Section */}
-          <GymFilter
-            handleReset={handleReset}
-            handleSubmit={handleSubmit}
-            formData={formData}
-            handleFilterChange={handleFilterChange}
-          />
+          <div className="bg-gray-900/70 backdrop-blur-md rounded-xl shadow-lg p-6 mb-10 border border-gray-800">
+            <GymFilter
+              handleReset={handleReset}
+              handleSubmit={handleSubmit}
+              formData={formData}
+              handleFilterChange={handleFilterChange}
+            />
+          </div>
 
           {/* Results Section */}
-          <div className="mb-4">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-200">
+          <div>
+            <h2 className="text-3xl font-bold mb-8 text-gray-100 border-b border-gray-800 pb-3">
               Available Gyms
             </h2>
 
@@ -138,29 +140,42 @@ const Home = () => {
                   <Link
                     to={`/home/gym/${gym.gymId}`}
                     key={index}
-                    className="transition duration-300"
+                    className="transition duration-300 transform hover:scale-[1.02]"
                   >
                     <GymCard data={gym} darkMode={true} />
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="bg-gray-800 rounded-lg shadow p-8 text-center">
+              <div className="bg-gray-900/70 rounded-xl shadow-lg p-10 text-center border border-gray-800">
                 <p className="text-gray-400 text-lg mb-4">
                   No gyms found matching your criteria.
                 </p>
                 <button
                   onClick={handleReset}
-                  className="mt-4 px-4 py-2 text-indigo-500 hover:text-indigo-400 font-medium focus:outline-none"
+                  className="mt-4 px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-500 transition"
                 >
                   Clear filters
                 </button>
               </div>
             )}
           </div>
-        </div>
+        </main>
       ) : (
-        <AllListing />
+        <main className="max-w-7xl mx-auto px-6 py-10">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
+              Equipments for <span className="text-indigo-400">Rent</span> and{" "}
+              <span className="text-indigo-400">Sale</span>
+            </h1>
+            <p className="mt-2 text-gray-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+              Browse through a wide range of equipment available for renting or
+              purchasing, all at the best prices.
+            </p>
+          </div>
+
+          <AllListing />
+        </main>
       )}
     </div>
   );
